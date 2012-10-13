@@ -14,7 +14,7 @@ trait ZObject {
 
   def id: ZIdentity
   def zClass: ZClass
-  def fieldSets: Map[(ZRole, ZFieldClass), ZFieldSet]
+  def fieldSets: FieldSetMap[ZFieldSet]
 
   def reference: ZObjectReference = ZObjectReference( id, zClass )
 
@@ -56,10 +56,9 @@ ZObjectReference protected[model] ( id: ZIdentity,
                                     ) extends ZObject {
 
   override def reference: ZObjectReference = this
-  def fieldSets: Map[(ZRole, ZFieldClass), ZFieldSet] = reload().fieldSets
+  def fieldSets: FieldSetMap[ZFieldSet] = reload().fieldSets
 
 }
-
 
 /**
  * An immutable Object that corresponds to an Object in the database
@@ -70,7 +69,7 @@ trait ZPersistedObject extends ZObject {
 
 
 /**
- * An Object that can be modified
+ * An Object that can be Modified
  */
 trait ZMutableObject extends ZObject {
   type T <: ZMutableObject
@@ -78,13 +77,13 @@ trait ZMutableObject extends ZObject {
 
   // Accessors
 
-  override def fieldSets: Map[(ZRole, ZFieldClass), S]
+  override def fieldSets: FieldSetMap[S]
   def deleted_? : Boolean
 
   // Mutation
 
   protected
-  def update( fieldSets: Map[(ZRole, ZFieldClass), S] = fieldSets,
+  def update( fieldSets: FieldSetMap[S] = fieldSets,
               deleted_? : Boolean = deleted_?
               ): T
 
@@ -134,7 +133,7 @@ trait ZModifiedObject extends ZObject with ZMutableObject {
   type S = ZModifiedFieldSet
 
   def id: ZPersistedIdentity
-  def fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet]
+  def fieldSets: FieldSetMap[ZModifiedFieldSet]
 
 }
 
@@ -147,7 +146,7 @@ trait ZNewObject extends ZObject with ZMutableObject {
   type S = ZNewFieldSet
 
   def id: TempId
-  def fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet]
+  def fieldSets: FieldSetMap[ZNewFieldSet]
 
 }
 

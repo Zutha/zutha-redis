@@ -15,6 +15,7 @@ trait ZItem extends ZObject {
 
 /**
  * An immutable Item that corresponds to an Item in the database
+ *
  * @param id
  * @param zClass
  * @param fieldSets
@@ -22,7 +23,7 @@ trait ZItem extends ZObject {
 case class
 ZPersistedItem protected[model] ( id: Zids,
                                   zClass: ZItemClass,
-                                  fieldSets: Map[(ZRole, ZFieldClass), ZPersistedFieldSet]
+                                  fieldSets: FieldSetMap[ZPersistedFieldSet]
                                   ) extends ZPersistedObject with ZItem {
 
   def edit: ZModifiedItem =
@@ -30,7 +31,7 @@ ZPersistedItem protected[model] ( id: Zids,
 }
 
 /**
- * A Item that can be Modified
+ * An Item that can be Modified
  */
 trait ZMutableItem extends ZItem with ZMutableObject {
   type T <: ZMutableItem
@@ -53,12 +54,12 @@ case class
 ZModifiedItem protected[model] ( id: Zids,
                                  zClassBkp: ZItemClass,
                                  zClass: ZItemClass,
-                                 fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
+                                 fieldSets: FieldSetMap[ZModifiedFieldSet],
                                  deleted_? : Boolean
                                  ) extends ZModifiedObject with ZItem with ZMutableItem {
   type T = ZModifiedItem
 
-  protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
+  protected def update( fieldSets: FieldSetMap[ZModifiedFieldSet],
                         deleted_? : Boolean ): ZModifiedItem = {
     ZModifiedItem( id, zClassBkp, zClass, fieldSets, deleted_? )
   }
@@ -72,6 +73,7 @@ ZModifiedItem protected[model] ( id: Zids,
 
 /**
  * An Item that has not been persisted to the database
+ *
  * @param id
  * @param zClass
  * @param fieldSets
@@ -80,12 +82,12 @@ ZModifiedItem protected[model] ( id: Zids,
 case class
 ZNewItem protected[model] ( id: TempId,
                             zClass: ZItemClass,
-                            fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
+                            fieldSets: FieldSetMap[ZNewFieldSet],
                             deleted_? : Boolean
                             ) extends ZNewObject with ZItem with ZMutableItem {
   type T = ZNewItem
 
-  protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
+  protected def update( fieldSets: FieldSetMap[ZNewFieldSet],
                         deleted_? : Boolean ): ZNewItem = {
     ZNewItem( id, zClass, fieldSets, deleted_? )
   }

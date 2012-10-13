@@ -21,8 +21,8 @@ object ZFieldSet {
 
   /** load FieldSet and add modifications */
   protected def apply( parent: ZObject, role: ZRole, fieldClass: ZFieldClass,
-                       addedFields: Map[ZFieldIdentity, ZNewField],
-                       modifiedFields: Map[ZFieldIdentity, ZModifiedField],
+                       addedFields: FieldMap[ZNewField],
+                       modifiedFields: FieldMap[ZModifiedField],
                        limit: Int,
                        offset: Int
                       ): ZFieldSet = {
@@ -41,7 +41,7 @@ trait ZFieldSet {
   def parent: ZObject
   def role: ZRole
   def fieldClass: ZFieldClass
-  def fields: Map[ZFieldIdentity, ZField]
+  def fields: FieldMap[ZField]
 }
 
 
@@ -50,7 +50,7 @@ case class
 ZPersistedFieldSet protected[model] ( parent: ZObject,
                                       role: ZRole,
                                       fieldClass: ZFieldClass,
-                                      fields: Map[ZFieldIdentity, ZPersistedField],
+                                      fields: FieldMap[ZPersistedField],
                                       limit: Int,
                                       offset: Int
                                       ) extends ZFieldSet {
@@ -90,9 +90,9 @@ case class
 ZModifiedFieldSet protected[model] ( override val parent: ZObject,
                                      override val role: ZRole,
                                      override val fieldClass: ZFieldClass,
-                                     persistedFields: Map[ZFieldIdentity, ZPersistedField],
-                                     addedFields: Map[ZFieldIdentity, ZNewField],
-                                     modifiedFields: Map[ZFieldIdentity, ZModifiedField],
+                                     persistedFields: FieldMap[ZPersistedField],
+                                     addedFields: FieldMap[ZNewField],
+                                     modifiedFields: FieldMap[ZModifiedField],
                                      limit: Int,
                                      offset: Int
                                      )
@@ -100,18 +100,18 @@ ZModifiedFieldSet protected[model] ( override val parent: ZObject,
 
   // Accessors
 
-  protected def persistedFieldsUpdated: Map[ZFieldIdentity, ZModifiedField] =
+  protected def persistedFieldsUpdated: FieldMap[ZModifiedField] =
     (persistedFields.mapValues(_.edit)) ++ modifiedFields
 
   override def fields = fields()
-  def fields(showDeleted: Boolean = false): Map[ZFieldIdentity, ZMutableField] = {
-    val allFields: Map[ZFieldIdentity, ZMutableField] = addedFields ++ persistedFieldsUpdated
+  def fields(showDeleted: Boolean = false): FieldMap[ZMutableField] = {
+    val allFields: FieldMap[ZMutableField] = addedFields ++ persistedFieldsUpdated
     if (showDeleted) allFields else allFields.filterNot(_._2.deleted_? )
   }
 
   // Mutators
-  protected def update( addedFields: Map[ZFieldIdentity, ZNewField] = addedFields,
-                        modifiedFields: Map[ZFieldIdentity, ZModifiedField] = modifiedFields,
+  protected def update( addedFields: FieldMap[ZNewField] = addedFields,
+                        modifiedFields: FieldMap[ZModifiedField] = modifiedFields,
                         limit: Int = limit,
                         offset: Int = offset
             ): ZModifiedFieldSet = {
@@ -174,7 +174,7 @@ ZModifiedFieldSet protected[model] ( override val parent: ZObject,
 case class ZNewFieldSet protected[model] ( parent: ZObject,
                                            role: ZRole,
                                            fieldClass: ZFieldClass,
-                                           fields: Map[ZFieldIdentity, ZNewField]
+                                           fields: FieldMap[ZNewField]
                                            ) extends ZFieldSet with ZMutableFieldSet {
 
 }

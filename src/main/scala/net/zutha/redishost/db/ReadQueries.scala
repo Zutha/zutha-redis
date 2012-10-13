@@ -6,12 +6,12 @@ import common._
 trait ReadQueries {
 
   // TODO: implement stub
-  def getRolePlayersOfField(field: ZField): Set[(ZRole, ZItem)] = {
+  def getRolePlayersOfField(field: ZField): RolePlayerSet = {
     ???
   }
 
   //  TODO: implement stub
-  def getLiteralsOfField(field: ZField): Set[ZLiteral] = {
+  def getLiteralsOfField(field: ZField): LiteralSet = {
     ???
   }
 
@@ -21,7 +21,7 @@ trait ReadQueries {
                          fieldClass: ZFieldClass,
                          limit: Int,
                          offset: Int
-                        ): Map[ZFieldIdentity, ZPersistedField] = {
+                        ): FieldMap[ZPersistedField] = {
     ???
   }
 
@@ -32,7 +32,7 @@ trait ReadQueries {
   def getUpdatedField( field: ZField, fieldLimit: Int = 0 ): ZPersistedField = ???
 
   // TODO: implement with single redis request
-  def getUpdatedFields( fields: ZField* ): Map[ZFieldIdentity, ZPersistedField] = {
+  def getUpdatedFields( fields: ZField* ): FieldMap[ZPersistedField] = {
     fields.map{ f =>
       val newf = getUpdatedField(f)
       (newf.id -> newf)

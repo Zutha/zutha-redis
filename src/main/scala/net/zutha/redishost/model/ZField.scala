@@ -13,11 +13,11 @@ object ZField {
    * @return
    */
   def apply( zClass: ZFieldClass,
-             rolePlayers: (ZRole, ZObject)*
+             rolePlayers: RolePlayer*
              ): ZNewField = {
     val id = new TempId
     val rps = rolePlayers.toSet
-    val fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet] = Map() //TODO get from db (implement in ZObject)
+    val fieldSets: FieldSetMap[ZNewFieldSet] = Map() //TODO get from db (implement in ZObject)
     ZNewField( id, zClass, fieldSets, rps, Set() )
   }
 }
@@ -29,9 +29,9 @@ trait ZField extends ZObject {
 
   def id: ZFieldIdentity
   def zClass: ZFieldClass
-  def fieldSets: Map[(ZRole, ZFieldClass), ZFieldSet]
-  def rolePlayers: Set[(ZRole, ZObject)]
-  def literals: Set[ZLiteral]
+  def fieldSets: FieldSetMap[ZFieldSet]
+  def rolePlayers: RolePlayerSet
+  def literals: LiteralSet
 
   def rolePlayerMap: Map[ZRole, Set[ZObject]] =
     rolePlayers.groupBy(_._1).mapValues(_.map(_._2))
@@ -41,10 +41,10 @@ trait ZField extends ZObject {
 
   def players: Set[ZObject] = rolePlayers.map(_._2)
 
-  def literalsOfType(literalType: ZLiteralType): Set[ZLiteral] =
-    literals.filter(_.literalType == literalType)
+  def literalsOfType(literalType: ZLiteralType): LiteralSet =
+    literals.filter(_._2 == literalType)
 
-  def firstLiteralOfType(literalType: ZLiteralType): ZLiteral =
+  def firstLiteralOfType(literalType: ZLiteralType): Literal =
     literalsOfType(literalType).head
 }
 
@@ -60,15 +60,22 @@ trait ZField extends ZObject {
 case class
 ZPersistedField protected[model] ( id: SingleZid,
                                    zClass: ZFieldClass,
-                                   fieldSets: Map[(ZRole, ZFieldClass), ZPersistedFieldSet],
-                                   rolePlayers: Set[(ZRole, ZObject)],
-                                   literals: Set[ZLiteral]
+                                   fieldSets: FieldSetMap[ZPersistedFieldSet],
+                                   rolePlayers: RolePlayerSet,
+                                   literals: LiteralSet
                                    ) extends ZPersistedObject with ZField {
 
   override def edit: ZModifiedField =
     ZModifiedField( id, zClass, fieldSets.mapValues(_.edit),
     rolePlayers, rolePlayers, literals, literals )
 
+  protected def applyDiff(diff: ZFieldDiff): ZModifiedField = {
+    edit.applyDiff(diff)
+  }
+  def merge(other: ZModifiedField): ZModifiedField = {
+    require(id == other.id, "must merge a modified version of the same field")
+    applyDiff( other.calcDiff )
+  }
 }
 
 /**
@@ -78,15 +85,14 @@ trait ZMutableField extends ZField with ZMutableObject {
   type T <: ZMutableField
 
   protected
-  def updateField ( rolePlayers: Set[(ZRole, ZObject)] = rolePlayers,
-                    literals: Set[ZLiteral] = literals
+  def updateField ( rolePlayers: RolePlayerSet = rolePlayers,
+                    literals: LiteralSet = literals
                     ): T
 
   override def save: Option[ZPersistedField]
 }
 
 /**
- * ZModifiedField
  * A Persisted Field that possibly has unsaved modifications
  *
  * @param id
@@ -101,34 +107,45 @@ trait ZMutableField extends ZField with ZMutableObject {
 case class
 ZModifiedField protected[model] ( id: SingleZid,
                                   zClass: ZFieldClass,
-                                  fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
-                                  rolePlayersBkp: Set[(ZRole, ZObject)],
-                                  rolePlayers: Set[(ZRole, ZObject)],
-                                  literalsBkp: Set[ZLiteral],
-                                  literals: Set[ZLiteral],
+                                  fieldSets: FieldSetMap[ZModifiedFieldSet],
+                                  rolePlayersBkp: RolePlayerSet,
+                                  rolePlayers: RolePlayerSet,
+                                  literalsBkp: LiteralSet,
+                                  literals: LiteralSet,
                                   deleted_? : Boolean = false
                                   )
   extends ZModifiedObject with ZField with ZMutableField {
+
   type T = ZModifiedField
 
   // Accessors
 
+  def calcDiff: ZFieldDiff = {
+    val addedRolePlayers = rolePlayers -- rolePlayersBkp
+    val removedRolePlayers = rolePlayersBkp -- rolePlayers
+    val addedLiterals = literals -- literalsBkp
+    val removedLiterals = literalsBkp -- literals
+    val modifiedLiterals = Set[Literal]() //TODO unary literals and text diffs
+    ZFieldDiff(addedRolePlayers, removedRolePlayers,
+      addedLiterals, removedLiterals, modifiedLiterals)
+  }
+
   //  Mutators
 
-  protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet] = fieldSets,
+  protected def update( fieldSets: FieldSetMap[ZModifiedFieldSet] = fieldSets,
                         deleted_? : Boolean = false
                         ): ZModifiedField = {
     ZModifiedField( id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
-  protected def updateField ( rolePlayers: Set[(ZRole, ZObject)] = rolePlayers,
-                              literals: Set[ZLiteral] = literals
+  protected def updateField ( rolePlayers: RolePlayerSet = rolePlayers,
+                              literals: LiteralSet = literals
                               ): ZModifiedField = {
     ZModifiedField( id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
 
-  def mutateRolePlayers(mutate: Set[(ZRole, ZObject)] => Set[(ZRole, ZObject)]): ZField =
+  def mutateRolePlayers(mutate: RolePlayerSet => RolePlayerSet): ZField =
     updateField( rolePlayers = mutate(rolePlayers) )
 
   def addRolePlayer(role: ZRole, player: ZObject): ZField =
@@ -137,14 +154,21 @@ ZModifiedField protected[model] ( id: SingleZid,
   def removeRolePlayer(role: ZRole, player: ZObject): ZField =
     mutateRolePlayers( _ - ((role, player)) )
 
-  def mutateLiterals(mutate: Set[ZLiteral] => Set[ZLiteral]): ZField =
+  def mutateLiterals(mutate: LiteralSet => LiteralSet): ZField =
     updateField( literals = mutate(literals) )
 
-  def addLiteral(literal: ZLiteral): ZField =
+  def addLiteral(literal: Literal): ZField =
     mutateLiterals( _ + literal )
 
-  def removeLiteral(literal: ZLiteral): ZField =
+  def removeLiteral(literal: Literal): ZField =
     mutateLiterals( _ - literal )
+
+  def applyDiff(diff: ZFieldDiff): ZModifiedField = {
+    val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
+    val newLiterals = literals ++ diff.addedLiterals -- diff.removedLiterals
+
+    updateField( rolePlayers = newRolePlayers, literals = newLiterals )
+  }
 
   override def reload(limit: Int = 0): ZPersistedField = {
     val latest = DB.getUpdatedField(this, limit)
@@ -176,21 +200,21 @@ ZModifiedField protected[model] ( id: SingleZid,
 case class
 ZNewField protected[model] ( id: TempId,
                              zClass: ZFieldClass,
-                             fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
-                             rolePlayers: Set[(ZRole, ZObject)],
-                             literals: Set[ZLiteral],
+                             fieldSets: FieldSetMap[ZNewFieldSet],
+                             rolePlayers: RolePlayerSet,
+                             literals: LiteralSet,
                              deleted_? : Boolean = false
                              )
   extends ZNewObject
   with ZField with ZMutableField {
   type T = ZNewField
 
-  protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet] = fieldSets,
+  protected def update( fieldSets: FieldSetMap[ZNewFieldSet] = fieldSets,
                         deleted_? : Boolean = false ): ZNewField = {
     ZNewField( id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
-  protected def updateField ( rolePlayers: Set[(ZRole, ZObject)] = rolePlayers,
-                              literals: Set[ZLiteral] = literals
+  protected def updateField ( rolePlayers: RolePlayerSet = rolePlayers,
+                              literals: LiteralSet = literals
                               ): ZNewField = {
     ZNewField( id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
