@@ -61,20 +61,17 @@ ZObjectReference protected[model] ( id: ZIdentity,
 }
 
 
-
-case class
-ZPersistedObject protected[model] ( id: ZPersistedIdentity,
-                                    zClass: ZClass,
-                                    fieldSets: Map[(ZRole, ZFieldClass), ZPersistedFieldSet]
-                                    ) extends ZObject {
-  type C = ZClass
-
-  def edit: ZModifiedObject =
-    ZModifiedObject(id, zClass, zClass, fieldSets.mapValues(_.edit), deleted_? = false )
+/**
+ * An immutable Object that corresponds to an Object in the database
+ */
+trait ZPersistedObject extends ZObject {
+  def edit: ZModifiedObject
 }
 
 
-
+/**
+ * An Object that can be modified
+ */
 trait ZMutableObject extends ZObject {
   type T <: ZMutableObject
   type S <: ZMutableFieldSet
@@ -125,39 +122,13 @@ trait ZMutableObject extends ZObject {
 
   // Persistence
 
-  def save()
+  def save: Option[ZPersistedObject]
 }
 
 
 /**
  * A Persisted Object that possibly has unsaved modifications
  */
-object ZModifiedObject {
-  private[ZModifiedObject] case class
-  ModifiedObject ( id: ZPersistedIdentity,
-                   zClassBkp: ZClass,
-                   zClass: ZClass,
-                   fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
-                   deleted_? : Boolean
-                   )
-    extends ZModifiedObject {
-    type T = ZModifiedObject
-    type C = ZClass
-
-    protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
-                          deleted_? : Boolean ): ZModifiedObject = {
-      ModifiedObject( id, zClassBkp, zClass, fieldSets, deleted_? )
-    }
-
-  }
-
-  def apply( id: ZPersistedIdentity,
-             zClassBkp: ZClass,
-             zClass: ZClass,
-             fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
-             deleted_? : Boolean = false
-             ) = ModifiedObject( id, zClassBkp, zClass, fieldSets, deleted_? )
-}
 trait ZModifiedObject extends ZObject with ZMutableObject {
   type T <: ZModifiedObject
   type S = ZModifiedFieldSet
@@ -165,37 +136,12 @@ trait ZModifiedObject extends ZObject with ZMutableObject {
   def id: ZPersistedIdentity
   def fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet]
 
-  def save() {}
-
 }
 
 
 /**
  * An Object that has not been persisted to the database
  */
-object ZNewObject {
-  private[ZNewObject] case class
-  NewObject ( id: TempId,
-              zClass: ZClass,
-              fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
-              deleted_? : Boolean
-              ) extends ZNewObject {
-    type T = ZNewObject
-    type C = ZClass
-
-    protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
-                          deleted_? : Boolean ) = {
-      NewObject( id, zClass, fieldSets, deleted_? )
-    }
-
-  }
-
-  def apply( id: TempId,
-             zClass: ZClass,
-             fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet],
-             deleted_? : Boolean = false
-             ) = NewObject( id, zClass, fieldSets, deleted_? )
-}
 trait ZNewObject extends ZObject with ZMutableObject {
   type T <: ZNewObject
   type S = ZNewFieldSet
@@ -203,7 +149,6 @@ trait ZNewObject extends ZObject with ZMutableObject {
   def id: TempId
   def fieldSets: Map[(ZRole, ZFieldClass), ZNewFieldSet]
 
-  def save() {}
 }
 
 

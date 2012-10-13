@@ -22,7 +22,9 @@ object ZField {
   }
 }
 
-
+/**
+ * An association between one or more objects and zero or more literal values
+ */
 trait ZField extends ZObject {
 
   def id: ZFieldIdentity
@@ -46,18 +48,22 @@ trait ZField extends ZObject {
     literalsOfType(literalType).head
 }
 
-
-
-
+/**
+ * An immutable Field that corresponds to a Field in the database
+ *
+ * @param id
+ * @param zClass
+ * @param fieldSets
+ * @param rolePlayers
+ * @param literals
+ */
 case class
-ZPersistedField protected[model] ( override val id: SingleZid,
-                                   override val zClass: ZFieldClass,
-                                   override val fieldSets: Map[(ZRole, ZFieldClass), ZPersistedFieldSet],
+ZPersistedField protected[model] ( id: SingleZid,
+                                   zClass: ZFieldClass,
+                                   fieldSets: Map[(ZRole, ZFieldClass), ZPersistedFieldSet],
                                    rolePlayers: Set[(ZRole, ZObject)],
                                    literals: Set[ZLiteral]
-                                   )
-  extends ZPersistedObject( id, zClass, fieldSets )
-  with ZField {
+                                   ) extends ZPersistedObject with ZField {
 
   override def edit: ZModifiedField =
     ZModifiedField( id, zClass, zClass, fieldSets.mapValues(_.edit),
@@ -66,19 +72,17 @@ ZPersistedField protected[model] ( override val id: SingleZid,
 }
 
 /**
- * ZMutableField
  * A Field that can be Modified
  */
 trait ZMutableField extends ZField with ZMutableObject {
   type T <: ZMutableField
-
-  def deleted_? : Boolean
 
   protected
   def updateField ( rolePlayers: Set[(ZRole, ZObject)] = rolePlayers,
                     literals: Set[ZLiteral] = literals
                     ): T
 
+  override def save: Option[ZPersistedField]
 }
 
 /**
@@ -157,7 +161,7 @@ ZModifiedField protected[model] ( id: SingleZid,
 
   // Persistence
 
-  override def save() {}
+  override def save = ???
 }
 
 
@@ -192,4 +196,6 @@ ZNewField protected[model] ( id: TempId,
                               ): ZNewField = {
     ZNewField( id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
+
+  override def save = ???
 }
