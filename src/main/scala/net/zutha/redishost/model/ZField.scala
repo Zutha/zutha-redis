@@ -66,7 +66,7 @@ ZPersistedField protected[model] ( id: SingleZid,
                                    ) extends ZPersistedObject with ZField {
 
   override def edit: ZModifiedField =
-    ZModifiedField( id, zClass, zClass, fieldSets.mapValues(_.edit),
+    ZModifiedField( id, zClass, fieldSets.mapValues(_.edit),
     rolePlayers, rolePlayers, literals, literals )
 
 }
@@ -90,7 +90,6 @@ trait ZMutableField extends ZField with ZMutableObject {
  * A Persisted Field that possibly has unsaved modifications
  *
  * @param id
- * @param zClassBkp
  * @param zClass
  * @param fieldSets
  * @param rolePlayersBkp
@@ -101,7 +100,6 @@ trait ZMutableField extends ZField with ZMutableObject {
  */
 case class
 ZModifiedField protected[model] ( id: SingleZid,
-                                  zClassBkp: ZFieldClass,
                                   zClass: ZFieldClass,
                                   fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet],
                                   rolePlayersBkp: Set[(ZRole, ZObject)],
@@ -120,13 +118,13 @@ ZModifiedField protected[model] ( id: SingleZid,
   protected def update( fieldSets: Map[(ZRole, ZFieldClass), ZModifiedFieldSet] = fieldSets,
                         deleted_? : Boolean = false
                         ): ZModifiedField = {
-    ZModifiedField( id, zClassBkp, zClass, fieldSets,
+    ZModifiedField( id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
   protected def updateField ( rolePlayers: Set[(ZRole, ZObject)] = rolePlayers,
                               literals: Set[ZLiteral] = literals
                               ): ZModifiedField = {
-    ZModifiedField( id, zClassBkp, zClass, fieldSets,
+    ZModifiedField( id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
 
