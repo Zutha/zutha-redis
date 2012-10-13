@@ -26,7 +26,7 @@ trait ReadQueries {
   }
 
   // TODO: implement stub
-  def getUpdatedObject( zObject: ZObject, fieldLimit: Int = 0): ZPersistedObject = ???
+  def getUpdatedItem( zObject: ZObject, fieldLimit: Int = 0): ZPersistedItem = ???
 
   // TODO: implement stub
   def getUpdatedField( field: ZField, fieldLimit: Int = 0 ): ZPersistedField = ???

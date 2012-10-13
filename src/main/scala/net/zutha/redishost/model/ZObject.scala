@@ -34,15 +34,6 @@ trait ZObject {
 
   def merged_? = primaryZids.size >= 2
 
-
-  /** reloads the object from the database
-    * @param limit the maximum number if fields to load per field set
-    */
-  def reload(limit: Int = 5): ZPersistedObject = {
-    val latest = DB.getUpdatedObject(this, limit)
-    latest
-  }
-
   // Comparison
 
   def sameAs(other: ZObject): Boolean = id == other.id
@@ -56,7 +47,7 @@ ZObjectReference protected[model] ( id: ZIdentity,
                                     ) extends ZObject {
 
   override def reference: ZObjectReference = this
-  def fieldSets: FieldSetMap[ZFieldSet] = reload().fieldSets
+  def fieldSets: FieldSetMap[ZFieldSet] = Map()
 
 }
 
@@ -64,7 +55,10 @@ ZObjectReference protected[model] ( id: ZIdentity,
  * An immutable Object that corresponds to an Object in the database
  */
 trait ZPersistedObject extends ZObject {
+
   def edit: ZModifiedObject
+
+  def reload( limit: Int ): ZPersistedObject
 }
 
 
@@ -105,20 +99,6 @@ trait ZMutableObject extends ZObject {
   def delete: T = update( deleted_? = true )
   def restore: T = update( deleted_? = false )
 
-  // TODO implement stub
-  /**
-   * Merges two objects. <br />
-   *
-   * If other is a modified version of this,
-   * its modifications are applied to this object (which must be persisted).
-   * If both objects are persisted, their fields are merged
-   *
-   * @param other the object to merge into this one
-   * @return the merged object
-   */
-  def merge(other: ZObject): ZObject = ???
-
-
   // Persistence
 
   def save: Option[ZPersistedObject]
@@ -135,6 +115,7 @@ trait ZModifiedObject extends ZObject with ZMutableObject {
   def id: ZPersistedIdentity
   def fieldSets: FieldSetMap[ZModifiedFieldSet]
 
+  def reload(limit: Int): ZModifiedObject
 }
 
 

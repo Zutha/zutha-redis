@@ -69,13 +69,14 @@ ZPersistedField protected[model] ( id: SingleZid,
     ZModifiedField( id, zClass, fieldSets.mapValues(_.edit),
     rolePlayers, rolePlayers, literals, literals )
 
-  protected def applyDiff(diff: ZFieldDiff): ZModifiedField = {
+  def applyDiff(diff: ZFieldDiff): ZModifiedField = {
     edit.applyDiff(diff)
   }
   def merge(other: ZModifiedField): ZModifiedField = {
-    require(id == other.id, "must merge a modified version of the same field")
-    applyDiff( other.calcDiff )
+    other merge this
   }
+
+  def reload(limit: Int) = ???
 }
 
 /**
@@ -170,15 +171,17 @@ ZModifiedField protected[model] ( id: SingleZid,
     updateField( rolePlayers = newRolePlayers, literals = newLiterals )
   }
 
-  override def reload(limit: Int = 0): ZPersistedField = {
-    val latest = DB.getUpdatedField(this, limit)
-    latest
+  def merge(other: ZPersistedField): ZModifiedField = {
+    require(id == other.id, "must merge a modified and persisted version of the same field")
+    val newFieldSets = fieldSets map {fs =>
+      (fs._1 -> (fs._2 merge other.fieldSets(fs._1)))
+    }
+    other.applyDiff( calcDiff ).update( fieldSets = newFieldSets )
   }
 
-  // TODO implement stub
-  override def merge(other: ZObject): ZField = other match {
-    case f:ZField => f
-    case _ => throw new IllegalArgumentException
+  override def reload(limit: Int = 0): ZModifiedField = {
+    val latest = DB.getUpdatedField(this, limit)
+    this merge latest
   }
 
   // Persistence

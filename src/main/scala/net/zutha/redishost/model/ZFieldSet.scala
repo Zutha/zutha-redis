@@ -58,6 +58,10 @@ ZPersistedFieldSet protected[model] ( parent: ZObject,
   def edit: ZModifiedFieldSet =
     ZModifiedFieldSet( parent, role, fieldClass, fields, Map(), Map(), limit, offset )
 
+  def merge(other: ZModifiedFieldSet): ZModifiedFieldSet = {
+    other.merge(this)
+  }
+
   def reload: ZPersistedFieldSet = {
     val persistedFields = DB.getFieldSetFields( parent, role, fieldClass, limit, offset )
     ZPersistedFieldSet( parent, role, fieldClass, persistedFields, limit, offset )
@@ -145,6 +149,16 @@ ZModifiedFieldSet protected[model] ( override val parent: ZObject,
   }
 
   def removeField(field: ZModifiedField): ZFieldSet = updateFields(field.delete)
+
+  def merge(other: ZPersistedFieldSet): ZModifiedFieldSet = {
+    require( (other.parent, other.role, other.fieldClass) == (parent, role, fieldClass) )
+    val newModifiedFields = modifiedFields.flatMap{ mf =>
+        other.fields.get(mf._1).map{oField =>
+          ( mf._1 -> mf._2.merge(oField) )
+        }
+    }
+    other.edit.update( modifiedFields = newModifiedFields )
+  }
 
   /** load the latest changes from the database and merge in the modifications */
   def reload( limit: Int, offset: Int = 0 ): ZModifiedFieldSet = {

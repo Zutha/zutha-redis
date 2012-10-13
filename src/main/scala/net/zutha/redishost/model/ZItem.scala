@@ -1,6 +1,7 @@
 package net.zutha.redishost.model
 
 import common._
+import net.zutha.redishost.db.DB
 
 /**
  * Represents some concept or thing. May contain fields which associate it with data or other items.
@@ -28,6 +29,18 @@ ZPersistedItem protected[model] ( id: Zids,
 
   def edit: ZModifiedItem =
     ZModifiedItem(id, zClass, zClass, fieldSets.mapValues(_.edit), deleted_? = false )
+
+  def merge(other: ZModifiedItem): ZModifiedItem = {
+    other merge this
+  }
+
+  /** reloads the object from the database
+    * @param limit the maximum number of fields to load per field set
+    */
+  def reload(limit: Int): ZPersistedItem = {
+    val latest = DB.getUpdatedItem(this, limit)
+    latest
+  }
 }
 
 /**
@@ -66,7 +79,30 @@ ZModifiedItem protected[model] ( id: Zids,
 
   protected def updateClass(zClass: ZItemClass) = ZModifiedItem( id, zClassBkp, zClass, fieldSets, deleted_? )
 
+  def merge(other: ZPersistedItem): ZModifiedItem = {
+    //TODO cater for merging
+    require(id == other.id, "must merge a modified and persisted version of the same item")
+    if(zClassBkp == other.zClass){
+      val newFieldSets = fieldSets map {fs => other.fieldSets.get(fs._1) match {
+        case Some(ofs) => (fs._1 -> (fs._2 merge ofs))
+        case None => fs
+      }}
+      val merged = other.edit.update( fieldSets = newFieldSets )
+      if (zClass == other.zClass) merged else merged.updateClass(zClass)
+    } else { // conflict in class - abandon this edit
+      throw new Exception("persisted item's class changed since modification was started")
+    }
+  }
+
   // Persistence
+
+  /** reloads the object from the database
+    * @param limit the maximum number if fields to load per field set
+    */
+  def reload(limit: Int): ZModifiedItem = {
+    val latest = DB.getUpdatedItem(this, limit)
+    this merge latest
+  }
 
   override def save = ???
 }
