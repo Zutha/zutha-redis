@@ -1,15 +1,10 @@
 name := "zutha-redis"
 
-version := "0.0.1-SNAPSHOT"
+version := "0.0.2-SNAPSHOT"
 
 organization := "net.zutha"
 
 scalaVersion := "2.9.2"
-
-// for Sbt Eclipse
-EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Managed
-
-EclipseKeys.withSource := true
 
 resolvers ++= Seq(
   "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository",
@@ -20,6 +15,7 @@ resolvers ++= Seq(
 libraryDependencies ++= {
   Seq(
   "net.debasishg" % "redisclient_2.9.2" % "[2.7,)",
+  "org.scalatest" %% "scalatest" % "1.8" % "test",
   "diff_match_patch" % "diff_match_patch" % "current"
 )}
 
