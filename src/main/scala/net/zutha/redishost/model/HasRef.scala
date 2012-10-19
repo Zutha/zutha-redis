@@ -2,40 +2,40 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 
-private[model] trait HasRef[+Trait <: HasRef[Trait] with ZObject] {
+private[model] trait HasRef[Trait <: ZObject] {
   def id: ZIdentity
 //  def ref: ReferenceT[Trait]
 
 
 }
 
-private[model] trait HasMutableRef[A <: MutableAccessor, +Trait <: HasMutableRef[A, Trait] with ZMutableObject[A]]
+private[model] trait HasMutableRef[A <: MutableAccessor, Trait <: MObject[A]]
   extends HasRef[Trait] {
 
   def acc: A
 
-  protected def refT[T <: ZMutableObject[A]]: MReferenceTA[A, T] = {
-    ZMutableObjectReference[A, T]( acc, id ).asInstanceOf[MReferenceTA[A, T]]
+  protected def refT[T <: MObject[A]]: MRefTA[A, T] = {
+    MRef[A]( acc, id ).asInstanceOf[MRefTA[A, T]]
   }
 
-  def ref: MReferenceTA[A, Trait] = refT[Trait]
+  def ref: MRefTA[A, Trait] = refT[Trait]
 
   def reload( acc: A, limit: Int ): Trait = ???
 }
 
 private[model] trait HasImmutableRef
-[A <: ImmutableAccessor, +Trait <: HasImmutableRef[A, Trait] with ZImmutableObject[A]]
+[A <: ImmutableAccessor, +Trait <: HasImmutableRef[A, Trait] with IObject[A]]
   extends HasRef[Trait] {
 
   override def id: Zid
 
   def acc: A
 
-  protected def refT[T <: ZImmutableObject[A]]: IReferenceTA[A, T] = {
-    ZImmutableObjectReference[A, T]( acc, id ).asInstanceOf[IReferenceTA[A, T]]
+  protected def refT[T <: IObject[A]]: IRefTA[A, T] = {
+    IRef[A]( acc, id ).asInstanceOf[IRefTA[A, T]]
   }
 
-  def ref: IReferenceTA[A, Trait] = refT[Trait]
+  def ref: IRefTA[A, Trait] = refT[Trait]
 
   def reload( acc: A, limit: Int ): Trait = ???
 }

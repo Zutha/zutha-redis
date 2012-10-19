@@ -7,12 +7,12 @@ trait ZFieldClass
   with HasRef[ZFieldClass] {
 }
 
-trait ZIFieldClass[A <: ImmutableAccessor]
+trait IFieldClass[A <: ImmutableAccessor]
   extends ZFieldClass
-  with ZIClass[A]
-  with HasImmutableRef[A, ZIFieldClass[A]]
+  with IClass[A]
+  with HasImmutableRef[A, IFieldClass[A]]
 
-trait ZMFieldClass[A <: MutableAccessor]
+trait MFieldClass[A <: MutableAccessor]
   extends ZFieldClass
-  with ZMClass[A]
-  with HasMutableRef[A, ZMFieldClass[A]]
+  with MClass[A]
+  with HasMutableRef[A, MFieldClass[A]]

@@ -2,10 +2,10 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor, Accessor}
 
-object ZLiteralType extends ZObjectFactory[ZLiteralType, ZILiteralType, ZMLiteralType] {
+object ZLiteralType extends ZObjectFactory[ZLiteralType, ILiteralType, MLiteralType] {
   def typeName = "ZLiteralType"
 
-  def validType_?(obj: ZConcreteObject): Boolean = ???
+  def validType_?(obj: ZObject): Boolean = ???
 }
 
 trait ZLiteralType
@@ -13,12 +13,12 @@ trait ZLiteralType
   with HasRef[ZLiteralType] {
 }
 
-trait ZILiteralType[A <: ImmutableAccessor]
+trait ILiteralType[A <: ImmutableAccessor]
   extends ZLiteralType
-  with ZIType[A]
-  with HasImmutableRef[A, ZILiteralType[A]]
+  with IType[A]
+  with HasImmutableRef[A, ILiteralType[A]]
 
-trait ZMLiteralType[A <: MutableAccessor]
+trait MLiteralType[A <: MutableAccessor]
   extends ZLiteralType
-  with ZMType[A]
-  with HasMutableRef[A, ZMLiteralType[A]]
+  with MType[A]
+  with HasMutableRef[A, MLiteralType[A]]

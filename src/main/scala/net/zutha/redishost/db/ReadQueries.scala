@@ -7,6 +7,6 @@ trait ReadQueries extends Queries {
   type A0 <: Accessor
   def me: A0
 
-  def getObjectRaw(id: Zid, fieldLimit: Int = 0): Option[ZConcreteObject]
+  def getObjectRaw(id: Zid, fieldLimit: Int = 0): Option[ZObject]
 
 }

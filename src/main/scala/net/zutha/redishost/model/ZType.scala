@@ -2,10 +2,10 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{Accessor, ImmutableAccessor, MutableAccessor}
 
-object ZType extends ZObjectFactory[ZType, ZIType, ZMType] {
+object ZType extends ZObjectFactory[ZType, IType, MType] {
   def typeName = "ZType"
 
-  def validType_?(obj: ZConcreteObject): Boolean = ???
+  def validType_?(obj: ZObject): Boolean = ???
 }
 
 trait ZType
@@ -14,12 +14,12 @@ trait ZType
 
 }
 
-trait ZIType[A <: ImmutableAccessor]
+trait IType[A <: ImmutableAccessor]
   extends ZType
-  with ZIItem[A]
-  with HasImmutableRef[A, ZIType[A]]
+  with IItem[A]
+  with HasImmutableRef[A, IType[A]]
 
-trait ZMType[A <: MutableAccessor]
+trait MType[A <: MutableAccessor]
   extends ZType
-  with ZMItem[A]
-  with HasMutableRef[A, ZMType[A]]
+  with MItem[A]
+  with HasMutableRef[A, MType[A]]

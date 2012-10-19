@@ -7,43 +7,43 @@ package object model {
   def ??? : Nothing = throw new Error("Not Implemented")
 
 
-  type ObjectT[T]                                        = ZObject with T
 
-  type ReferenceT[T <: ZObject]                                    = ZObjectReference[T] with T
-  type IReferenceT[A <: ImmutableAccessor, +T[A1 <: A] <: ZImmutableObject[A1]]  = ZImmutableObjectReference[A, T[A]] with T[A]
-  type IReferenceTA[A <: ImmutableAccessor, +TA <: ZImmutableObject[A]]         = ZImmutableObjectReference[A, TA] with TA
-  type MReferenceT[A <: MutableAccessor, +T[A1 <: A] <: ZMutableObject[A1]]    = ZMutableObjectReference[A, T[A]] with T[A]
-  type MReferenceTA[A <: MutableAccessor, +TA <: ZMutableObject[A]]           = ZMutableObjectReference[A, TA] with TA
+  type RefT[T <: ZObject]                                         = ZRef with T
+  type IRefT[A <: ImmutableAccessor, +T[A1 <: A] <: IObject[A1]]  = IRef[T[A]] with T[A]
+  type IRefTA[A <: ImmutableAccessor, +TA <: IObject[A]]          = IRef[TA] with TA
+  type MRefT[A <: MutableAccessor, +T[A1 <: A] <: MObject[A1]]    = MRef[T[A]] with T[A]
+  type MRefTA[A <: MutableAccessor, +TA <: MObject[A]]            = MRef[TA] with TA
 
-  type CObjectT[T]                                       = ZConcreteObject with T
-  type CImmutableT[A <: ImmutableAccessor, +T[A1 <: A] <: ZImmutableObject[A1]] = ZConcreteImmutableObject[A] with T[A]
-  type CMutableT[A <: MutableAccessor, +T[A1 <: A] <: ZMutableObject[A1]]      = ZConcreteMutableObject[A] with T[A]
+  type ObjectT[T]                                                       = ZObject with T
+  type ZObjectT[T]                                                      = ZObject with T
+  type IObjectT[A <: ImmutableAccessor, +T[A1 <: A] <: IObject[A1]]     = IObject[A] with T[A]
+  type MObjectT[A <: MutableAccessor, +T[A1 <: A] <: MObject[A1]]       = MObject[A] with T[A]
 
 
-  type RolePlayer                             = (ReferenceT[ZRole], ReferenceT[ZObject])
-  type RolePlayerSet = Set[RolePlayer]
-  type RolePlayerMap                          = Map[ReferenceT[ZRole], Set[ReferenceT[ZObject]]]
-  type IRolePlayer[A <: ImmutableAccessor]    = (IReferenceT[A, ZIRole], IReferenceT[A, ZImmutableObject])
+  type RolePlayer                             = (RefT[ZRole], RefT[ZObject])
+  type RolePlayerSet                          = Set[RolePlayer]
+  type RolePlayerMap                          = Map[RefT[ZRole], Set[RefT[ZObject]]]
+  type IRolePlayer[A <: ImmutableAccessor]    = (IRefT[A, IRole], IRefT[A, IObject])
   type IRolePlayerSet[A <: ImmutableAccessor] = Set[IRolePlayer[A]]
-  type IRolePlayerMap[A <: ImmutableAccessor] = Map[IReferenceT[A, ZIRole], Set[IReferenceT[A, ZImmutableObject]]]
-  type MRolePlayer[A <: MutableAccessor]      = (MReferenceT[A, ZMRole], MReferenceT[A, ZMutableObject])
+  type IRolePlayerMap[A <: ImmutableAccessor] = Map[IRefT[A, IRole], Set[IRefT[A, IObject]]]
+  type MRolePlayer[A <: MutableAccessor]      = (MRefT[A, MRole], MRefT[A, MObject])
   type MRolePlayerSet[A <: MutableAccessor]   = Set[MRolePlayer[A]]
-  type MRolePlayerMap[A <: MutableAccessor]   = Map[MReferenceT[A, ZMRole], Set[MReferenceT[A, ZMutableObject]]]
+  type MRolePlayerMap[A <: MutableAccessor]   = Map[MRefT[A, MRole], Set[MRefT[A, MObject]]]
 
-  type Literal                                = (ReferenceT[ZLiteralType], ZLiteralValue)
+  type Literal                                = (RefT[ZLiteralType], ZLiteralValue)
   type LiteralSet                             = Set[Literal]
-  type LiteralMap                             = Map[ReferenceT[ZLiteralType], Set[ZLiteralValue]]
-  type ILiteral[A <: ImmutableAccessor]       = (IReferenceT[A, ZILiteralType], ZLiteralValue)
+  type LiteralMap                             = Map[RefT[ZLiteralType], Set[ZLiteralValue]]
+  type ILiteral[A <: ImmutableAccessor]       = (IRefT[A, ILiteralType], ZLiteralValue)
   type ILiteralSet[A <: ImmutableAccessor]    = Set[ILiteral[A]]
-  type ILiteralMap[A <: ImmutableAccessor]    = Map[IReferenceT[A, ZILiteralType], Set[ZLiteralValue]]
-  type MLiteral[A <: MutableAccessor]         = (MReferenceT[A, ZMLiteralType], ZLiteralValue)
+  type ILiteralMap[A <: ImmutableAccessor]    = Map[IRefT[A, ILiteralType], Set[ZLiteralValue]]
+  type MLiteral[A <: MutableAccessor]         = (MRefT[A, MLiteralType], ZLiteralValue)
   type MLiteralSet[A <: MutableAccessor]      = Set[MLiteral[A]]
-  type MLiteralMap[A <: MutableAccessor]      = Map[MReferenceT[A, ZMLiteralType], Set[ZLiteralValue]]
+  type MLiteralMap[A <: MutableAccessor]      = Map[MRefT[A, MLiteralType], Set[ZLiteralValue]]
 
   type FieldMap                               = Map[ZFieldIdentity, ZField]
-  type FieldSetMap                            = Map[(ReferenceT[ZRole], ReferenceT[ZFieldClass]), ZFieldSet]
-  type IFieldMap[A <: ImmutableAccessor]      = Map[Zid, ZImmutableField[A]]
-  type IFieldSetMap[A <: ImmutableAccessor]   = Map[(IReferenceT[A, ZIRole], IReferenceT[A, ZIFieldClass]), ZImmutableFieldSet[A]]
-  type MFieldMap[A <: MutableAccessor]        = Map[ZFieldIdentity, ZMutableField[A]]
-  type MFieldSetMap[A <: MutableAccessor]     = Map[(MReferenceT[A, ZMRole], MReferenceT[A, ZMFieldClass]), ZMutableFieldSet[A]]
+  type FieldSetMap                            = Map[(RefT[ZRole], RefT[ZFieldClass]), ZFieldSet]
+  type IFieldMap[A <: ImmutableAccessor]      = Map[Zid, IField[A]]
+  type IFieldSetMap[A <: ImmutableAccessor]   = Map[(IRefT[A, IRole], IRefT[A, IFieldClass]), IFieldSet[A]]
+  type MFieldMap[A <: MutableAccessor]        = Map[ZFieldIdentity, MField[A]]
+  type MFieldSetMap[A <: MutableAccessor]     = Map[(MRefT[A, MRole], MRefT[A, MFieldClass]), MFieldSet[A]]
 }

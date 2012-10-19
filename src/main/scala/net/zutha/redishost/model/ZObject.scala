@@ -2,10 +2,10 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 
-object ZObject extends ZObjectFactory[ZObject, ZImmutableObject, ZMutableObject] {
+object ZObject extends ZObjectFactory[ZObject, IObject, MObject] {
   def typeName = "ZObject"
 
-  def validType_?(obj: ZConcreteObject): Boolean = ???
+  def validType_?(obj: ZObject): Boolean = ???
 }
 
 
@@ -42,88 +42,25 @@ trait ZObject
 
 }
 
-
-
-trait ZConcreteObject
+trait PersistedObject
   extends ZObject
-  with HasRef[ZConcreteObject]
-
-trait ZPersistedObject
-  extends ZObject
-  with HasRef[ZPersistedObject]
+  with HasRef[PersistedObject]
 {
 
 }
 
-trait ZImmutableObject[A <: ImmutableAccessor]
-  extends ZObject
-  with HasImmutableRef[A, ZImmutableObject[A]]
-{
-//  def fieldSets: IFieldSetMap[A]
-}
-
-trait ZMutableObject[A <: MutableAccessor]
-  extends ZObject
-  with HasMutableRef[A, ZMutableObject[A]]
-{
-
-//  def fieldSets: MFieldSetMap[A]
-}
-
-trait ZObjectReference[+Trait <: ZObject]
-  extends ZObject
-{
-//  def refT[T <: ZObject] = this.asInstanceOf[ReferenceT[T]]
-//  def ref = this.asInstanceOf[ReferenceT[Trait]]
-
-}
-
-
-case class ZImmutableObjectReference
-[A <: ImmutableAccessor, +Trait <: ZImmutableObject[A]] protected[model]( acc: A, id: Zid )
-  extends ZObjectReference[Trait]
-  with ZImmutableObject[A]
-{
-//  type A0 = acc.type
-
-  def get: ZConcreteImmutableObject[acc.type] = acc.getObject(id).get
-
-  override def refT[T <: ZImmutableObject[A]] = this.asInstanceOf[IReferenceTA[A, T]]
-
-//  override def ref = this.asInstanceOf[IReferenceTA[A, Trait]]
-
-  def zClass: ZClass = get.zClass
-
-  def fieldSets: IFieldSetMap[acc.type] = get.fieldSets
-
-}
-
-case class ZMutableObjectReference
-[A <: MutableAccessor, +Trait <: ZMutableObject[A]] protected[model] ( acc: A, id: ZIdentity)
-  extends ZObjectReference[Trait]
-  with ZMutableObject[A]
-{
-
-  def get: ZConcreteMutableObject[acc.type] = acc.getObject(id).get
-
-  override def refT[T <: ZMutableObject[A]] = this.asInstanceOf[MReferenceTA[A, T]]
-
-  def zClass: ZMClass[acc.type] = get.zClass
-
-  def fieldSets: MFieldSetMap[acc.type] = get.fieldSets
-
-}
 
 /**
  * An immutable Object that corresponds to an Object in the database
  */
-trait ZConcreteImmutableObject[A <: ImmutableAccessor]
-  extends ZImmutableObject[A]
-  with ZConcreteObject
-  with ZPersistedObject
-  with HasImmutableRef[A, ZConcreteImmutableObject[A]]
+trait IObject[A <: ImmutableAccessor]
+  extends ZObject
+  with PersistedObject
+  with HasImmutableRef[A, IObject[A]]
 {
-  override def zClass: ZIClass[A]
+  type T <: IObject[A]
+
+  override def zClass: IClass[A]
 
   def fieldSets: IFieldSetMap[A]
 
@@ -133,16 +70,15 @@ trait ZConcreteImmutableObject[A <: ImmutableAccessor]
 /**
  * An Object that can be Modified
  */
-trait ZConcreteMutableObject[A <: MutableAccessor]
-  extends ZMutableObject[A]
-  with ZConcreteObject
-  with HasMutableRef[A, ZConcreteMutableObject[A]]
+trait MObject[A <: MutableAccessor]
+  extends ZObject
+  with HasMutableRef[A, MObject[A]]
 {
 
-  type T <: ZConcreteMutableObject[A]
+  type T <: MObject[A]
 
   // Accessors
-  override def zClass: ZMClass[A]
+  override def zClass: MClass[A]
 
   def fieldSets: MFieldSetMap[A]
 
@@ -154,12 +90,12 @@ trait ZConcreteMutableObject[A <: MutableAccessor]
                         deleted_? : Boolean = deleted_?
                         ): T
 
-  def mutateFieldSets(mutate: ZMutableFieldSet[A] => ZMutableFieldSet[A]): T = {
+  def mutateFieldSets(mutate: MFieldSet[A] => MFieldSet[A]): T = {
     val newFieldSets = fieldSets.mapValues(mutate)
     update(fieldSets = newFieldSets)
   }
-  def mutateFieldSet( role: ZMRole[A], fieldClass: ZMFieldClass[A] )
-                    ( mutate: ZMutableFieldSet[A] => ZMutableFieldSet[A] ): T = {
+  def mutateFieldSet( role: MRole[A], fieldClass: MFieldClass[A] )
+                    ( mutate: MFieldSet[A] => MFieldSet[A] ): T = {
 
     val key = (role.ref -> fieldClass.ref)
 
@@ -180,13 +116,13 @@ trait ZConcreteMutableObject[A <: MutableAccessor]
 /**
  * A Persisted Object that possibly has unsaved modifications
  */
-trait ZModifiedObject[A <: MutableAccessor]
-  extends ZConcreteMutableObject[A]
-  with ZPersistedObject
-  with HasMutableRef[A, ZModifiedObject[A]]
+trait ModifiedObject[A <: MutableAccessor]
+  extends MObject[A]
+  with PersistedObject
+  with HasMutableRef[A, ModifiedObject[A]]
 {
 
-  override type T <: ZModifiedObject[A]
+  override type T <: ModifiedObject[A]
 
   def id: ZPersistedIdentity
 
@@ -196,12 +132,12 @@ trait ZModifiedObject[A <: MutableAccessor]
 /**
  * An Object that has not been persisted to the database
  */
-trait ZNewObject[A <: MutableAccessor]
-  extends ZConcreteMutableObject[A]
-  with HasMutableRef[A, ZNewObject[A]]
+trait NewObject[A <: MutableAccessor]
+  extends MObject[A]
+  with HasMutableRef[A, NewObject[A]]
 {
 
-  override type T <: ZNewObject[A]
+  override type T <: NewObject[A]
 
   def id: TempId
 

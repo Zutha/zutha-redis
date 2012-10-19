@@ -2,10 +2,10 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor, Accessor}
 
-object ZItem extends ZObjectFactory[ZItem, ZIItem, ZMItem] {
+object ZItem extends ZObjectFactory[ZItem, IItem, MItem] {
   def typeName = "ZItem"
 
-  def validType_?(obj: ZConcreteObject): Boolean = ???
+  def validType_?(obj: ZObject): Boolean = ???
 }
 
 
@@ -20,16 +20,37 @@ trait ZItem
   def zClass: ZItemClass
 }
 
-trait ZIItem[A <: ImmutableAccessor]
-  extends ZItem
-  with ZImmutableObject[A]
-  with HasImmutableRef[A, ZIItem[A]]
+/**
+ * An Item that cannot be Modified
+ */
+trait IItem[A <: ImmutableAccessor]
+  extends IObject[A]
+  with ZItem
+  with HasImmutableRef[A, IItem[A]]
+{
+  override type T <: IItem[A]
 
-trait ZMItem[A <: MutableAccessor]
-  extends ZItem
-  with ZMutableObject[A]
-  with HasMutableRef[A, ZMItem[A]]
+  override def id: Zid
 
+  override def zClass: IItemClass[A]
+
+}
+
+/**
+ * An Item that can be Modified
+ */
+trait MItem[A <: MutableAccessor]
+  extends MObject[A]
+  with ZItem
+  with HasMutableRef[A, MItem[A]]
+{
+  override type T <: MItem[A]
+
+  override def zClass: MItemClass[A]
+
+  protected def updateClass( zClass: MItemClass[A] ): T
+
+}
 
 /**
  * An immutable Item that corresponds to an Item in the database
@@ -38,31 +59,14 @@ trait ZMItem[A <: MutableAccessor]
  * @param zClass
  * @param fieldSets
  */
-case class ZImmutableItem
+case class ImmutableItem
 [A <: ImmutableAccessor] protected[redishost] ( acc: A,
-                                                 id: Zid,
-                                                 zClass: IReferenceT[A, ZIItemClass],
-                                                 fieldSets: IFieldSetMap[A]
-                                                 )
-  extends ZConcreteImmutableObject[A]
-  with ZItem
-  with HasImmutableRef[A, ZImmutableItem[A]] {
-
-}
-
-/**
- * An Item that can be Modified
- */
-trait ZMutableItem[A <: MutableAccessor]
-  extends ZConcreteMutableObject[A]
-  with ZItem
-  with HasMutableRef[A, ZMutableItem[A]]
-{
-  override type T <: ZMutableItem[A]
-
-  override def zClass: ZMItemClass[A]
-
-  protected def updateClass( zClass: ZMItemClass[A] ): T
+                                                id: Zid,
+                                                zClass: IRefT[A, IItemClass],
+                                                fieldSets: IFieldSetMap[A]
+                                                )
+  extends IItem[A]
+  with HasImmutableRef[A, IItem[A]] {
 
 }
 
@@ -75,29 +79,29 @@ trait ZMutableItem[A <: MutableAccessor]
  * @param fieldSets
  * @param deleted_?
  */
-case class ZModifiedItem
+case class ModifiedItem
 [A <: MutableAccessor] protected[redishost] ( acc: A,
                                                id: Zids,
-                                               zClassBkp: MReferenceT[A, ZMItemClass],
-                                               zClass: MReferenceT[A, ZMItemClass],
+                                               zClassBkp: MRefT[A, MItemClass],
+                                               zClass: MRefT[A, MItemClass],
                                                fieldSets: MFieldSetMap[A],
                                                deleted_? : Boolean
                                                )
-  extends ZModifiedObject[A]
-  with ZMutableItem[A]
-  with HasMutableRef[A, ZModifiedItem[A]]
+  extends ModifiedObject[A]
+  with MItem[A]
+  with HasMutableRef[A, ModifiedItem[A]]
 {
-  override type T = ZModifiedItem[A]
+  override type T = ModifiedItem[A]
 
   protected def update( fieldSets: MFieldSetMap[A],
-                        deleted_? : Boolean ): ZModifiedItem[A] = {
-    ZModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? )
+                        deleted_? : Boolean ): ModifiedItem[A] = {
+    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? )
   }
 
-  protected def updateClass(zClass: ZMItemClass[A]) =
-    ZModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? )
+  protected def updateClass(zClass: MItemClass[A]) =
+    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? )
 
-//  def merge(other: ZModifiedItem[A]): ZModifiedItem[A] = {
+//  def merge(other: ModifiedItem[A]): ModifiedItem[A] = {
 //    //TODO cater for merging
 //    require(id == other.id, "must merge a modified and persisted version of the same item")
 //    if(zClassBkp == other.zClass){
@@ -122,25 +126,25 @@ case class ZModifiedItem
  * @param fieldSets
  * @param deleted_?
  */
-case class ZNewItem
+case class NewItem
 [A <: MutableAccessor] protected[redishost] ( acc: A,
                                                id: TempId,
-                                               zClass: MReferenceT[A, ZMItemClass],
+                                               zClass: MRefT[A, MItemClass],
                                                fieldSets: MFieldSetMap[A],
                                                deleted_? : Boolean
                                                )
-  extends ZNewObject[A]
-  with ZMutableItem[A]
-  with HasMutableRef[A, ZNewItem[A]]
+  extends NewObject[A]
+  with MItem[A]
+  with HasMutableRef[A, NewItem[A]]
 {
-  override type T = ZNewItem[A]
+  override type T = NewItem[A]
 
   protected def update( fieldSets: MFieldSetMap[A],
-                        deleted_? : Boolean ): ZNewItem[A] = {
-    ZNewItem( acc, id, zClass, fieldSets, deleted_? )
+                        deleted_? : Boolean ): NewItem[A] = {
+    NewItem( acc, id, zClass, fieldSets, deleted_? )
   }
 
-  protected def updateClass(zClass: ZMItemClass[A]) = ZNewItem( acc, id, zClass.ref, fieldSets, deleted_? )
+  protected def updateClass(zClass: MItemClass[A]) = NewItem( acc, id, zClass.ref, fieldSets, deleted_? )
 
 
 }

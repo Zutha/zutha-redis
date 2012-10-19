@@ -5,17 +5,17 @@ import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 private[model] trait ZObjectFactory
 [
   T <: ZObject,
-  TI[A <: ImmutableAccessor] <: T with ZImmutableObject[A],
-  TM[A <: MutableAccessor] <: T with ZMutableObject[A]
+  TI[A <: ImmutableAccessor] <: T with IObject[A],
+  TM[A <: MutableAccessor] <: T with MObject[A]
 ]
 {
 
   def typeName: String
 
-  def validType_?(obj: ZConcreteObject): Boolean
+  def validType_?(obj: ZObject): Boolean
 
-  private def toT[A <: Accessor, C <: CObjectT[T]]( acc: A,
-                                                    obj: Option[ZConcreteObject]
+  private def toT[A <: Accessor, C <: ZObjectT[T]]( acc: A,
+                                                    obj: Option[ZObject]
                                                     ): Option[C] = {
     obj flatMap {o =>
       if(validType_?(o) )
@@ -27,14 +27,14 @@ private[model] trait ZObjectFactory
     }
   }
 
-  def apply[A <: ImmutableAccessor](acc: A, id: Zid): Option[CImmutableT[A, TI]] = {
+  def apply[A <: ImmutableAccessor](acc: A, id: Zid): Option[IObjectT[A, TI]] = {
     val obj = acc.getObject(id)
-    toT[A, CImmutableT[A, TI]](acc, obj)
+    toT[A, IObjectT[A, TI]](acc, obj)
   }
 
-  def apply[A <: MutableAccessor](acc: A, id: ZIdentity): Option[CMutableT[A, TM]] = {
+  def apply[A <: MutableAccessor](acc: A, id: ZIdentity): Option[MObjectT[A, TM]] = {
     val obj = acc.getObject(id)
-    toT[A, CMutableT[A, TM]](acc, obj)
+    toT[A, MObjectT[A, TM]](acc, obj)
   }
 
   def getI[A <: ImmutableAccessor](acc: A): TI[A] = {

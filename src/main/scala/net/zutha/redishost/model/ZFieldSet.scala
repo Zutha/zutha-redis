@@ -11,9 +11,9 @@ object ZFieldSet {
  * A container for fields of a certain type owned by a specific item
  */
 trait ZFieldSet {
-  def parent: ReferenceT[ZObject]
-  def role: ReferenceT[ZRole]
-  def fieldClass: ReferenceT[ZFieldClass]
+  def parent: RefT[ZObject]
+  def role: RefT[ZRole]
+  def fieldClass: RefT[ZFieldClass]
 //  def fields: FieldMap
   def limit: Int
   def offset: Int
@@ -34,20 +34,20 @@ trait ZFieldSet {
  * @param offset
  * @tparam A value type of the ImmutableAccessor instance that created the fields
  */
-case class ZImmutableFieldSet
+case class IFieldSet
 [A <: ImmutableAccessor] protected[redishost] ( acc: A,
-                                             parent: IReferenceT[A, ZImmutableObject],
-                                             role: IReferenceT[A, ZIRole],
-                                             fieldClass: IReferenceT[A, ZIFieldClass],
+                                             parent: IRefT[A, IObject],
+                                             role: IRefT[A, IRole],
+                                             fieldClass: IRefT[A, IFieldClass],
                                              fields: IFieldMap[A],
                                              limit: Int,
                                              offset: Int
                                              ) extends ZFieldSet {
 
-  def reload: ZImmutableFieldSet[acc.type] = {
+  def reload: IFieldSet[acc.type] = {
 //    acc.getFieldSet( parent, role, fieldClass, limit, offset )
     val fields: IFieldMap[acc.type] = ???
-//    ZImmutableFieldSet[acc.type]( acc, parent.ref, role.ref, fieldClass.ref, fields, limit, offset )
+//    IFieldSet[acc.type]( acc, parent.ref, role.ref, fieldClass.ref, fields, limit, offset )
     ???
   }
 }
@@ -65,11 +65,11 @@ case class ZImmutableFieldSet
  * @param offset
  * @tparam A
  */
-case class ZMutableFieldSet
+case class MFieldSet
 [A <: MutableAccessor] protected[redishost] ( acc: A,
-                                           parent: MReferenceT[A, ZMutableObject],
-                                           role: MReferenceT[A, ZMRole],
-                                           fieldClass: MReferenceT[A, ZMFieldClass],
+                                           parent: MRefT[A, MObject],
+                                           role: MRefT[A, MRole],
+                                           fieldClass: MRefT[A, MFieldClass],
                                            fields: MFieldMap[A],
                                            limit: Int,
                                            offset: Int,
@@ -86,7 +86,7 @@ case class ZMutableFieldSet
   }
 
   /** re-load the current page of fields from the database */
-  def reload: ZMutableFieldSet[acc.type] = {
+  def reload: MFieldSet[acc.type] = {
 //    acc.getFieldSet( parent, role, fieldClass, limit, offset, includeDeleted_? )
     ???
   }

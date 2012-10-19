@@ -2,10 +2,10 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{Accessor, MutableAccessor, ImmutableAccessor}
 
-object ZField extends ZObjectFactory[ZField, ZImmutableField, ZMutableField] {
+object ZField extends ZObjectFactory[ZField, IField, MField] {
   def typeName = "ZField"
 
-  def validType_?(obj: ZConcreteObject): Boolean = ???
+  def validType_?(obj: ZObject): Boolean = ???
 
   /**
    * Create a new Field
@@ -14,14 +14,14 @@ object ZField extends ZObjectFactory[ZField, ZImmutableField, ZMutableField] {
    * @return
    */
   def apply[A <: MutableAccessor]( acc: A,
-                                   zClass: MReferenceT[A, ZMFieldClass],
+                                   zClass: MRefT[A, MFieldClass],
                                    rolePlayers: MRolePlayer[A]*
-                                   ): ZNewField[A] = {
+                                   ): NewField[A] = {
     val id = new TempId
     val rps = rolePlayers.toSet
     val fieldSets: MFieldSetMap[A] = Map() //TODO get from db (implement in ZObject)
     val literals: MLiteralSet[A] = Set()
-    ZNewField( acc, id, zClass, fieldSets, rps, literals, false)
+    NewField( acc, id, zClass, fieldSets, rps, literals, false)
   }
 }
 
@@ -31,7 +31,7 @@ object ZField extends ZObjectFactory[ZField, ZImmutableField, ZMutableField] {
 trait ZField extends ZObject with HasRef[ZObject] {
 
   def id: ZFieldIdentity
-  def zClass: ReferenceT[ZFieldClass]
+  def zClass: RefT[ZFieldClass]
   def fieldSets: FieldSetMap
   def rolePlayers: RolePlayerSet
   def literals: LiteralSet
@@ -60,17 +60,17 @@ trait ZField extends ZObject with HasRef[ZObject] {
  * @param rolePlayers
  * @param literals
  */
-case class ZImmutableField
+case class IField
 [A <: ImmutableAccessor] protected[redishost] ( acc: A,
                                                 id: Zid,
-                                                zClass: IReferenceT[A, ZIFieldClass],
+                                                zClass: IRefT[A, IFieldClass],
                                                 fieldSets: IFieldSetMap[A],
                                                 rolePlayers: IRolePlayerSet[A],
                                                 literals: ILiteralSet[A]
                                                 )
-  extends ZConcreteImmutableObject[A]
+  extends IObject[A]
   with ZField
-  with HasImmutableRef[A, ZImmutableField[A]]
+  with HasImmutableRef[A, IField[A]]
 {
 
 }
@@ -78,18 +78,18 @@ case class ZImmutableField
 /**
  * A Field that can be Modified
  */
-trait ZMutableField[A <: MutableAccessor]
+trait MField[A <: MutableAccessor]
   extends ZField
-  with ZConcreteMutableObject[A]
-  with HasMutableRef[A, ZMutableField[A]]
+  with MObject[A]
+  with HasMutableRef[A, MField[A]]
 {
-  override type T <: ZMutableField[A]
+  override type T <: MField[A]
 
   protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
                               literals: MLiteralSet[A] = literals
                               ): T
 
-  def zClass: MReferenceT[A, ZMFieldClass]
+  def zClass: MRefT[A, MFieldClass]
   def fieldSets: MFieldSetMap[A]
   def rolePlayers: MRolePlayerSet[A]
   def literals: MLiteralSet[A]
@@ -97,10 +97,10 @@ trait ZMutableField[A <: MutableAccessor]
   def mutateRolePlayers(mutate: MRolePlayerSet[A] => MRolePlayerSet[A]): T =
     updateField( rolePlayers = mutate(rolePlayers) )
 
-  def addRolePlayer(role: ZMRole[A], player: ZMutableObject[A]): T =
+  def addRolePlayer(role: MRole[A], player: MObject[A]): T =
     mutateRolePlayers(_ + (role.ref -> player.ref) )
 
-  def removeRolePlayer(role: ZMRole[A], player: ZMutableObject[A]): T =
+  def removeRolePlayer(role: MRole[A], player: MObject[A]): T =
     mutateRolePlayers( _ - (role.ref -> player.ref) )
 
   def mutateLiterals(mutate: MLiteralSet[A] => MLiteralSet[A]): T =
@@ -133,9 +133,9 @@ trait ZMutableField[A <: MutableAccessor]
  * @param deleted_?
  */
 case class
-ZModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
+ModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
                                                             id: Zid,
-                                                            zClass: MReferenceT[A, ZMFieldClass],
+                                                            zClass: MRefT[A, MFieldClass],
                                                             fieldSets: MFieldSetMap[A],
                                                             rolePlayersBkp: MRolePlayerSet[A],
                                                             rolePlayers: MRolePlayerSet[A],
@@ -143,12 +143,12 @@ ZModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
                                                             literals: MLiteralSet[A],
                                                             deleted_? : Boolean = false
                                                             )
-  extends ZModifiedObject[A]
-  with ZMutableField[A]
-  with HasMutableRef[A, ZModifiedField[A]]
+  extends ModifiedObject[A]
+  with MField[A]
+  with HasMutableRef[A, ModifiedField[A]]
 {
 
-  override type T = ZModifiedField[A]
+  override type T = ModifiedField[A]
 
   // Accessors
 
@@ -166,20 +166,20 @@ ZModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
 
   protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
                         deleted_? : Boolean = false
-                        ): ZModifiedField[A] = {
-    ZModifiedField( acc, id, zClass, fieldSets,
+                        ): ModifiedField[A] = {
+    ModifiedField( acc, id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
                               literals: MLiteralSet[A] = literals
-                              ): ZModifiedField[A] = {
-    ZModifiedField( acc, id, zClass, fieldSets,
+                              ): ModifiedField[A] = {
+    ModifiedField( acc, id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
 
 
 
-  def merge(other: ZModifiedField[A]): ZModifiedField[A] = {
+  def merge(other: ModifiedField[A]): ModifiedField[A] = {
     ??? // need to re-purpose this for merging two different fields (if I end up allowing field merging)
   }
 
@@ -196,29 +196,29 @@ ZModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
  * @param literals
  * @param deleted_?
  */
-case class ZNewField
+case class NewField
 [A <: MutableAccessor] protected[redishost] ( acc: A,
                                                id: TempId,
-                                               zClass: MReferenceT[A, ZMFieldClass],
+                                               zClass: MRefT[A, MFieldClass],
                                                fieldSets: MFieldSetMap[A],
                                                rolePlayers: MRolePlayerSet[A],
                                                literals: MLiteralSet[A],
                                                deleted_? : Boolean = false
                                                )
-  extends ZNewObject[A]
-  with ZMutableField[A]
-  with HasMutableRef[A, ZNewField[A]]
+  extends NewObject[A]
+  with MField[A]
+  with HasMutableRef[A, NewField[A]]
 {
-  override type T = ZNewField[A]
+  override type T = NewField[A]
 
   protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
-                        deleted_? : Boolean = false ): ZNewField[A] = {
-    ZNewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
+                        deleted_? : Boolean = false ): NewField[A] = {
+    NewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
                               literals: MLiteralSet[A] = literals
-                              ): ZNewField[A] = {
-    ZNewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
+                              ): NewField[A] = {
+    NewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
 
 }
