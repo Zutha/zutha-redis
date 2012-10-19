@@ -10,10 +10,12 @@ object ZObject extends ZObjectFactory[ZObject, IObject, MObject] {
 
 
 trait ZObject
-  extends HasRef[ZObject]
+  extends HasRef
 {
+  type T <: ZObject
 
   // Accessors
+  def ref: RefT[T]
 
   def id: ZIdentity
   def zClass: ZClass
@@ -44,9 +46,8 @@ trait ZObject
 
 trait PersistedObject
   extends ZObject
-  with HasRef[PersistedObject]
 {
-
+	type T <: PersistedObject
 }
 
 
@@ -56,9 +57,13 @@ trait PersistedObject
 trait IObject[A <: ImmutableAccessor]
   extends ZObject
   with PersistedObject
-  with HasImmutableRef[A, IObject[A]]
+  with HasIRef[A]
 {
-  type T <: IObject[A]
+	type T <: IObject[A]
+
+  def acc: A
+
+  def id: Zid
 
   override def zClass: IClass[A]
 
@@ -72,10 +77,11 @@ trait IObject[A <: ImmutableAccessor]
  */
 trait MObject[A <: MutableAccessor]
   extends ZObject
-  with HasMutableRef[A, MObject[A]]
+  with HasMRef[A]
 {
+	type T <: MObject[A]
 
-  type T <: MObject[A]
+  def acc: A
 
   // Accessors
   override def zClass: MClass[A]
@@ -119,10 +125,8 @@ trait MObject[A <: MutableAccessor]
 trait ModifiedObject[A <: MutableAccessor]
   extends MObject[A]
   with PersistedObject
-  with HasMutableRef[A, ModifiedObject[A]]
 {
-
-  override type T <: ModifiedObject[A]
+	type T <: ModifiedObject[A]
 
   def id: ZPersistedIdentity
 
@@ -134,10 +138,8 @@ trait ModifiedObject[A <: MutableAccessor]
  */
 trait NewObject[A <: MutableAccessor]
   extends MObject[A]
-  with HasMutableRef[A, NewObject[A]]
 {
-
-  override type T <: NewObject[A]
+	type T <: NewObject[A]
 
   def id: TempId
 

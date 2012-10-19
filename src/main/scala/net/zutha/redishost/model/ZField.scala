@@ -28,13 +28,15 @@ object ZField extends ZObjectFactory[ZField, IField, MField] {
 /**
  * An association between one or more objects and zero or more literal values
  */
-trait ZField extends ZObject with HasRef[ZObject] {
+trait ZField extends ZObject
+{
+	type T <: ZField
 
   def id: ZFieldIdentity
   def zClass: RefT[ZFieldClass]
-  def fieldSets: FieldSetMap
-  def rolePlayers: RolePlayerSet
-  def literals: LiteralSet
+//  def fieldSets: FieldSetMap
+//  def rolePlayers: RolePlayerSet
+//  def literals: LiteralSet
 
 //  def rolePlayerMap: RolePlayerMap =
 //    rolePlayers.groupBy(_._1).mapValues(_.map(_._2))
@@ -70,9 +72,8 @@ case class IField
                                                 )
   extends IObject[A]
   with ZField
-  with HasImmutableRef[A, IField[A]]
 {
-
+	type T = IField[A]
 }
 
 /**
@@ -81,9 +82,8 @@ case class IField
 trait MField[A <: MutableAccessor]
   extends ZField
   with MObject[A]
-  with HasMutableRef[A, MField[A]]
 {
-  override type T <: MField[A]
+	type T <: MField[A]
 
   protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
                               literals: MLiteralSet[A] = literals
@@ -145,10 +145,8 @@ ModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
                                                             )
   extends ModifiedObject[A]
   with MField[A]
-  with HasMutableRef[A, ModifiedField[A]]
 {
-
-  override type T = ModifiedField[A]
+	type T = ModifiedField[A]
 
   // Accessors
 
@@ -207,9 +205,8 @@ case class NewField
                                                )
   extends NewObject[A]
   with MField[A]
-  with HasMutableRef[A, NewField[A]]
 {
-  override type T = NewField[A]
+	type T = NewField[A]
 
   protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
                         deleted_? : Boolean = false ): NewField[A] = {

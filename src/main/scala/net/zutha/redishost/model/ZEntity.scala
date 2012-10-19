@@ -10,14 +10,20 @@ object ZEntity extends ZObjectFactory[ZEntity, IEntity, MEntity] {
 
 trait ZEntity
   extends ZItem
-  with HasRef[ZEntity]
+{
+	type T <: ZEntity
+}
 
 trait IEntity[A <: ImmutableAccessor]
   extends IItem[A]
   with ZEntity
-  with HasImmutableRef[A, IEntity[A]]
+{
+	type T <: IEntity[A]
+}
 
 trait MEntity[A <: MutableAccessor]
   extends ZEntity
   with MItem[A]
-  with HasMutableRef[A, MEntity[A]]
+{
+	type T <: MEntity[A]
+}

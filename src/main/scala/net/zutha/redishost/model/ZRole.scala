@@ -10,20 +10,21 @@ object ZRole extends ZObjectFactory[ZRole, IRole, MRole] {
 
 trait ZRole
   extends ZType
-  with HasRef[ZRole] {
-
+{
+	type T <: ZRole
 
 }
 
 trait IRole[A <: ImmutableAccessor]
   extends ZRole
   with IType[A]
-  with HasImmutableRef[A, IRole[A]]
 {
-
+	type T <: IRole[A]
 }
 
 trait MRole[A <: MutableAccessor]
   extends ZRole
   with MType[A]
-  with HasMutableRef[A, MRole[A]]
+{
+	type T <: MRole[A]
+}

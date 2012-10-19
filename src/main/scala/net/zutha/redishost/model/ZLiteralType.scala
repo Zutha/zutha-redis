@@ -10,15 +10,20 @@ object ZLiteralType extends ZObjectFactory[ZLiteralType, ILiteralType, MLiteralT
 
 trait ZLiteralType
   extends ZType
-  with HasRef[ZLiteralType] {
+{
+	type T <: ZLiteralType
 }
 
 trait ILiteralType[A <: ImmutableAccessor]
   extends ZLiteralType
   with IType[A]
-  with HasImmutableRef[A, ILiteralType[A]]
+{
+	type T <: ILiteralType[A]
+}
 
 trait MLiteralType[A <: MutableAccessor]
   extends ZLiteralType
   with MType[A]
-  with HasMutableRef[A, MLiteralType[A]]
+{
+	type T <: MLiteralType[A]
+}

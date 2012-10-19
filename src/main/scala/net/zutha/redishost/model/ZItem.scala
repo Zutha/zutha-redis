@@ -14,7 +14,8 @@ object ZItem extends ZObjectFactory[ZItem, IItem, MItem] {
  */
 trait ZItem
   extends ZObject
-  with HasRef[ZItem] {
+{
+	type T <: ZItem
 
   def id: ZIdentity
   def zClass: ZItemClass
@@ -26,9 +27,8 @@ trait ZItem
 trait IItem[A <: ImmutableAccessor]
   extends IObject[A]
   with ZItem
-  with HasImmutableRef[A, IItem[A]]
 {
-  override type T <: IItem[A]
+	type T <: IItem[A]
 
   override def id: Zid
 
@@ -42,9 +42,8 @@ trait IItem[A <: ImmutableAccessor]
 trait MItem[A <: MutableAccessor]
   extends MObject[A]
   with ZItem
-  with HasMutableRef[A, MItem[A]]
 {
-  override type T <: MItem[A]
+	type T <: MItem[A]
 
   override def zClass: MItemClass[A]
 
@@ -66,7 +65,8 @@ case class ImmutableItem
                                                 fieldSets: IFieldSetMap[A]
                                                 )
   extends IItem[A]
-  with HasImmutableRef[A, IItem[A]] {
+{
+	type T <: IItem[A]
 
 }
 
@@ -89,17 +89,16 @@ case class ModifiedItem
                                                )
   extends ModifiedObject[A]
   with MItem[A]
-  with HasMutableRef[A, ModifiedItem[A]]
 {
-  override type T = ModifiedItem[A]
+	type T <: ModifiedItem[A]
 
   protected def update( fieldSets: MFieldSetMap[A],
-                        deleted_? : Boolean ): ModifiedItem[A] = {
-    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? )
+                        deleted_? : Boolean ): T = {
+    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? ).asInstanceOf[ModifiedItem[A] with T]
   }
 
-  protected def updateClass(zClass: MItemClass[A]) =
-    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? )
+  protected def updateClass(zClass: MItemClass[A]): T =
+    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? ).asInstanceOf[ModifiedItem[A] with T]
 
 //  def merge(other: ModifiedItem[A]): ModifiedItem[A] = {
 //    //TODO cater for merging
@@ -135,16 +134,17 @@ case class NewItem
                                                )
   extends NewObject[A]
   with MItem[A]
-  with HasMutableRef[A, NewItem[A]]
 {
-  override type T = NewItem[A]
+	type T <: NewItem[A]
 
   protected def update( fieldSets: MFieldSetMap[A],
-                        deleted_? : Boolean ): NewItem[A] = {
-    NewItem( acc, id, zClass, fieldSets, deleted_? )
+                        deleted_? : Boolean ): T = {
+    NewItem( acc, id, zClass, fieldSets, deleted_? ).asInstanceOf[NewItem[A] with T]
   }
 
-  protected def updateClass(zClass: MItemClass[A]) = NewItem( acc, id, zClass.ref, fieldSets, deleted_? )
+  protected def updateClass(zClass: MItemClass[A]): T = {
+    NewItem( acc, id, zClass.ref, fieldSets, deleted_? ).asInstanceOf[NewItem[A] with T]
+  }
 
 
 }

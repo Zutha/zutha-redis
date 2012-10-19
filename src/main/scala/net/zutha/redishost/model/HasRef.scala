@@ -2,40 +2,37 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 
-private[model] trait HasRef[Trait <: ZObject] {
+private[model] trait HasRef {
+  type T <: ZObject
+
   def id: ZIdentity
-//  def ref: ReferenceT[Trait]
-
+  
+  def ref: RefT[T]
 
 }
 
-private[model] trait HasMutableRef[A <: MutableAccessor, Trait <: MObject[A]]
-  extends HasRef[Trait] {
+private[model] trait HasIRef
+[A <: ImmutableAccessor]
+  extends HasRef
+{
+  type T <: IObject[A]
 
+  def id: Zid
   def acc: A
 
-  protected def refT[T <: MObject[A]]: MRefTA[A, T] = {
-    MRef[A]( acc, id ).asInstanceOf[MRefTA[A, T]]
-  }
+  def ref: IRefTA[A, T] = IRef( acc, id ).asInstanceOf[IRefTA[A, T]]
 
-  def ref: MRefTA[A, Trait] = refT[Trait]
-
-  def reload( acc: A, limit: Int ): Trait = ???
+  def reload( acc: A, limit: Int ): T = ???
 }
 
-private[model] trait HasImmutableRef
-[A <: ImmutableAccessor, +Trait <: HasImmutableRef[A, Trait] with IObject[A]]
-  extends HasRef[Trait] {
-
-  override def id: Zid
+private[model] trait HasMRef[A <: MutableAccessor]
+  extends HasRef
+{
+  type T <: MObject[A]
 
   def acc: A
 
-  protected def refT[T <: IObject[A]]: IRefTA[A, T] = {
-    IRef[A]( acc, id ).asInstanceOf[IRefTA[A, T]]
-  }
+  def ref = MRef[A]( acc, id ).asInstanceOf[MRefTA[A, T]]
 
-  def ref: IRefTA[A, Trait] = refT[Trait]
-
-  def reload( acc: A, limit: Int ): Trait = ???
+  def reload( acc: A, limit: Int ): T = ???
 }

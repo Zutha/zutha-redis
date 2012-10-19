@@ -10,15 +10,20 @@ object ZDatatype extends ZObjectFactory[ZDatatype, IDatatype, MDatatype] {
 
 trait ZDatatype
   extends ZType
-  with HasRef[ZDatatype] {
+{
+	type T <: ZDatatype
 }
 
 trait IDatatype[A <: ImmutableAccessor]
   extends ZDatatype
   with IType[A]
-  with HasImmutableRef[A, IDatatype[A]]
+{
+	type T <: IDatatype[A]
+}
 
 trait MDatatype[A <: MutableAccessor]
   extends ZDatatype
   with MType[A]
-  with HasMutableRef[A, MDatatype[A]]
+{
+	type T <: MDatatype[A]
+}

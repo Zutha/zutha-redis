@@ -3,8 +3,10 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 
 
-trait ZRef {
-
+trait ZRef
+  extends HasRef
+{
+  type T <: ZObject
 }
 
   //  def refT[T <: ZObject] = this.asInstanceOf[ReferenceT[T]]
@@ -14,15 +16,13 @@ trait ZRef {
 case class IRef
 [A <: ImmutableAccessor] protected[model]( acc: A, id: Zid )
   extends ZRef
-  with HasImmutableRef[A, IObject[A]]
+  with HasIRef[A]
 {
-  //  type A0 = acc.type
+	type T <: IObject[A]
 
   def get: IObject[acc.type] = acc.getObject(id).get
 
-  override def refT[T <: IObject[A]] = this.asInstanceOf[IRefTA[A, T]]
-
-  //  override def ref = this.asInstanceOf[IReferenceTA[A, Trait]]
+  override def ref = this.asInstanceOf[IRefTA[A, T]]
 
   def zClass: ZClass = get.zClass
 
@@ -33,11 +33,13 @@ case class IRef
 case class MRef
 [A <: MutableAccessor] protected[model] ( acc: A, id: ZIdentity)
   extends ZRef
-  with HasMutableRef[A, MObject[A]]
+with HasMRef[A]
 {
+	type T <: MObject[A]
+
   def get: MObject[acc.type] = acc.getObject(id).get
 
-  override def refT[T <: MObject[A]] = this.asInstanceOf[MRefTA[A, T]]
+  override def ref = this.asInstanceOf[MRefTA[A, T]]
 
   def zClass: MClass[acc.type] = get.zClass
 

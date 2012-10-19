@@ -10,15 +10,20 @@ object ZItemClass extends ZObjectFactory[ZItemClass, IItemClass, MItemClass] {
 
 trait ZItemClass
   extends ZClass
-  with HasRef[ZItemClass] {
+{
+	type T <: ZItemClass
 }
 
 trait IItemClass[A <: ImmutableAccessor]
   extends ZItemClass
   with IClass[A]
-  with HasImmutableRef[A, IItemClass[A]]
+{
+	type T <: IItemClass[A]
+}
 
 trait MItemClass[A <: MutableAccessor]
   extends ZItemClass
   with MClass[A]
-  with HasMutableRef[A, MItemClass[A]]
+{
+	type T <: MItemClass[A]
+}

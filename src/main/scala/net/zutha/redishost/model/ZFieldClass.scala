@@ -4,15 +4,20 @@ import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 
 trait ZFieldClass
   extends ZClass
-  with HasRef[ZFieldClass] {
+{
+	type T <: ZFieldClass
 }
 
 trait IFieldClass[A <: ImmutableAccessor]
   extends ZFieldClass
   with IClass[A]
-  with HasImmutableRef[A, IFieldClass[A]]
+{
+	type T <: IFieldClass[A]
+}
 
 trait MFieldClass[A <: MutableAccessor]
   extends ZFieldClass
   with MClass[A]
-  with HasMutableRef[A, MFieldClass[A]]
+{
+	type T <: MFieldClass[A]
+}
