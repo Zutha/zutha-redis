@@ -1,17 +1,34 @@
 package net.zutha.redishost.model
 
-import common._
-import net.zutha.redishost.db.DB
+import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor, Accessor}
+
+object ZItem extends ZObjectFactory[ZItem, ZIItem, ZMItem] {
+  def typeName = "ZItem"
+
+  def validType_?(obj: ZConcreteObject): Boolean = ???
+}
+
 
 /**
  * Represents some concept or thing. May contain fields which associate it with data or other items.
  */
-trait ZItem extends ZObject {
+trait ZItem
+  extends ZObject
+  with HasRef[ZItem] {
 
-  def id: ZItemIdentity
+  def id: ZIdentity
   def zClass: ZItemClass
-
 }
+
+trait ZIItem[A <: ImmutableAccessor]
+  extends ZItem
+  with ZImmutableObject[A]
+  with HasImmutableRef[A, ZIItem[A]]
+
+trait ZMItem[A <: MutableAccessor]
+  extends ZItem
+  with ZMutableObject[A]
+  with HasMutableRef[A, ZMItem[A]]
 
 
 /**
@@ -21,37 +38,32 @@ trait ZItem extends ZObject {
  * @param zClass
  * @param fieldSets
  */
-case class
-ZPersistedItem protected[model] ( id: Zids,
-                                  zClass: ZItemClass,
-                                  fieldSets: FieldSetMap[ZPersistedFieldSet]
-                                  ) extends ZPersistedObject with ZItem {
+case class ZImmutableItem
+[A <: ImmutableAccessor] protected[redishost] ( acc: A,
+                                                 id: Zid,
+                                                 zClass: IReferenceT[A, ZIItemClass],
+                                                 fieldSets: IFieldSetMap[A]
+                                                 )
+  extends ZConcreteImmutableObject[A]
+  with ZItem
+  with HasImmutableRef[A, ZImmutableItem[A]] {
 
-  def edit: ZModifiedItem =
-    ZModifiedItem(id, zClass, zClass, fieldSets.mapValues(_.edit), deleted_? = false )
-
-  def merge(other: ZModifiedItem): ZModifiedItem = {
-    other merge this
-  }
-
-  /** reloads the object from the database
-    * @param limit the maximum number of fields to load per field set
-    */
-  def reload(limit: Int): ZPersistedItem = {
-    val latest = DB.getUpdatedItem(this, limit)
-    latest
-  }
 }
 
 /**
  * An Item that can be Modified
  */
-trait ZMutableItem extends ZItem with ZMutableObject {
-  type T <: ZMutableItem
+trait ZMutableItem[A <: MutableAccessor]
+  extends ZConcreteMutableObject[A]
+  with ZItem
+  with HasMutableRef[A, ZMutableItem[A]]
+{
+  override type T <: ZMutableItem[A]
 
-  protected def updateClass( zClass: ZItemClass ): T
+  override def zClass: ZMItemClass[A]
 
-  override def save: Option[ZPersistedItem]
+  protected def updateClass( zClass: ZMItemClass[A] ): T
+
 }
 
 /**
@@ -63,48 +75,43 @@ trait ZMutableItem extends ZItem with ZMutableObject {
  * @param fieldSets
  * @param deleted_?
  */
-case class
-ZModifiedItem protected[model] ( id: Zids,
-                                 zClassBkp: ZItemClass,
-                                 zClass: ZItemClass,
-                                 fieldSets: FieldSetMap[ZModifiedFieldSet],
-                                 deleted_? : Boolean
-                                 ) extends ZModifiedObject with ZItem with ZMutableItem {
-  type T = ZModifiedItem
+case class ZModifiedItem
+[A <: MutableAccessor] protected[redishost] ( acc: A,
+                                               id: Zids,
+                                               zClassBkp: MReferenceT[A, ZMItemClass],
+                                               zClass: MReferenceT[A, ZMItemClass],
+                                               fieldSets: MFieldSetMap[A],
+                                               deleted_? : Boolean
+                                               )
+  extends ZModifiedObject[A]
+  with ZMutableItem[A]
+  with HasMutableRef[A, ZModifiedItem[A]]
+{
+  override type T = ZModifiedItem[A]
 
-  protected def update( fieldSets: FieldSetMap[ZModifiedFieldSet],
-                        deleted_? : Boolean ): ZModifiedItem = {
-    ZModifiedItem( id, zClassBkp, zClass, fieldSets, deleted_? )
+  protected def update( fieldSets: MFieldSetMap[A],
+                        deleted_? : Boolean ): ZModifiedItem[A] = {
+    ZModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? )
   }
 
-  protected def updateClass(zClass: ZItemClass) = ZModifiedItem( id, zClassBkp, zClass, fieldSets, deleted_? )
+  protected def updateClass(zClass: ZMItemClass[A]) =
+    ZModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? )
 
-  def merge(other: ZPersistedItem): ZModifiedItem = {
-    //TODO cater for merging
-    require(id == other.id, "must merge a modified and persisted version of the same item")
-    if(zClassBkp == other.zClass){
-      val newFieldSets = fieldSets map {fs => other.fieldSets.get(fs._1) match {
-        case Some(ofs) => (fs._1 -> (fs._2 merge ofs))
-        case None => fs
-      }}
-      val merged = other.edit.update( fieldSets = newFieldSets )
-      if (zClass == other.zClass) merged else merged.updateClass(zClass)
-    } else { // conflict in class - abandon this edit
-      throw new Exception("persisted item's class changed since modification was started")
-    }
-  }
+//  def merge(other: ZModifiedItem[A]): ZModifiedItem[A] = {
+//    //TODO cater for merging
+//    require(id == other.id, "must merge a modified and persisted version of the same item")
+//    if(zClassBkp == other.zClass){
+//      val newFieldSets = fieldSets map {fs => other.fieldSets.get(fs._1) match {
+//        case Some(ofs) => (fs._1 -> (fs._2 merge ofs))
+//        case None => fs
+//      }}
+//      val merged = other.update( fieldSets = newFieldSets )
+//      if (zClass == other.zClass) merged else merged.updateClass(zClass)
+//    } else { // conflict in class - abandon this edit
+//      throw new Exception("persisted item's class changed since modification was started")
+//    }
+//  }
 
-  // Persistence
-
-  /** reloads the object from the database
-    * @param limit the maximum number if fields to load per field set
-    */
-  def reload(limit: Int): ZModifiedItem = {
-    val latest = DB.getUpdatedItem(this, limit)
-    this merge latest
-  }
-
-  override def save = ???
 }
 
 /**
@@ -115,23 +122,25 @@ ZModifiedItem protected[model] ( id: Zids,
  * @param fieldSets
  * @param deleted_?
  */
-case class
-ZNewItem protected[model] ( id: TempId,
-                            zClass: ZItemClass,
-                            fieldSets: FieldSetMap[ZNewFieldSet],
-                            deleted_? : Boolean
-                            ) extends ZNewObject with ZItem with ZMutableItem {
-  type T = ZNewItem
+case class ZNewItem
+[A <: MutableAccessor] protected[redishost] ( acc: A,
+                                               id: TempId,
+                                               zClass: MReferenceT[A, ZMItemClass],
+                                               fieldSets: MFieldSetMap[A],
+                                               deleted_? : Boolean
+                                               )
+  extends ZNewObject[A]
+  with ZMutableItem[A]
+  with HasMutableRef[A, ZNewItem[A]]
+{
+  override type T = ZNewItem[A]
 
-  protected def update( fieldSets: FieldSetMap[ZNewFieldSet],
-                        deleted_? : Boolean ): ZNewItem = {
-    ZNewItem( id, zClass, fieldSets, deleted_? )
+  protected def update( fieldSets: MFieldSetMap[A],
+                        deleted_? : Boolean ): ZNewItem[A] = {
+    ZNewItem( acc, id, zClass, fieldSets, deleted_? )
   }
 
-  protected def updateClass(zClass: ZItemClass) = ZNewItem( id, zClass, fieldSets, deleted_? )
+  protected def updateClass(zClass: ZMItemClass[A]) = ZNewItem( acc, id, zClass.ref, fieldSets, deleted_? )
 
-  // Persistence
-
-  override def save = ???
 
 }

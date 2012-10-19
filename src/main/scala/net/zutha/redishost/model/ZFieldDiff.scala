@@ -1,8 +1,10 @@
 package net.zutha.redishost.model
 
-case class ZFieldDiff( addedRolePlayers: RolePlayerSet,
-                       removedRolePlayers: RolePlayerSet,
-                       addedLiterals: LiteralSet,
-                       removedLiterals: LiteralSet,
-                       modifiedLiterals: LiteralSet
-                       )
+import net.zutha.redishost.db.MutableAccessor
+
+case class ZFieldDiff[A <: MutableAccessor]( addedRolePlayers: MRolePlayerSet[A],
+                                              removedRolePlayers: MRolePlayerSet[A],
+                                              addedLiterals: MLiteralSet[A],
+                                              removedLiterals: MLiteralSet[A],
+                                              modifiedLiterals: MLiteralSet[A]
+                                              )
