@@ -1,13 +1,15 @@
 dist/*
 src_managed/
+*.log
+
 # Scala-IDE specific
 target/
 project/boot/
 *.class
 /.idea_modules
-*.log
-project/plugins/project/
+/.idea
+*.iml
+
 # sbt specific
 lib_managed/
 .scala_dependencies
-/.idea
