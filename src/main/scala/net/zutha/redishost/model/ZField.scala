@@ -13,14 +13,14 @@ object ZField extends ZObjectFactory[ZField, IField, MField] {
    * @param rolePlayers
    * @return
    */
-  def apply[A <: MutableAccessor]( acc: A,
-                                   zClass: MRefT[A, MFieldClass],
-                                   rolePlayers: MRolePlayer[A]*
-                                   ): NewField[A] = {
+  def apply( acc: MutableAccessor,
+             zClass: MRefT[MFieldClass],
+             rolePlayers: MRolePlayer*
+             ): NewField = {
     val id = new TempId
     val rps = rolePlayers.toSet
-    val fieldSets: MFieldSetMap[A] = Map() //TODO get from db (implement in ZObject)
-    val literals: MLiteralSet[A] = Set()
+    val fieldSets: MFieldSetMap = Map() //TODO get from db (implement in ZObject)
+    val literals: MLiteralSet = Set()
     NewField( acc, id, zClass, fieldSets, rps, literals, false)
   }
 }
@@ -62,57 +62,56 @@ trait ZField extends ZObject
  * @param rolePlayers
  * @param literals
  */
-case class IField
-[A <: ImmutableAccessor] protected[redishost] ( acc: A,
-                                                id: Zid,
-                                                zClass: IRefT[A, IFieldClass],
-                                                fieldSets: IFieldSetMap[A],
-                                                rolePlayers: IRolePlayerSet[A],
-                                                literals: ILiteralSet[A]
-                                                )
-  extends IObject[A]
+case class IField protected[redishost] ( acc: ImmutableAccessor,
+                                         id: Zid,
+                                         zClass: IRefT[IFieldClass],
+                                         fieldSets: IFieldSetMap,
+                                         rolePlayers: IRolePlayerSet,
+                                         literals: ILiteralSet
+                                         )
+  extends IObject
   with ZField
 {
-	type T = IField[A]
+  type T = IField
 }
 
 /**
  * A Field that can be Modified
  */
-trait MField[A <: MutableAccessor]
+trait MField
   extends ZField
-  with MObject[A]
+  with MObject
 {
-	type T <: MField[A]
+	type T <: MField
 
-  protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
-                              literals: MLiteralSet[A] = literals
+  protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
+                              literals: MLiteralSet = literals
                               ): T
 
-  def zClass: MRefT[A, MFieldClass]
-  def fieldSets: MFieldSetMap[A]
-  def rolePlayers: MRolePlayerSet[A]
-  def literals: MLiteralSet[A]
+  def zClass: MRefT[MFieldClass]
+  def fieldSets: MFieldSetMap
+  def rolePlayers: MRolePlayerSet
+  def literals: MLiteralSet
 
-  def mutateRolePlayers(mutate: MRolePlayerSet[A] => MRolePlayerSet[A]): T =
+  def mutateRolePlayers(mutate: MRolePlayerSet => MRolePlayerSet): T =
     updateField( rolePlayers = mutate(rolePlayers) )
 
-  def addRolePlayer(role: MRole[A], player: MObject[A]): T =
+  def addRolePlayer(role: MRole, player: MObject): T =
     mutateRolePlayers(_ + (role.ref -> player.ref) )
 
-  def removeRolePlayer(role: MRole[A], player: MObject[A]): T =
+  def removeRolePlayer(role: MRole, player: MObject): T =
     mutateRolePlayers( _ - (role.ref -> player.ref) )
 
-  def mutateLiterals(mutate: MLiteralSet[A] => MLiteralSet[A]): T =
+  def mutateLiterals(mutate: MLiteralSet => MLiteralSet): T =
     updateField( literals = mutate(literals) )
 
-  def addLiteral(literal: MLiteral[A]): T =
+  def addLiteral(literal: MLiteral): T =
     mutateLiterals( _ + literal )
 
-  def removeLiteral(literal: MLiteral[A]): T =
+  def removeLiteral(literal: MLiteral): T =
     mutateLiterals( _ - literal )
 
-  def applyDiff(diff: ZFieldDiff[A]): T = {
+  def applyDiff(diff: ZFieldDiff): T = {
     val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
     val newLiterals = literals ++ diff.addedLiterals -- diff.removedLiterals
 
@@ -133,51 +132,51 @@ trait MField[A <: MutableAccessor]
  * @param deleted_?
  */
 case class
-ModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
+ModifiedField protected[redishost] ( acc: MutableAccessor,
                                                             id: Zid,
-                                                            zClass: MRefT[A, MFieldClass],
-                                                            fieldSets: MFieldSetMap[A],
-                                                            rolePlayersBkp: MRolePlayerSet[A],
-                                                            rolePlayers: MRolePlayerSet[A],
-                                                            literalsBkp: MLiteralSet[A],
-                                                            literals: MLiteralSet[A],
+                                                            zClass: MRefT[MFieldClass],
+                                                            fieldSets: MFieldSetMap,
+                                                            rolePlayersBkp: MRolePlayerSet,
+                                                            rolePlayers: MRolePlayerSet,
+                                                            literalsBkp: MLiteralSet,
+                                                            literals: MLiteralSet,
                                                             deleted_? : Boolean = false
                                                             )
-  extends ModifiedObject[A]
-  with MField[A]
+  extends ModifiedObject
+  with MField
 {
-	type T = ModifiedField[A]
+	type T = ModifiedField
 
   // Accessors
 
-  def calcDiff: ZFieldDiff[A] = {
+  def calcDiff: ZFieldDiff = {
     val addedRolePlayers = rolePlayers -- rolePlayersBkp
     val removedRolePlayers = rolePlayersBkp -- rolePlayers
     val addedLiterals = literals -- literalsBkp
     val removedLiterals = literalsBkp -- literals
-    val modifiedLiterals = Set[MLiteral[A]]() //TODO unary literals and text diffs
+    val modifiedLiterals = Set[MLiteral]() //TODO unary literals and text diffs
     ZFieldDiff(addedRolePlayers, removedRolePlayers,
       addedLiterals, removedLiterals, modifiedLiterals)
   }
 
   //  Mutators
 
-  protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
+  protected def update( fieldSets: MFieldSetMap = fieldSets,
                         deleted_? : Boolean = false
-                        ): ModifiedField[A] = {
+                        ): ModifiedField = {
     ModifiedField( acc, id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
-                              literals: MLiteralSet[A] = literals
-                              ): ModifiedField[A] = {
+  protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
+                              literals: MLiteralSet = literals
+                              ): ModifiedField = {
     ModifiedField( acc, id, zClass, fieldSets,
       rolePlayersBkp, rolePlayers, literalsBkp, literals, deleted_? )
   }
 
 
 
-  def merge(other: ModifiedField[A]): ModifiedField[A] = {
+  def merge(other: ModifiedField): ModifiedField = {
     ??? // need to re-purpose this for merging two different fields (if I end up allowing field merging)
   }
 
@@ -194,27 +193,26 @@ ModifiedField[A <: MutableAccessor] protected[redishost] ( acc: A,
  * @param literals
  * @param deleted_?
  */
-case class NewField
-[A <: MutableAccessor] protected[redishost] ( acc: A,
+case class NewField protected[redishost] ( acc: MutableAccessor,
                                                id: TempId,
-                                               zClass: MRefT[A, MFieldClass],
-                                               fieldSets: MFieldSetMap[A],
-                                               rolePlayers: MRolePlayerSet[A],
-                                               literals: MLiteralSet[A],
+                                               zClass: MRefT[MFieldClass],
+                                               fieldSets: MFieldSetMap,
+                                               rolePlayers: MRolePlayerSet,
+                                               literals: MLiteralSet,
                                                deleted_? : Boolean = false
                                                )
-  extends NewObject[A]
-  with MField[A]
+  extends NewObject
+  with MField
 {
-	type T = NewField[A]
+	type T = NewField
 
-  protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
-                        deleted_? : Boolean = false ): NewField[A] = {
+  protected def update( fieldSets: MFieldSetMap = fieldSets,
+                        deleted_? : Boolean = false ): NewField = {
     NewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerSet[A] = rolePlayers,
-                              literals: MLiteralSet[A] = literals
-                              ): NewField[A] = {
+  protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
+                              literals: MLiteralSet = literals
+                              ): NewField = {
     NewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
 

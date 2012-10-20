@@ -9,9 +9,6 @@ class ImmutableAccessor protected[db] (r: RedisClient)
   with RedisReadQueries
   with RedisUpdateQueries
 {
-  type A0 = this.type
-  def me = this
-
   protected def redis = r
 
 }

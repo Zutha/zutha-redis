@@ -13,36 +13,34 @@ trait ZRef
   //  def ref = this.asInstanceOf[ReferenceT[Trait]]
 
 
-case class IRef
-[A <: ImmutableAccessor] protected[model]( acc: A, id: Zid )
+case class IRef protected[model]( acc: ImmutableAccessor, id: Zid )
   extends ZRef
-  with HasIRef[A]
+  with HasIRef
 {
-	type T <: IObject[A]
+	type T <: IObject
 
-  def get: IObject[acc.type] = acc.getObject(id).get
+  def get: IObject = acc.getObject(id).get
 
-  override def ref = this.asInstanceOf[IRefTA[A, T]]
+  override def ref = this.asInstanceOf[IRefTA[T]]
 
   def zClass: ZClass = get.zClass
 
-  def fieldSets: IFieldSetMap[acc.type] = get.fieldSets
+  def fieldSets: IFieldSetMap = get.fieldSets
 
 }
 
-case class MRef
-[A <: MutableAccessor] protected[model] ( acc: A, id: ZIdentity)
+case class MRef protected[model] ( acc: MutableAccessor, id: ZIdentity)
   extends ZRef
-with HasMRef[A]
+with HasMRef
 {
-	type T <: MObject[A]
+	type T <: MObject
 
-  def get: MObject[acc.type] = acc.getObject(id).get
+  def get: MObject = acc.getObject(id).get
 
-  override def ref = this.asInstanceOf[MRefTA[A, T]]
+  override def ref = this.asInstanceOf[MRefTA[T]]
 
-  def zClass: MClass[acc.type] = get.zClass
+  def zClass: MClass = get.zClass
 
-  def fieldSets: MFieldSetMap[acc.type] = get.fieldSets
+  def fieldSets: MFieldSetMap = get.fieldSets
 
 }

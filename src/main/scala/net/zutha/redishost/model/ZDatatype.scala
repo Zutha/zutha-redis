@@ -14,16 +14,16 @@ trait ZDatatype
 	type T <: ZDatatype
 }
 
-trait IDatatype[A <: ImmutableAccessor]
+trait IDatatype
   extends ZDatatype
-  with IType[A]
+  with IType
 {
-	type T <: IDatatype[A]
+	type T <: IDatatype
 }
 
-trait MDatatype[A <: MutableAccessor]
+trait MDatatype
   extends ZDatatype
-  with MType[A]
+  with MType
 {
-	type T <: MDatatype[A]
+	type T <: MDatatype
 }

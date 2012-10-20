@@ -14,16 +14,16 @@ trait ZItemClass
 	type T <: ZItemClass
 }
 
-trait IItemClass[A <: ImmutableAccessor]
+trait IItemClass
   extends ZItemClass
-  with IClass[A]
+  with IClass
 {
-	type T <: IItemClass[A]
+	type T <: IItemClass
 }
 
-trait MItemClass[A <: MutableAccessor]
+trait MItemClass
   extends ZItemClass
-  with MClass[A]
+  with MClass
 {
-	type T <: MItemClass[A]
+	type T <: MItemClass
 }

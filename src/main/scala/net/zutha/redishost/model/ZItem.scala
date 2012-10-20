@@ -24,30 +24,30 @@ trait ZItem
 /**
  * An Item that cannot be Modified
  */
-trait IItem[A <: ImmutableAccessor]
-  extends IObject[A]
+trait IItem
+  extends IObject
   with ZItem
 {
-	type T <: IItem[A]
+	type T <: IItem
 
   override def id: Zid
 
-  override def zClass: IItemClass[A]
+  override def zClass: IItemClass
 
 }
 
 /**
  * An Item that can be Modified
  */
-trait MItem[A <: MutableAccessor]
-  extends MObject[A]
+trait MItem
+  extends MObject
   with ZItem
 {
-	type T <: MItem[A]
+	type T <: MItem
 
-  override def zClass: MItemClass[A]
+  override def zClass: MItemClass
 
-  protected def updateClass( zClass: MItemClass[A] ): T
+  protected def updateClass( zClass: MItemClass ): T
 
 }
 
@@ -58,15 +58,14 @@ trait MItem[A <: MutableAccessor]
  * @param zClass
  * @param fieldSets
  */
-case class ImmutableItem
-[A <: ImmutableAccessor] protected[redishost] ( acc: A,
+case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
                                                 id: Zid,
-                                                zClass: IRefT[A, IItemClass],
-                                                fieldSets: IFieldSetMap[A]
+                                                zClass: IRefT[IItemClass],
+                                                fieldSets: IFieldSetMap
                                                 )
-  extends IItem[A]
+  extends IItem
 {
-	type T <: IItem[A]
+	type T <: IItem
 
 }
 
@@ -79,28 +78,27 @@ case class ImmutableItem
  * @param fieldSets
  * @param deleted_?
  */
-case class ModifiedItem
-[A <: MutableAccessor] protected[redishost] ( acc: A,
+case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
                                                id: Zids,
-                                               zClassBkp: MRefT[A, MItemClass],
-                                               zClass: MRefT[A, MItemClass],
-                                               fieldSets: MFieldSetMap[A],
+                                               zClassBkp: MRefT[MItemClass],
+                                               zClass: MRefT[MItemClass],
+                                               fieldSets: MFieldSetMap,
                                                deleted_? : Boolean
                                                )
-  extends ModifiedObject[A]
-  with MItem[A]
+  extends ModifiedObject
+  with MItem
 {
-	type T <: ModifiedItem[A]
+	type T <: ModifiedItem
 
-  protected def update( fieldSets: MFieldSetMap[A],
+  protected def update( fieldSets: MFieldSetMap,
                         deleted_? : Boolean ): T = {
-    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? ).asInstanceOf[ModifiedItem[A] with T]
+    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? ).asInstanceOf[ModifiedItem with T]
   }
 
-  protected def updateClass(zClass: MItemClass[A]): T =
-    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? ).asInstanceOf[ModifiedItem[A] with T]
+  protected def updateClass(zClass: MItemClass): T =
+    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? ).asInstanceOf[ModifiedItem with T]
 
-//  def merge(other: ModifiedItem[A]): ModifiedItem[A] = {
+//  def merge(other: ModifiedItem): ModifiedItem = {
 //    //TODO cater for merging
 //    require(id == other.id, "must merge a modified and persisted version of the same item")
 //    if(zClassBkp == other.zClass){
@@ -125,25 +123,24 @@ case class ModifiedItem
  * @param fieldSets
  * @param deleted_?
  */
-case class NewItem
-[A <: MutableAccessor] protected[redishost] ( acc: A,
-                                               id: TempId,
-                                               zClass: MRefT[A, MItemClass],
-                                               fieldSets: MFieldSetMap[A],
-                                               deleted_? : Boolean
-                                               )
-  extends NewObject[A]
-  with MItem[A]
+case class NewItem protected[redishost] ( acc: MutableAccessor,
+                                          id: TempId,
+                                          zClass: MRefT[MItemClass],
+                                          fieldSets: MFieldSetMap,
+                                          deleted_? : Boolean
+                                          )
+  extends NewObject
+  with MItem
 {
-	type T <: NewItem[A]
+  type T <: NewItem
 
-  protected def update( fieldSets: MFieldSetMap[A],
+  protected def update( fieldSets: MFieldSetMap,
                         deleted_? : Boolean ): T = {
-    NewItem( acc, id, zClass, fieldSets, deleted_? ).asInstanceOf[NewItem[A] with T]
+    NewItem( acc, id, zClass, fieldSets, deleted_? ).asInstanceOf[NewItem with T]
   }
 
-  protected def updateClass(zClass: MItemClass[A]): T = {
-    NewItem( acc, id, zClass.ref, fieldSets, deleted_? ).asInstanceOf[NewItem[A] with T]
+  protected def updateClass(zClass: MItemClass): T = {
+    NewItem( acc, id, zClass.ref, fieldSets, deleted_? ).asInstanceOf[NewItem with T]
   }
 
 

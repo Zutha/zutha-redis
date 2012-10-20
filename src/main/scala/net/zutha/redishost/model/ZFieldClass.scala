@@ -8,16 +8,16 @@ trait ZFieldClass
 	type T <: ZFieldClass
 }
 
-trait IFieldClass[A <: ImmutableAccessor]
+trait IFieldClass
   extends ZFieldClass
-  with IClass[A]
+  with IClass
 {
-	type T <: IFieldClass[A]
+	type T <: IFieldClass
 }
 
-trait MFieldClass[A <: MutableAccessor]
+trait MFieldClass
   extends ZFieldClass
-  with MClass[A]
+  with MClass
 {
-	type T <: MFieldClass[A]
+	type T <: MFieldClass
 }

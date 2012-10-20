@@ -14,16 +14,16 @@ trait ZType
 	type T <: ZType
 }
 
-trait IType[A <: ImmutableAccessor]
+trait IType
   extends ZType
-  with IItem[A]
+  with IItem
 {
-	type T <: IType[A]
+	type T <: IType
 }
 
-trait MType[A <: MutableAccessor]
+trait MType
   extends ZType
-  with MItem[A]
+  with MItem
 {
-	type T <: MType[A]
+	type T <: MType
 }

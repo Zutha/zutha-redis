@@ -54,20 +54,20 @@ trait PersistedObject
 /**
  * An immutable Object that corresponds to an Object in the database
  */
-trait IObject[A <: ImmutableAccessor]
+trait IObject
   extends ZObject
   with PersistedObject
-  with HasIRef[A]
+  with HasIRef
 {
-	type T <: IObject[A]
+	type T <: IObject
 
-  def acc: A
+  def acc: ImmutableAccessor
 
   def id: Zid
 
-  override def zClass: IClass[A]
+  override def zClass: IClass
 
-  def fieldSets: IFieldSetMap[A]
+  def fieldSets: IFieldSetMap
 
 }
 
@@ -75,33 +75,33 @@ trait IObject[A <: ImmutableAccessor]
 /**
  * An Object that can be Modified
  */
-trait MObject[A <: MutableAccessor]
+trait MObject
   extends ZObject
-  with HasMRef[A]
+  with HasMRef
 {
-	type T <: MObject[A]
+	type T <: MObject
 
-  def acc: A
+  def acc: MutableAccessor
 
   // Accessors
-  override def zClass: MClass[A]
+  override def zClass: MClass
 
-  def fieldSets: MFieldSetMap[A]
+  def fieldSets: MFieldSetMap
 
   def deleted_? : Boolean
 
   // Mutation
 
-  protected def update( fieldSets: MFieldSetMap[A] = fieldSets,
+  protected def update( fieldSets: MFieldSetMap = fieldSets,
                         deleted_? : Boolean = deleted_?
                         ): T
 
-  def mutateFieldSets(mutate: MFieldSet[A] => MFieldSet[A]): T = {
+  def mutateFieldSets(mutate: MFieldSet => MFieldSet): T = {
     val newFieldSets = fieldSets.mapValues(mutate)
     update(fieldSets = newFieldSets)
   }
-  def mutateFieldSet( role: MRole[A], fieldClass: MFieldClass[A] )
-                    ( mutate: MFieldSet[A] => MFieldSet[A] ): T = {
+  def mutateFieldSet( role: MRole, fieldClass: MFieldClass )
+                    ( mutate: MFieldSet => MFieldSet ): T = {
 
     val key = (role.ref -> fieldClass.ref)
 
@@ -122,11 +122,11 @@ trait MObject[A <: MutableAccessor]
 /**
  * A Persisted Object that possibly has unsaved modifications
  */
-trait ModifiedObject[A <: MutableAccessor]
-  extends MObject[A]
+trait ModifiedObject
+  extends MObject
   with PersistedObject
 {
-	type T <: ModifiedObject[A]
+	type T <: ModifiedObject
 
   def id: ZPersistedIdentity
 
@@ -136,10 +136,10 @@ trait ModifiedObject[A <: MutableAccessor]
 /**
  * An Object that has not been persisted to the database
  */
-trait NewObject[A <: MutableAccessor]
-  extends MObject[A]
+trait NewObject
+  extends MObject
 {
-	type T <: NewObject[A]
+	type T <: NewObject
 
   def id: TempId
 

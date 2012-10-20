@@ -12,27 +12,26 @@ private[model] trait HasRef {
 }
 
 private[model] trait HasIRef
-[A <: ImmutableAccessor]
   extends HasRef
 {
-  type T <: IObject[A]
+  type T <: IObject
 
   def id: Zid
-  def acc: A
+  def acc: ImmutableAccessor
 
-  def ref: IRefTA[A, T] = IRef( acc, id ).asInstanceOf[IRefTA[A, T]]
+  def ref: IRefTA[T] = IRef( acc, id ).asInstanceOf[IRefTA[T]]
 
-  def reload( acc: A, limit: Int ): T = ???
+  def reload( acc: ImmutableAccessor, limit: Int ): T = ???
 }
 
-private[model] trait HasMRef[A <: MutableAccessor]
+private[model] trait HasMRef
   extends HasRef
 {
-  type T <: MObject[A]
+  type T <: MObject
 
-  def acc: A
+  def acc: MutableAccessor
 
-  def ref = MRef[A]( acc, id ).asInstanceOf[MRefTA[A, T]]
+  def ref = MRef( acc, id ).asInstanceOf[MRefTA[T]]
 
-  def reload( acc: A, limit: Int ): T = ???
+  def reload( acc: MutableAccessor, limit: Int ): T = ???
 }

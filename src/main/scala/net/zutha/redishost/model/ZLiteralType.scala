@@ -14,16 +14,16 @@ trait ZLiteralType
 	type T <: ZLiteralType
 }
 
-trait ILiteralType[A <: ImmutableAccessor]
+trait ILiteralType
   extends ZLiteralType
-  with IType[A]
+  with IType
 {
-	type T <: ILiteralType[A]
+	type T <: ILiteralType
 }
 
-trait MLiteralType[A <: MutableAccessor]
+trait MLiteralType
   extends ZLiteralType
-  with MType[A]
+  with MType
 {
-	type T <: MLiteralType[A]
+	type T <: MLiteralType
 }

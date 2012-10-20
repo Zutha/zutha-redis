@@ -10,11 +10,8 @@ class MutableAccessor protected[db] (val redis: RedisClient, val dbAcc: Immutabl
   with RedisReadQueries
   with RedisUpdateQueries
 {
-  type A0 = this.type
-  def me = this
 
-
-  def update[A >: A0 <: MutableAccessor with Singleton](id: ZIdentity, o: MObject[A]): Boolean = {
+  def update(id: ZIdentity, o: MObject): Boolean = {
     // save object in private redis key domain for this accessor
     ???
   }

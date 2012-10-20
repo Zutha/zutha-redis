@@ -15,16 +15,16 @@ trait ZRole
 
 }
 
-trait IRole[A <: ImmutableAccessor]
+trait IRole
   extends ZRole
-  with IType[A]
+  with IType
 {
-	type T <: IRole[A]
+	type T <: IRole
 }
 
-trait MRole[A <: MutableAccessor]
+trait MRole
   extends ZRole
-  with MType[A]
+  with MType
 {
-	type T <: MRole[A]
+	type T <: MRole
 }
