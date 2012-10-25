@@ -13,13 +13,13 @@ trait ZRef
   //  def ref = this.asInstanceOf[ReferenceT[Trait]]
 
 
-case class IRef protected[model]( acc: ImmutableAccessor, id: Zid )
+case class IRef protected[model]( acc: ImmutableAccessor, id: Zids )
   extends ZRef
   with HasIRef
 {
 	type T <: IObject
 
-  def get: IObject = acc.getObject(id).get
+  def get: IObject = acc.getObject(id.zid).get
 
   override def ref = this.asInstanceOf[IRefTA[T]]
 

@@ -32,7 +32,8 @@ trait ZField extends ZObject
 {
 	type T <: ZField
 
-  def id: ZFieldIdentity
+  def id: ZIdentity
+
   def zClass: RefT[ZFieldClass]
 //  def fieldSets: FieldSetMap
 //  def rolePlayers: RolePlayerSet
@@ -63,7 +64,7 @@ trait ZField extends ZObject
  * @param literals
  */
 case class IField protected[redishost] ( acc: ImmutableAccessor,
-                                         id: Zid,
+                                         id: Zids,
                                          zClass: IRefT[IFieldClass],
                                          fieldSets: IFieldSetMap,
                                          rolePlayers: IRolePlayerSet,
@@ -83,6 +84,8 @@ trait MField
   with MObject
 {
 	type T <: MField
+
+  override def id: ZIdentity
 
   protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
                               literals: MLiteralSet = literals
@@ -133,15 +136,15 @@ trait MField
  */
 case class
 ModifiedField protected[redishost] ( acc: MutableAccessor,
-                                                            id: Zid,
-                                                            zClass: MRefT[MFieldClass],
-                                                            fieldSets: MFieldSetMap,
-                                                            rolePlayersBkp: MRolePlayerSet,
-                                                            rolePlayers: MRolePlayerSet,
-                                                            literalsBkp: MLiteralSet,
-                                                            literals: MLiteralSet,
-                                                            deleted_? : Boolean = false
-                                                            )
+                                     id: PersistedId,
+                                     zClass: MRefT[MFieldClass],
+                                     fieldSets: MFieldSetMap,
+                                     rolePlayersBkp: MRolePlayerSet,
+                                     rolePlayers: MRolePlayerSet,
+                                     literalsBkp: MLiteralSet,
+                                     literals: MLiteralSet,
+                                     deleted_? : Boolean = false
+                                     )
   extends ModifiedObject
   with MField
 {

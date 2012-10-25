@@ -2,7 +2,7 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import collection.GenMap
-import net.zutha.redishost.model.Zids
+import net.zutha.redishost.model.MZids
 import net.zutha.redishost.model.TempId
 import net.zutha.redishost.model.Zid
 
@@ -15,8 +15,8 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   // QUESTION why doesn't this override definition in ReadQueries?
   def getObject(id: ZIdentity, fieldLimit: Int = 0): Option[MObject] = {
     val obj = id match {
-      case Zids(pZids, allZids) => dbAcc.getObject(pZids.head) //TODO merge results
-      case zid: Zid => dbAcc.getObject(zid)
+      case MZids(pZids, allZids) => dbAcc.getObject(pZids.head) //TODO merge results
+      case Zids(zid, allZids) => dbAcc.getObject(zid)
       case TempId(uuid) => None
     }
 

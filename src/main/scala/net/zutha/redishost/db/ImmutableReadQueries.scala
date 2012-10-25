@@ -15,19 +15,11 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
   }
 
   def getItem( item: IItem, fieldLimit: Int = 0): IItem = {
-    getObject(item.id, fieldLimit).asInstanceOf[IItem]
+    getObject(item.zid, fieldLimit).asInstanceOf[IItem]
   }
 
   def getField( field: IField, fieldLimit: Int = 0 ): IField = {
-    getObject(field.id, fieldLimit).asInstanceOf[IField]
-  }
-
-  // TODO: implement with single redis request
-  def getFields( fields: IField* ): IFieldMap = {
-    fields.map{ f =>
-      val newf = getField(f)
-      (newf.id -> newf)
-    }.toMap
+    getObject(field.zid, fieldLimit).asInstanceOf[IField]
   }
 
   // TODO: implement stub

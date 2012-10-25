@@ -21,17 +21,16 @@ trait ZObject
   def zClass: ZClass
 //  def fieldSets: FieldSetMap
 
-  def zids: Set[Zid] = id match {
-    case TempId(_) => Set()
-    case Zids(_, allZids) => allZids
-    case zid: Zid => Set(zid)
+  def zids: List[Zid] = id match {
+    case TempId(_) => List()
+    case MZids(_, allZids) => allZids
+    case Zids(zid, allZids) => allZids
   }
-  def primaryZids: Set[Zid] = id match {
-    case TempId(_) => Set()
-    case Zids(pZids, _) => pZids
-    case zid: Zid => Set(zid)
+  def primaryZids: List[Zid] = id match {
+    case TempId(_) => List()
+    case MZids(pZids, _) => pZids
+    case Zids(zid, allZids) => List(zid)
   }
-  def zid: Option[Zid] = primaryZids.toSeq.sorted.headOption
 
   def persisted_? = primaryZids.size > 0
 
@@ -48,6 +47,8 @@ trait PersistedObject
   extends ZObject
 {
 	type T <: PersistedObject
+
+  def id: PersistedId
 }
 
 
@@ -63,7 +64,9 @@ trait IObject
 
   def acc: ImmutableAccessor
 
-  def id: Zid
+  def id: Zids
+
+  def zid: Zid = id.zid
 
   override def zClass: IClass
 
@@ -81,9 +84,11 @@ trait MObject
 {
 	type T <: MObject
 
+  // Accessors
   def acc: MutableAccessor
 
-  // Accessors
+  def id: ZIdentity
+
   override def zClass: MClass
 
   def fieldSets: MFieldSetMap
@@ -128,7 +133,7 @@ trait ModifiedObject
 {
 	type T <: ModifiedObject
 
-  def id: ZPersistedIdentity
+  def id: PersistedId
 
 }
 

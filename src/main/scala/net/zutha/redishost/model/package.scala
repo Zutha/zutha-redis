@@ -43,10 +43,10 @@ package object model {
   type MLiteralSet            = Set[MLiteral]
   type MLiteralMap            = Map[MRefT[MLiteralType], Set[ZLiteralValue]]
 
-  type FieldMap                                     = Map[ZFieldIdentity, ZField]
+  type FieldMap                                     = Map[ZIdentity, ZField]
   type FieldSetMap                                  = Map[(RefT[ZRole], RefT[ZFieldClass]), ZFieldSet]
   type IFieldMap            = Map[Zid, IField]
   type IFieldSetMap         = Map[(IRefT[IRole], IRefT[IFieldClass]), IFieldSet]
-  type MFieldMap              = Map[ZFieldIdentity, MField]
+  type MFieldMap              = Map[ZIdentity, MField]
   type MFieldSetMap           = Map[(MRefT[MRole], MRefT[MFieldClass]), MFieldSet]
 }

@@ -30,7 +30,7 @@ trait IItem
 {
 	type T <: IItem
 
-  override def id: Zid
+  override def id: Zids
 
   override def zClass: IItemClass
 
@@ -44,6 +44,8 @@ trait MItem
   with ZItem
 {
 	type T <: MItem
+
+  override def id: ZIdentity
 
   override def zClass: MItemClass
 
@@ -59,7 +61,7 @@ trait MItem
  * @param fieldSets
  */
 case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
-                                                id: Zid,
+                                                id: Zids,
                                                 zClass: IRefT[IItemClass],
                                                 fieldSets: IFieldSetMap
                                                 )
@@ -79,7 +81,7 @@ case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
  * @param deleted_?
  */
 case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
-                                               id: Zids,
+                                               id: PersistedId,
                                                zClassBkp: MRefT[MItemClass],
                                                zClass: MRefT[MItemClass],
                                                fieldSets: MFieldSetMap,

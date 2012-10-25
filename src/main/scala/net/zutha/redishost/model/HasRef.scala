@@ -16,8 +16,9 @@ private[model] trait HasIRef
 {
   type T <: IObject
 
-  def id: Zid
   def acc: ImmutableAccessor
+
+  def id: Zids
 
   def ref: IRefTA[T] = IRef( acc, id ).asInstanceOf[IRefTA[T]]
 
@@ -30,6 +31,8 @@ private[model] trait HasMRef
   type T <: MObject
 
   def acc: MutableAccessor
+
+  def id: ZIdentity
 
   def ref = MRef( acc, id ).asInstanceOf[MRefTA[T]]
 
