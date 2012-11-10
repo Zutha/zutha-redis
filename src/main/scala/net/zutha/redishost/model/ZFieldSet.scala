@@ -37,14 +37,14 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
                                              parent: IRef[IObject],
                                              role: IRef[IRole],
                                              fieldClass: IRef[IFieldClass],
-                                             fields: IFieldMap,
+                                             fields: IFieldList,
                                              limit: Int,
                                              offset: Int
                                              ) extends ZFieldSet {
 
   def reload: IFieldSet = {
 //    acc.getFieldSet( parent, role, fieldClass, limit, offset )
-    val fields: IFieldMap = ???
+    val fields: IFieldList = ???
 //    IFieldSet( acc, parent.ref, role.ref, fieldClass.ref, fields, limit, offset )
     ???
   }
@@ -66,7 +66,7 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             parent: MRef[MObject],
                                             role: MRef[MRole],
                                             fieldClass: MRef[MFieldClass],
-                                            fields: MFieldMap,
+                                            fields: MFieldList,
                                             limit: Int,
                                             offset: Int,
                                             includeDeleted_? : Boolean

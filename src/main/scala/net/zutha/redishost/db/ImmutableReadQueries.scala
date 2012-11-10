@@ -43,7 +43,7 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
                    limit: Int,
                    offset: Int
                    ): IFieldSet = {
-    val fields: IFieldMap = ???
+    val fields: IFieldList = ???
     IFieldSet( this, parent, role, fieldClass, fields, limit, offset )
   }
 

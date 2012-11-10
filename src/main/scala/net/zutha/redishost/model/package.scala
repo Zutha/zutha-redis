@@ -29,7 +29,7 @@ package object model {
   type MLiteralSet            = Set[MLiteral]
   type MLiteralMap            = Map[MRef[MLiteralType], Set[ZLiteralValue]]
 
-  type FieldMap                                     = Map[ZIdentity, ZField]
-  type IFieldMap            = Map[Zid, IField]
-  type MFieldMap              = Map[ZIdentity, MField]
+  type FieldList             = List[ZRef[ZField]]
+  type IFieldList            = List[IRef[IField]]
+  type MFieldList            = List[MRef[MField]]
 }

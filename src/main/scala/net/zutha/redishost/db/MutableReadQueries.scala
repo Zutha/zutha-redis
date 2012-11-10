@@ -53,7 +53,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
                    offset: Int,
                    includeDeleted_? : Boolean
                    ): MFieldSet = {
-    val fields: MFieldMap = ???
+    val fields: MFieldList = ???
     MFieldSet( this, parent, role, fieldClass, fields, limit, offset, includeDeleted_?)
   }
 
@@ -62,14 +62,5 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
   // TODO: implement stub
   def getUpdatedField( field: MRef[ModifiedField], fieldLimit: Int = 0 ): ModifiedField = ???
-
-  // TODO: implement with single redis request
-  def getUpdatedFields( fields: MRef[ModifiedField]* ): MFieldMap = {
-    fields.map{ f =>
-      val newf = getUpdatedField(f)
-      (newf.id -> newf)
-    }.toMap
-  }
-
 
 }
