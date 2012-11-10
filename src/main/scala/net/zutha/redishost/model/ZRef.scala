@@ -3,44 +3,22 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 
 
-trait ZRef
-  extends HasRef
+trait ZRef[+T <: ZObject]
 {
-  type T <: ZObject
+  def get: T
 }
 
-  //  def refT[T <: ZObject] = this.asInstanceOf[ReferenceT[T]]
-  //  def ref = this.asInstanceOf[ReferenceT[Trait]]
-
-
-case class IRef protected[model]( acc: ImmutableAccessor, id: Zids )
-  extends ZRef
-  with HasIRef
+case class IRef[+T <: IObject] protected[model]( acc: ImmutableAccessor, id: Zids )
+  extends ZRef[T]
 {
-	type T <: IObject
 
-  def get: IObject = acc.getObject(id.zid).get
+  def get: T = acc.getObjectT(id.zid).get
 
-  override def ref = this.asInstanceOf[IRefTA[T]]
-
-  def zClass: ZClass = get.zClass
-
-  def fieldSets: IFieldSetMap = get.fieldSets
-
+  def zid: Zid = id.zid
 }
 
-case class MRef protected[model] ( acc: MutableAccessor, id: ZIdentity)
-  extends ZRef
-with HasMRef
+case class MRef[+T <: MObject] protected[model] ( acc: MutableAccessor, id: ZIdentity)
+  extends ZRef[T]
 {
-	type T <: MObject
-
-  def get: MObject = acc.getObject(id).get
-
-  override def ref = this.asInstanceOf[MRefTA[T]]
-
-  def zClass: MClass = get.zClass
-
-  def fieldSets: MFieldSetMap = get.fieldSets
-
+  def get: T = acc.getObjectT(id).get
 }

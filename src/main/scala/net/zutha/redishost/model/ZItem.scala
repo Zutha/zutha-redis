@@ -18,7 +18,7 @@ trait ZItem
 	type T <: ZItem
 
   def id: ZIdentity
-  def zClass: ZItemClass
+  def zClass: ZRef[ZItemClass]
 }
 
 /**
@@ -32,7 +32,7 @@ trait IItem
 
   override def id: Zids
 
-  override def zClass: IItemClass
+  override def zClass: IRef[IItemClass]
 
 }
 
@@ -47,9 +47,9 @@ trait MItem
 
   override def id: ZIdentity
 
-  override def zClass: MItemClass
+  override def zClass: MRef[MItemClass]
 
-  protected def updateClass( zClass: MItemClass ): T
+  protected def updateClass( zClass: MRef[MItemClass] ): T
 
 }
 
@@ -62,8 +62,8 @@ trait MItem
  */
 case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
                                                 id: Zids,
-                                                zClass: IRefT[IItemClass],
-                                                fieldSets: IFieldSetMap
+                                                zClass: IRef[IItemClass],
+                                                fieldSets: List[IFieldSetRef]
                                                 )
   extends IItem
 {
@@ -82,9 +82,9 @@ case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
  */
 case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
                                                id: PersistedId,
-                                               zClassBkp: MRefT[MItemClass],
-                                               zClass: MRefT[MItemClass],
-                                               fieldSets: MFieldSetMap,
+                                               zClassBkp: MRef[MItemClass],
+                                               zClass: MRef[MItemClass],
+                                               fieldSets: List[MFieldSetRef],
                                                deleted_? : Boolean
                                                )
   extends ModifiedObject
@@ -92,13 +92,13 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
 {
 	type T <: ModifiedItem
 
-  protected def update( fieldSets: MFieldSetMap,
+  protected def update( fieldSets: List[MFieldSetRef],
                         deleted_? : Boolean ): T = {
     ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? ).asInstanceOf[ModifiedItem with T]
   }
 
-  protected def updateClass(zClass: MItemClass): T =
-    ModifiedItem( acc, id, zClassBkp, zClass.ref, fieldSets, deleted_? ).asInstanceOf[ModifiedItem with T]
+  protected def updateClass(zClass: MRef[MItemClass]): T =
+    ModifiedItem( acc, id, zClassBkp, zClass, fieldSets, deleted_? ).asInstanceOf[ModifiedItem with T]
 
 //  def merge(other: ModifiedItem): ModifiedItem = {
 //    //TODO cater for merging
@@ -127,8 +127,8 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
  */
 case class NewItem protected[redishost] ( acc: MutableAccessor,
                                           id: TempId,
-                                          zClass: MRefT[MItemClass],
-                                          fieldSets: MFieldSetMap,
+                                          zClass: MRef[MItemClass],
+                                          fieldSets: List[MFieldSetRef],
                                           deleted_? : Boolean
                                           )
   extends NewObject
@@ -136,13 +136,13 @@ case class NewItem protected[redishost] ( acc: MutableAccessor,
 {
   type T <: NewItem
 
-  protected def update( fieldSets: MFieldSetMap,
+  protected def update( fieldSets: List[MFieldSetRef],
                         deleted_? : Boolean ): T = {
     NewItem( acc, id, zClass, fieldSets, deleted_? ).asInstanceOf[NewItem with T]
   }
 
-  protected def updateClass(zClass: MItemClass): T = {
-    NewItem( acc, id, zClass.ref, fieldSets, deleted_? ).asInstanceOf[NewItem with T]
+  protected def updateClass(zClass: MRef[MItemClass]): T = {
+    NewItem( acc, id, zClass, fieldSets, deleted_? ).asInstanceOf[NewItem with T]
   }
 
 

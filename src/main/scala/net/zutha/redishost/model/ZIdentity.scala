@@ -11,6 +11,14 @@ sealed case class Zids(zid: Zid, allZids: List[Zid])
 sealed case class MZids(primaryZids: List[Zid], allZids: List[Zid])
   extends PersistedId
 
+sealed case class TempId(uuid: UUID)
+  extends ZIdentity
+{
+  def this() = this(UUID.randomUUID())
+}
+
+
+
 sealed case class Zid(identifier: String)
   extends Ordered[Zid]
 {
@@ -19,8 +27,3 @@ sealed case class Zid(identifier: String)
   def compare(that: Zid) = this.identifier compare that.identifier
 }
 
-sealed case class TempId(uuid: UUID)
-  extends ZIdentity
-{
-  def this() = this(UUID.randomUUID())
-}

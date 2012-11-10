@@ -14,7 +14,7 @@ private[model] trait ZObjectFactory
 
   def validType_?(obj: ZObject): Boolean
 
-  private def toT[C <: ZObjectT[T]]( acc: Accessor,
+  private def toT[C <: T]( acc: Accessor,
                                      obj: Option[ZObject]
                                      ): Option[C] = {
     obj flatMap {o =>
@@ -27,14 +27,14 @@ private[model] trait ZObjectFactory
     }
   }
 
-  def apply(acc: ImmutableAccessor, id: Zid): Option[IObjectT[TI]] = {
+  def apply(acc: ImmutableAccessor, id: Zid): Option[TI] = {
     val obj = acc.getObject(id)
-    toT[IObjectT[TI]](acc, obj)
+    toT[TI](acc, obj)
   }
 
-  def apply(acc: MutableAccessor, id: ZIdentity): Option[MObjectT[TM]] = {
+  def apply(acc: MutableAccessor, id: ZIdentity): Option[TM] = {
     val obj = acc.getObject(id)
-    toT[MObjectT[TM]](acc, obj)
+    toT[TM](acc, obj)
   }
 
   def getI(acc: ImmutableAccessor): TI = {

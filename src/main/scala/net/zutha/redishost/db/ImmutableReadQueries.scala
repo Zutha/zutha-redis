@@ -14,33 +14,37 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
     ???
   }
 
-  def getItem( item: IItem, fieldLimit: Int = 0): IItem = {
-    getObject(item.zid, fieldLimit).asInstanceOf[IItem]
+  def getObjectT[T <: IObject](id: Zid, fieldLimit: Int = 0): Option[T] = {
+    getObject(id, fieldLimit) map (_.asInstanceOf[T])
   }
 
-  def getField( field: IField, fieldLimit: Int = 0 ): IField = {
-    getObject(field.zid, fieldLimit).asInstanceOf[IField]
+  def getItem( item: IRef[IItem], fieldLimit: Int = 0): IItem = {
+    getObject(item.zid, fieldLimit).get.asInstanceOf[IItem]
+  }
+
+  def getField( field: IRef[IField], fieldLimit: Int = 0 ): IField = {
+    getObject(field.zid, fieldLimit).get.asInstanceOf[IField]
   }
 
   // TODO: implement stub
-  def getRolePlayersOfField(field: IField): IRolePlayerSet = {
+  def getRolePlayersOfField(field: IRef[IField]): IRolePlayerSet = {
     ???
   }
 
   //  TODO: implement stub
-  def getLiteralsOfField(field: IField): ILiteralSet = {
+  def getLiteralsOfField(field: IRef[IField]): ILiteralSet = {
     ???
   }
 
   //  TODO: implement stub
-  def getFieldSet( parent: IObject,
-                   role: IRole,
-                   fieldClass: IFieldClass,
+  def getFieldSet( parent: IRef[IObject],
+                   role: IRef[IRole],
+                   fieldClass: IRef[IFieldClass],
                    limit: Int,
                    offset: Int
                    ): IFieldSet = {
     val fields: IFieldMap = ???
-    IFieldSet( this, parent.ref, role.ref, fieldClass.ref, fields, limit, offset )
+    IFieldSet( this, parent, role, fieldClass, fields, limit, offset )
   }
 
 

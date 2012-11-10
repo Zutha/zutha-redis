@@ -15,11 +15,11 @@ trait ZObject
   type T <: ZObject
 
   // Accessors
-  def ref: RefT[T]
+  def ref: ZRef[T]
 
   def id: ZIdentity
-  def zClass: ZClass
-//  def fieldSets: FieldSetMap
+  def zClass: ZRef[ZClass]
+  def fieldSets: List[ZFieldSetRef]
 
   def zids: List[Zid] = id match {
     case TempId(_) => List()
@@ -68,9 +68,9 @@ trait IObject
 
   def zid: Zid = id.zid
 
-  override def zClass: IClass
+  override def zClass: IRef[IClass]
 
-  def fieldSets: IFieldSetMap
+  def fieldSets: List[IFieldSetRef]
 
 }
 
@@ -89,34 +89,17 @@ trait MObject
 
   def id: ZIdentity
 
-  override def zClass: MClass
+  override def zClass: MRef[MClass]
 
-  def fieldSets: MFieldSetMap
+  def fieldSets: List[MFieldSetRef]
 
   def deleted_? : Boolean
 
   // Mutation
 
-  protected def update( fieldSets: MFieldSetMap = fieldSets,
+  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = deleted_?
                         ): T
-
-  def mutateFieldSets(mutate: MFieldSet => MFieldSet): T = {
-    val newFieldSets = fieldSets.mapValues(mutate)
-    update(fieldSets = newFieldSets)
-  }
-  def mutateFieldSet( role: MRole, fieldClass: MFieldClass )
-                    ( mutate: MFieldSet => MFieldSet ): T = {
-
-    val key = (role.ref -> fieldClass.ref)
-
-    fieldSets.get(key) match {
-      case Some(fieldSet) => update(fieldSets = fieldSets.updated(role.ref -> fieldClass.ref, mutate(fieldSet)))
-      case None => throw new IllegalArgumentException(
-        "object does not contain the specified fieldSet"
-      )
-    }
-  }
 
   def delete: T = update( deleted_? = true )
   def restore: T = update( deleted_? = false )

@@ -7,7 +7,7 @@ private[model] trait HasRef {
 
   def id: ZIdentity
   
-  def ref: RefT[T]
+  def ref: ZRef[T]
 
 }
 
@@ -20,7 +20,7 @@ private[model] trait HasIRef
 
   def id: Zids
 
-  def ref: IRefTA[T] = IRef( acc, id ).asInstanceOf[IRefTA[T]]
+  def ref: IRef[T] = IRef[T]( acc, id )
 
   def reload( acc: ImmutableAccessor, limit: Int ): T = ???
 }
@@ -34,7 +34,7 @@ private[model] trait HasMRef
 
   def id: ZIdentity
 
-  def ref = MRef( acc, id ).asInstanceOf[MRefTA[T]]
+  def ref = MRef[T]( acc, id )
 
   def reload( acc: MutableAccessor, limit: Int ): T = ???
 }

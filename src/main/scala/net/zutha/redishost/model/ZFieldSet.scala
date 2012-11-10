@@ -11,9 +11,9 @@ object ZFieldSet {
  * A container for fields of a certain type owned by a specific item
  */
 trait ZFieldSet {
-  def parent: RefT[ZObject]
-  def role: RefT[ZRole]
-  def fieldClass: RefT[ZFieldClass]
+  def parent: ZRef[ZObject]
+  def role: ZRef[ZRole]
+  def fieldClass: ZRef[ZFieldClass]
 //  def fields: FieldMap
   def limit: Int
   def offset: Int
@@ -34,9 +34,9 @@ trait ZFieldSet {
  * @param offset
  */
 case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
-                                             parent: IRefT[IObject],
-                                             role: IRefT[IRole],
-                                             fieldClass: IRefT[IFieldClass],
+                                             parent: IRef[IObject],
+                                             role: IRef[IRole],
+                                             fieldClass: IRef[IFieldClass],
                                              fields: IFieldMap,
                                              limit: Int,
                                              offset: Int
@@ -61,12 +61,11 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
  * @param fields
  * @param limit
  * @param offset
- * @tparam A
  */
 case class MFieldSet protected[redishost] ( acc: MutableAccessor,
-                                            parent: MRefT[MObject],
-                                            role: MRefT[MRole],
-                                            fieldClass: MRefT[MFieldClass],
+                                            parent: MRef[MObject],
+                                            role: MRef[MRole],
+                                            fieldClass: MRef[MFieldClass],
                                             fields: MFieldMap,
                                             limit: Int,
                                             offset: Int,

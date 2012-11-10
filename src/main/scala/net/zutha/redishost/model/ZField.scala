@@ -14,12 +14,12 @@ object ZField extends ZObjectFactory[ZField, IField, MField] {
    * @return
    */
   def apply( acc: MutableAccessor,
-             zClass: MRefT[MFieldClass],
+             zClass: MRef[MFieldClass],
              rolePlayers: MRolePlayer*
              ): NewField = {
     val id = new TempId
     val rps = rolePlayers.toSet
-    val fieldSets: MFieldSetMap = Map() //TODO get from db (implement in ZObject)
+    val fieldSets: List[MFieldSetRef] = List() //TODO get from db (implement in ZObject)
     val literals: MLiteralSet = Set()
     NewField( acc, id, zClass, fieldSets, rps, literals, false)
   }
@@ -34,8 +34,8 @@ trait ZField extends ZObject
 
   def id: ZIdentity
 
-  def zClass: RefT[ZFieldClass]
-//  def fieldSets: FieldSetMap
+  def zClass: ZRef[ZFieldClass]
+//  def fieldSets: List[ZFieldSetRef]
 //  def rolePlayers: RolePlayerSet
 //  def literals: LiteralSet
 
@@ -65,8 +65,8 @@ trait ZField extends ZObject
  */
 case class IField protected[redishost] ( acc: ImmutableAccessor,
                                          id: Zids,
-                                         zClass: IRefT[IFieldClass],
-                                         fieldSets: IFieldSetMap,
+                                         zClass: IRef[IFieldClass],
+                                         fieldSets: List[IFieldSetRef],
                                          rolePlayers: IRolePlayerSet,
                                          literals: ILiteralSet
                                          )
@@ -91,8 +91,8 @@ trait MField
                               literals: MLiteralSet = literals
                               ): T
 
-  def zClass: MRefT[MFieldClass]
-  def fieldSets: MFieldSetMap
+  def zClass: MRef[MFieldClass]
+  def fieldSets: List[MFieldSetRef]
   def rolePlayers: MRolePlayerSet
   def literals: MLiteralSet
 
@@ -137,8 +137,8 @@ trait MField
 case class
 ModifiedField protected[redishost] ( acc: MutableAccessor,
                                      id: PersistedId,
-                                     zClass: MRefT[MFieldClass],
-                                     fieldSets: MFieldSetMap,
+                                     zClass: MRef[MFieldClass],
+                                     fieldSets: List[MFieldSetRef],
                                      rolePlayersBkp: MRolePlayerSet,
                                      rolePlayers: MRolePlayerSet,
                                      literalsBkp: MLiteralSet,
@@ -164,7 +164,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
 
   //  Mutators
 
-  protected def update( fieldSets: MFieldSetMap = fieldSets,
+  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false
                         ): ModifiedField = {
     ModifiedField( acc, id, zClass, fieldSets,
@@ -198,8 +198,8 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
  */
 case class NewField protected[redishost] ( acc: MutableAccessor,
                                                id: TempId,
-                                               zClass: MRefT[MFieldClass],
-                                               fieldSets: MFieldSetMap,
+                                               zClass: MRef[MFieldClass],
+                                               fieldSets: List[MFieldSetRef],
                                                rolePlayers: MRolePlayerSet,
                                                literals: MLiteralSet,
                                                deleted_? : Boolean = false
@@ -209,7 +209,7 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
 {
 	type T = NewField
 
-  protected def update( fieldSets: MFieldSetMap = fieldSets,
+  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false ): NewField = {
     NewField( acc, id, zClass, fieldSets, rolePlayers, literals, deleted_? )
   }
