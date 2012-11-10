@@ -16,18 +16,15 @@ package object model {
   type MRolePlayerSet         = Set[MRolePlayer]
   type MRolePlayerMap         = Map[MRef[MRole], Set[MRef[MObject]]]
 
-  type LiteralR[R[T <: ZObject] <: ZRef[T]]         = (R[ZLiteralType], ZLiteralValue)
-  type Literal                                      = (ZRef[ZLiteralType], ZLiteralValue)
-  type LiteralSetR[R[T <: ZObject] <: ZRef[T]]                             = Set[LiteralR[R]]
+  type Literal                                      = (ZRef[ZLiteralType], LiteralValue)
   type LiteralSet                                   = Set[Literal]
-  type LiteralMapR[R[T <: ZObject] <: ZRef[T]]      = Map[R[ZLiteralType], Set[ZLiteralValue]]
-  type LiteralMap                                   = Map[ZRef[ZLiteralType], Set[ZLiteralValue]]
-  type ILiteral             = (IRef[ILiteralType], ZLiteralValue)
+  type LiteralMap                                   = Map[ZRef[ZLiteralType], Set[LiteralValue]]
+  type ILiteral             = (IRef[ILiteralType], LiteralValue)
   type ILiteralSet          = Set[ILiteral]
-  type ILiteralMap          = Map[IRef[ILiteralType], Set[ZLiteralValue]]
-  type MLiteral               = (MRef[MLiteralType], ZLiteralValue)
+  type ILiteralMap          = Map[IRef[ILiteralType], Set[LiteralValue]]
+  type MLiteral               = (MRef[MLiteralType], LiteralValue)
   type MLiteralSet            = Set[MLiteral]
-  type MLiteralMap            = Map[MRef[MLiteralType], Set[ZLiteralValue]]
+  type MLiteralMap            = Map[MRef[MLiteralType], Set[LiteralValue]]
 
   type FieldList             = List[ZRef[ZField]]
   type IFieldList            = List[IRef[IField]]
