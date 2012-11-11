@@ -9,7 +9,7 @@ case class ZFieldLiteralMember(literalType: ZRef[ZLiteralType], values: List[Lit
   extends ZFieldMember
 
 
-trait IFieldMember
+trait IFieldMember extends ZFieldMember
 
 case class IFieldRoleMember(role: IRef[IRole], players: List[IRef[IObject]])
   extends IFieldMember
@@ -19,7 +19,7 @@ case class IFieldLiteralMember(literalType: IRef[ILiteralType], values: List[Lit
 
 
 
-trait MFieldMember
+trait MFieldMember extends ZFieldMember
 
 case class MFieldRoleMember(role: MRef[MRole], players: List[MRef[MObject]])
   extends MFieldMember

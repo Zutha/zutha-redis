@@ -9,21 +9,21 @@ object ZLiteralType extends ZObjectFactory[ZLiteralType, ILiteralType, MLiteralT
 }
 
 trait ZLiteralType
-  extends ZType
+  extends ZFieldMemberType
 {
 	type T <: ZLiteralType
 }
 
 trait ILiteralType
   extends ZLiteralType
-  with IType
+  with IFieldMemberType
 {
 	type T <: ILiteralType
 }
 
 trait MLiteralType
   extends ZLiteralType
-  with MType
+  with MFieldMemberType
 {
 	type T <: MLiteralType
 }

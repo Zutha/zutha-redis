@@ -1,10 +1,7 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
-import scala.Predef._
-import net.zutha.redishost.model.IItem
-import net.zutha.redishost.model.IField
-import net.zutha.redishost.model.Zid
+import net.zutha.redishost.model.ScopeMatchType._
 
 trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
 
@@ -40,11 +37,13 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
   def getFieldSet( parent: IRef[IObject],
                    role: IRef[IRole],
                    fieldClass: IRef[IFieldClass],
+                   scopeFilter: IScope,
+                   scopeMatchType: ScopeMatchType,
                    limit: Int,
                    offset: Int
                    ): IFieldSet = {
     val fields: IFieldList = ???
-    IFieldSet( this, parent, role, fieldClass, fields, limit, offset )
+    IFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, limit, offset )
   }
 
 

@@ -15,6 +15,7 @@ object ZField extends ZObjectFactory[ZField, IField, MField] {
    */
   def apply( acc: MutableAccessor,
              zClass: MRef[MFieldClass],
+             fixedRolePlayer: (MRef[MRole], MRef[MObject]),
              rolePlayers: MRolePlayer*
              ): NewField = {
     val id = new TempId
@@ -23,7 +24,8 @@ object ZField extends ZObjectFactory[ZField, IField, MField] {
     // TODO create with accessor
     val members: List[MFieldMember] = List()
     val fieldSets: List[MFieldSetRef] = List()
-    NewField( acc, id, zClass, fieldSets, members, false)
+    val scope: MScope = List()
+    NewField( acc, id, zClass, fieldSets, fixedRolePlayer, members, scope, deleted_? = false)
   }
 }
 
@@ -37,37 +39,22 @@ trait ZField extends ZObject
   def id: ZIdentity
 
   def zClass: ZRef[ZFieldClass]
-//  def fieldSets: List[ZFieldSetRef]
-//  def members: List[ZFieldMember]
-
-//  def rolePlayerMap: RolePlayerMap =
-//    rolePlayers.groupBy(_._1).mapValues(_.map(_._2))
-//
-//  def getPlayersOf(role: ReferenceT[ZRole]): Set[ReferenceT[ZObject]] =
-//    rolePlayers.filter(_._1 == role).map(_._2)
-//
-//  def players: Set[ReferenceT[ZObject]] = rolePlayers.map(_._2)
-//
-//  def literalsOfType(literalType: ReferenceT[ZLiteralType]): LiteralSet =
-//    literals.filter(_._2 == literalType)
-//
-//  def firstLiteralOfType(literalType: ReferenceT[ZLiteralType]): Literal =
-//    literalsOfType(literalType).head
+  def fixedRolePlayer: (ZRef[ZRole], ZRef[ZObject])
+  def members: List[ZFieldMember]
+  def scope: Scope
 }
 
 /**
  * An immutable Field that corresponds to a Field in the database
  *
- * @param id
- * @param zClass
- * @param fieldSets
- * @param members
  */
 case class IField protected[redishost] ( acc: ImmutableAccessor,
                                          id: Zids,
                                          zClass: IRef[IFieldClass],
                                          fieldSets: List[IFieldSetRef],
-                                         members: List[IFieldMember]
+                                         fixedRolePlayer: (IRef[IRole], IRef[IObject]),
+                                         members: List[IFieldMember],
+                                         scope: IScope
                                          )
   extends IObject
   with ZField
@@ -94,7 +81,9 @@ trait MField
 
   def zClass: MRef[MFieldClass]
   def fieldSets: List[MFieldSetRef]
+  def fixedRolePlayer: (MRef[MRole], MRef[MObject])
   def members: List[MFieldMember]
+  def scope: MScope
 
   lazy val rolePlayers: MRolePlayerSet = {
     val rolePlayerList = members flatMap {m => m match {
@@ -142,14 +131,6 @@ trait MField
 
 /**
  * A Persisted Field that possibly has unsaved modifications
- *
- * @param id
- * @param zClass
- * @param fieldSets
- * @param rolePlayersOrig
- * @param literalsOrig
- * @param members
- * @param deleted_?
  */
 case class
 ModifiedField protected[redishost] ( acc: MutableAccessor,
@@ -158,7 +139,9 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
                                      fieldSets: List[MFieldSetRef],
                                      rolePlayersOrig: MRolePlayerSet,
                                      literalsOrig: MLiteralSet,
+                                     fixedRolePlayer: (MRef[MRole], MRef[MObject]),
                                      members: List[MFieldMember],
+                                     scope: MScope,
                                      deleted_? : Boolean = false
                                      )
   extends ModifiedObject
@@ -185,14 +168,14 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
                         ): ModifiedField = {
     // TODO update using accessor
     ModifiedField( acc, id, zClass, fieldSets,
-      rolePlayersOrig, literalsOrig, members, deleted_? )
+      rolePlayersOrig, literalsOrig, fixedRolePlayer, members, scope, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
                               literals: MLiteralSet = literals
                               ): ModifiedField = {
     // TODO update using accessor
     ModifiedField( acc, id, zClass, fieldSets,
-      rolePlayersOrig, literalsOrig, members, deleted_? )
+      rolePlayersOrig, literalsOrig, fixedRolePlayer, members, scope, deleted_? )
   }
 
 
@@ -217,7 +200,9 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
                                            id: TempId,
                                            zClass: MRef[MFieldClass],
                                            fieldSets: List[MFieldSetRef],
+                                           fixedRolePlayer: (MRef[MRole], MRef[MObject]),
                                            members: List[MFieldMember],
+                                           scope: MScope,
                                            deleted_? : Boolean = false
                                            )
   extends NewObject
@@ -228,13 +213,13 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
   protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false ): NewField = {
     // TODO update using accessor
-    NewField( acc, id, zClass, fieldSets, members, deleted_? )
+    NewField( acc, id, zClass, fieldSets, fixedRolePlayer, members, scope, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
                               literals: MLiteralSet = literals
                               ): NewField = {
     // TODO update using accessor
-    NewField( acc, id, zClass, fieldSets, members, deleted_? )
+    NewField( acc, id, zClass, fieldSets, fixedRolePlayer, members, scope, deleted_? )
   }
 
 }

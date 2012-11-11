@@ -1,6 +1,7 @@
 package net.zutha.redishost.model
 
 import net.zutha.redishost.db._
+import ScopeMatchType._
 
 object ZFieldSet {
 
@@ -14,7 +15,9 @@ trait ZFieldSet {
   def parent: ZRef[ZObject]
   def role: ZRef[ZRole]
   def fieldClass: ZRef[ZFieldClass]
-//  def fields: FieldMap
+  def fields: FieldList
+  def scopeFilter: Scope
+  def scopeMatchType: ScopeMatchType
   def limit: Int
   def offset: Int
 
@@ -24,28 +27,20 @@ trait ZFieldSet {
 
 /**
  * A container for immutable fields of a certain type owned by a specific item
- *
- * @param acc the ImmutableAccessor instance that created the fields
- * @param parent
- * @param role
- * @param fieldClass
- * @param fields
- * @param limit
- * @param offset
  */
 case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
-                                             parent: IRef[IObject],
-                                             role: IRef[IRole],
-                                             fieldClass: IRef[IFieldClass],
-                                             fields: IFieldList,
-                                             limit: Int,
-                                             offset: Int
-                                             ) extends ZFieldSet {
+                                            parent: IRef[IObject],
+                                            role: IRef[IRole],
+                                            fieldClass: IRef[IFieldClass],
+                                            fields: IFieldList,
+                                            scopeFilter: IScope,
+                                            scopeMatchType: ScopeMatchType,
+                                            limit: Int,
+                                            offset: Int
+                                            ) extends ZFieldSet {
 
   def reload: IFieldSet = {
-//    acc.getFieldSet( parent, role, fieldClass, limit, offset )
-    val fields: IFieldList = ???
-//    IFieldSet( acc, parent.ref, role.ref, fieldClass.ref, fields, limit, offset )
+    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, limit, offset )
     ???
   }
 }
@@ -53,20 +48,14 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
 
 /**
  * A FieldSet that can be modified
- *
- * @param acc
- * @param parent
- * @param role
- * @param fieldClass
- * @param fields
- * @param limit
- * @param offset
  */
 case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             parent: MRef[MObject],
                                             role: MRef[MRole],
                                             fieldClass: MRef[MFieldClass],
                                             fields: MFieldList,
+                                            scopeFilter: MScope,
+                                            scopeMatchType: ScopeMatchType,
                                             limit: Int,
                                             offset: Int,
                                             includeDeleted_? : Boolean
@@ -83,7 +72,7 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
 
   /** re-load the current page of fields from the database */
   def reload: MFieldSet = {
-//    acc.getFieldSet( parent, role, fieldClass, limit, offset, includeDeleted_? )
+    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, limit, offset, includeDeleted_? )
     ???
   }
 

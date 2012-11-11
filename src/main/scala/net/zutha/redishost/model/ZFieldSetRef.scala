@@ -1,6 +1,8 @@
 package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
+import net.zutha.redishost.model.ScopeMatchType._
+
 
 trait ZFieldSetRef
 {
@@ -10,7 +12,9 @@ trait ZFieldSetRef
   def role: ZRef[ZRole]
   def fieldClass: ZRef[ZFieldClass]
 
-  def get(limit: Int, offset: Int): T
+  def get( limit: Int,
+           offset: Int
+           ): T
 }
 
 case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
@@ -22,7 +26,14 @@ case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
 {
   type T = IFieldSet
 
-  def get(limit: Int, offset: Int) = acc.getFieldSet(parent, role, fieldClass, limit, offset)
+  def get( limit: Int,
+           offset: Int
+          ): T = {
+    val scopeFilter: IScope = List()
+    val scopeMatchType: ScopeMatchType = UpperBound
+    acc.getFieldSet(parent, role, fieldClass,
+      scopeFilter, scopeMatchType, limit, offset)
+  }
 }
 
 case class MFieldSetRef protected[model]( acc: MutableAccessor,
@@ -34,5 +45,10 @@ case class MFieldSetRef protected[model]( acc: MutableAccessor,
 {
   type T = MFieldSet
 
-  def get(limit: Int, offset: Int) = acc.getFieldSet(parent, role, fieldClass, limit, offset, includeDeleted_? =  false)
+  def get(limit: Int, offset: Int) = {
+    val scopeFilter: MScope = List()
+    val scopeMatchType: ScopeMatchType = UpperBound
+    acc.getFieldSet(parent, role, fieldClass,
+      scopeFilter, scopeMatchType, limit, offset, includeDeleted_? =  false)
+  }
 }

@@ -9,22 +9,21 @@ object ZRole extends ZObjectFactory[ZRole, IRole, MRole] {
 }
 
 trait ZRole
-  extends ZType
+  extends ZFieldMemberType
 {
 	type T <: ZRole
-
 }
 
 trait IRole
   extends ZRole
-  with IType
+  with IFieldMemberType
 {
 	type T <: IRole
 }
 
 trait MRole
   extends ZRole
-  with MType
+  with MFieldMemberType
 {
 	type T <: MRole
 }

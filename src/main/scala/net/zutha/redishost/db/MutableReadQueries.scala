@@ -1,10 +1,7 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
-import collection.GenMap
-import net.zutha.redishost.model.MZids
-import net.zutha.redishost.model.TempId
-import net.zutha.redishost.model.Zid
+import net.zutha.redishost.model.ScopeMatchType._
 
 trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
@@ -49,12 +46,14 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   def getFieldSet( parent: MRef[MObject],
                    role: MRef[MRole],
                    fieldClass: MRef[MFieldClass],
+                   scopeFilter: MScope,
+                   scopeMatchType: ScopeMatchType,
                    limit: Int,
                    offset: Int,
                    includeDeleted_? : Boolean
                    ): MFieldSet = {
     val fields: MFieldList = ???
-    MFieldSet( this, parent, role, fieldClass, fields, limit, offset, includeDeleted_?)
+    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, limit, offset, includeDeleted_?)
   }
 
   // TODO: implement stub
