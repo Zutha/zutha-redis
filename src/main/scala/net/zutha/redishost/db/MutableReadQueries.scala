@@ -48,12 +48,13 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
                    fieldClass: MRef[MFieldClass],
                    scopeFilter: MScope,
                    scopeMatchType: ScopeMatchType,
+                   order: String,
                    limit: Int,
                    offset: Int,
                    includeDeleted_? : Boolean
                    ): MFieldSet = {
     val fields: MFieldList = ???
-    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, limit, offset, includeDeleted_?)
+    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_?)
   }
 
   // TODO: implement stub

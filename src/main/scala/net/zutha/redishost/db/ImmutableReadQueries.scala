@@ -39,11 +39,12 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
                    fieldClass: IRef[IFieldClass],
                    scopeFilter: IScope,
                    scopeMatchType: ScopeMatchType,
+                   order: String,
                    limit: Int,
                    offset: Int
                    ): IFieldSet = {
     val fields: IFieldList = ???
-    IFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, limit, offset )
+    IFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset )
   }
 
 

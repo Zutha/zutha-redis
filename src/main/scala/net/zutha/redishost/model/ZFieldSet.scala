@@ -18,6 +18,7 @@ trait ZFieldSet {
   def fields: FieldList
   def scopeFilter: Scope
   def scopeMatchType: ScopeMatchType
+  def order: String
   def limit: Int
   def offset: Int
 
@@ -35,12 +36,13 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
                                             fields: IFieldList,
                                             scopeFilter: IScope,
                                             scopeMatchType: ScopeMatchType,
+                                            order: String,
                                             limit: Int,
                                             offset: Int
                                             ) extends ZFieldSet {
 
   def reload: IFieldSet = {
-    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, limit, offset )
+    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, order, limit, offset )
     ???
   }
 }
@@ -56,6 +58,7 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             fields: MFieldList,
                                             scopeFilter: MScope,
                                             scopeMatchType: ScopeMatchType,
+                                            order: String,
                                             limit: Int,
                                             offset: Int,
                                             includeDeleted_? : Boolean
@@ -72,7 +75,7 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
 
   /** re-load the current page of fields from the database */
   def reload: MFieldSet = {
-    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, limit, offset, includeDeleted_? )
+    acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_? )
     ???
   }
 
