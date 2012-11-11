@@ -1,6 +1,7 @@
 package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
+import net.zutha.redishost.model.MsgType._
 
 object ZObject extends ZObjectFactory[ZObject, IObject, MObject] {
   def typeName = "ZObject"
@@ -94,6 +95,8 @@ trait MObject
   def fieldSets: List[MFieldSetRef]
 
   def deleted_? : Boolean
+
+  def messages: List[(MsgType, String)]
 
   // Mutation
 

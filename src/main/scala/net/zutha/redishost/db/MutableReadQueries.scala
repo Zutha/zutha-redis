@@ -54,7 +54,8 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
                    includeDeleted_? : Boolean
                    ): MFieldSet = {
     val fields: MFieldList = ???
-    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_?)
+    val messages = List()
+    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_?, messages)
   }
 
   // TODO: implement stub

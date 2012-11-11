@@ -2,6 +2,7 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db._
 import ScopeMatchType._
+import MsgType._
 
 object ZFieldSet {
 
@@ -61,10 +62,9 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             order: String,
                                             limit: Int,
                                             offset: Int,
-                                            includeDeleted_? : Boolean
-                                            )
-  extends ZFieldSet
-{
+                                            includeDeleted_? : Boolean,
+                                            messages: List[(MsgType, String)]
+                                            ) extends ZFieldSet {
 
   // Accessors
 
