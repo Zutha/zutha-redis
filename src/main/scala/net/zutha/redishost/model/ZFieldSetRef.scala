@@ -31,8 +31,14 @@ case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
            limit: Int,
            offset: Int
           ): T = {
-    val scopeFilter: IScope = List()
-    val scopeMatchType: ScopeMatchType = UpperBound
+    get(List(), UpperBound, order, limit, offset)
+  }
+  def get( scopeFilter: IScope,
+           scopeMatchType: ScopeMatchType,
+           order: String,
+           limit: Int,
+           offset: Int
+           ): T = {
     acc.getFieldSet(parent, role, fieldClass,
       scopeFilter, scopeMatchType, order, limit, offset)
   }
@@ -49,10 +55,18 @@ case class MFieldSetRef protected[model]( acc: MutableAccessor,
 
   def get( order: String,
            limit: Int,
-           offset: Int) = {
-    val scopeFilter: MScope = List()
-    val scopeMatchType: ScopeMatchType = UpperBound
+           offset: Int
+           ): T = {
+    get(List(), UpperBound, order, limit, offset)
+  }
+  def get( scopeFilter: MScope,
+           scopeMatchType: ScopeMatchType,
+           order: String,
+           limit: Int,
+           offset: Int,
+           includeDeleted_? : Boolean = false
+           ): T = {
     acc.getFieldSet(parent, role, fieldClass,
-      scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_? =  false)
+      scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_? )
   }
 }
