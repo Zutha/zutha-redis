@@ -1,7 +1,5 @@
 package net.zutha.redishost
 
-import db.{MutableAccessor, ImmutableAccessor}
-
 package object model {
 
   def ??? : Nothing = throw new Error("Not Implemented")

@@ -17,4 +17,4 @@ seq(jrebelSettings: _*)
 
 jrebel.enabled := true
 
-jrebel.classpath += file("target/scala-2.9.2/classes")
+jrebel.classpath += file("target/scala-2.10/classes")
