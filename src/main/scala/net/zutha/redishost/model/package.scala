@@ -4,9 +4,12 @@ package object model {
 
   def ??? : Nothing = throw new Error("Not Implemented")
 
-  type Scope                = List[(ZRef[ZScopeType], List[ZRef[ZObject]])]
-  type IScope               = List[(IRef[IScopeType], List[IRef[IObject]])]
-  type MScope               = List[(MRef[MScopeType], List[MRef[MObject]])]
+  type ScopeList                = List[(ZRef[ZScopeType], List[ZRef[ZObject]])]
+  type ScopeMap                 = Map[ZRef[ZScopeType], Set[ZRef[ZObject]]]
+  type IScopeList               = List[(IRef[IScopeType], List[IRef[IObject]])]
+  type IScopeMap                = Map[IRef[IScopeType], Set[IRef[IObject]]]
+  type MScopeList               = List[(MRef[MScopeType], List[MRef[MObject]])]
+  type MScopeMap                = Map[MRef[MScopeType], Set[MRef[MObject]]]
 
   type RolePlayer           = (ZRef[ZRole], ZRef[ZObject])
   type RolePlayerSet        = Set[RolePlayer]
@@ -31,4 +34,5 @@ package object model {
   type FieldList            = List[ZRef[ZField]]
   type IFieldList           = List[IRef[IField]]
   type MFieldList           = List[MRef[MField]]
+
 }

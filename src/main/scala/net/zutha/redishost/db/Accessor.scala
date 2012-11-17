@@ -1,8 +1,7 @@
 package net.zutha.redishost.db
 
-import net.zutha.redishost.model.{ZObject, ZIdentity}
+import com.redis.RedisClient
 
 trait Accessor extends ReadQueries {
-
-  def hashCode: Int
+  protected def redis: RedisClient
 }

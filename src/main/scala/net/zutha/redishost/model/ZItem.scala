@@ -7,6 +7,12 @@ object ZItem extends ZObjectFactory[ZItem, IItem, MItem] {
   def typeName = "ZItem"
 
   def validType_?(obj: ZObject): Boolean = ???
+
+  def apply( acc: MutableAccessor,
+             zClass: MRef[MItemClass]
+             ): NewItem = {
+    acc.createItem( zClass )
+  }
 }
 
 

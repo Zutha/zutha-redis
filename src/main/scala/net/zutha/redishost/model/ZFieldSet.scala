@@ -17,7 +17,7 @@ trait ZFieldSet {
   def role: ZRef[ZRole]
   def fieldClass: ZRef[ZFieldClass]
   def fields: FieldList
-  def scopeFilter: Scope
+  def scopeFilter: ScopeList
   def scopeMatchType: ScopeMatchType
   def order: String
   def limit: Int
@@ -35,7 +35,7 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
                                             role: IRef[IRole],
                                             fieldClass: IRef[IFieldClass],
                                             fields: IFieldList,
-                                            scopeFilter: IScope,
+                                            scopeFilter: IScopeList,
                                             scopeMatchType: ScopeMatchType,
                                             order: String,
                                             limit: Int,
@@ -57,7 +57,7 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             role: MRef[MRole],
                                             fieldClass: MRef[MFieldClass],
                                             fields: MFieldList,
-                                            scopeFilter: MScope,
+                                            scopeFilter: MScopeList,
                                             scopeMatchType: ScopeMatchType,
                                             order: String,
                                             limit: Int,

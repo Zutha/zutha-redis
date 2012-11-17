@@ -46,7 +46,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   def getFieldSet( parent: MRef[MObject],
                    role: MRef[MRole],
                    fieldClass: MRef[MFieldClass],
-                   scopeFilter: MScope,
+                   scopeFilter: MScopeList,
                    scopeMatchType: ScopeMatchType,
                    order: String,
                    limit: Int,
@@ -63,5 +63,6 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
   // TODO: implement stub
   def getUpdatedField( field: MRef[ModifiedField], fieldLimit: Int = 0 ): ModifiedField = ???
+
 
 }

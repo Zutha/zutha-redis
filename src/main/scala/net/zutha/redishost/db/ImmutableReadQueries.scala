@@ -37,7 +37,7 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
   def getFieldSet( parent: IRef[IObject],
                    role: IRef[IRole],
                    fieldClass: IRef[IFieldClass],
-                   scopeFilter: IScope,
+                   scopeFilter: IScopeList,
                    scopeMatchType: ScopeMatchType,
                    order: String,
                    limit: Int,

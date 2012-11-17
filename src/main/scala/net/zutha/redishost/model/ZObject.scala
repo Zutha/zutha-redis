@@ -19,6 +19,7 @@ trait ZObject
   def ref: ZRef[T]
 
   def id: ZIdentity
+  def key: String = id.key
   def zClass: ZRef[ZClass]
   def fieldSets: List[ZFieldSetRef]
 

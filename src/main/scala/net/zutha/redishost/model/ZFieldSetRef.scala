@@ -33,7 +33,7 @@ case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
           ): T = {
     get(List(), UpperBound, order, limit, offset)
   }
-  def get( scopeFilter: IScope,
+  def get( scopeFilter: IScopeList,
            scopeMatchType: ScopeMatchType,
            order: String,
            limit: Int,
@@ -59,7 +59,7 @@ case class MFieldSetRef protected[model]( acc: MutableAccessor,
            ): T = {
     get(List(), UpperBound, order, limit, offset)
   }
-  def get( scopeFilter: MScope,
+  def get( scopeFilter: MScopeList,
            scopeMatchType: ScopeMatchType,
            order: String,
            limit: Int,
