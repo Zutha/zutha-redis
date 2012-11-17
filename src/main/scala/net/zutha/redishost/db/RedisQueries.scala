@@ -14,7 +14,14 @@ protected[db] trait RedisQueries {
 
   def typeAllSupertypesKey( typeId: String ) = TYPE_PREFIX + typeId + ":supertypes"
   def typeDirectSupertypesKey( typeId: String ) = TYPE_PREFIX + typeId + ":dSupertypes"
-  def typeInstancesKey( typeId: String ) = TYPE_PREFIX + typeId + ":instances"
+
+  val OBJECT_TYPE_PREFIX = "objType:"
+
+  def objTypeFieldDefs( objTypeId: String ) = OBJECT_TYPE_PREFIX + objTypeId + ":fieldDefs"
+
+  val CLASS_PREFIX = "class:"
+
+  def classInstancesKey( typeId: String ) = TYPE_PREFIX + typeId + ":instances"
 
   val FIELD_PREFIX = "field:"
 

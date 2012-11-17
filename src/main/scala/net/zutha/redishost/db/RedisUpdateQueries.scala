@@ -10,14 +10,14 @@ protected[db] trait RedisUpdateQueries extends RedisQueries {
   // An ImmutableAccessor will only ever receive update instructions from a MutableAccessor
 
 
-  def setObjectClass( r: RedisCommand, itemId: String, classId: String ) {
-    r.hset( objKey(itemId), "class", objKey(classId) )
+  def setObjectClass( r: RedisCommand, objId: String, classId: String ) {
+    r.hset( objKey(objId), "class", objKey(classId) )
+    r.sadd( classInstancesKey(classId), objId )
   }
 
   def addTypeToObject( r: RedisCommand, objId: String, typeId: String ) {
     r.sadd( objDirectTypesKey(objId), typeId )
     r.sunionstore( objAllTypesKey(objId), objAllTypesKey(objId), typeAllSupertypesKey(typeId) )
-    r.sadd( typeInstancesKey(typeId), objId )
   }
 
   def setFieldScope( r: RedisCommand, fieldId: String, scope: MScopeMap ) {
