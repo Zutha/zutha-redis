@@ -1,7 +1,5 @@
 package net.zutha.redishost.model
 
-import java.util.UUID
-
 sealed trait ZIdentity
 sealed trait PersistedId extends ZIdentity
 
@@ -11,19 +9,8 @@ sealed case class Zids(zid: Zid, allZids: List[Zid])
 sealed case class MZids(primaryZids: List[Zid], allZids: List[Zid])
   extends PersistedId
 
-sealed case class TempId(uuid: UUID)
+sealed case class TempId(id: Int)
   extends ZIdentity
-{
-  def this() = this(UUID.randomUUID())
-}
 
 
-
-sealed case class Zid(identifier: String)
-  extends Ordered[Zid]
-{
-  def compare(x: Zid, y: Zid) = x.identifier < y.identifier
-
-  def compare(that: Zid) = this.identifier compare that.identifier
-}
 
