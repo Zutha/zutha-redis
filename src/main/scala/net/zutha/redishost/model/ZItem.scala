@@ -3,10 +3,7 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
-object ZItem extends ObjectFactory[ZItem, IItem, MItem] {
-  type ObjT = ZItemClass
-  type ObjTM = MItemClass
-  type ObjTI = IItemClass
+object ZItem extends ItemFactory[ZItem, IItem, MItem] {
 
   def name = "ZItem"
 

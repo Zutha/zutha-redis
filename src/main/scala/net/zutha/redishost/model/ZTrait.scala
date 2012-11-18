@@ -1,9 +1,6 @@
 package net.zutha.redishost.model
 
-object ZTrait extends ObjectFactory[ZTrait, ITrait, MTrait] {
-  type ObjT = ZItemClass
-  type ObjTM = MItemClass
-  type ObjTI = IItemClass
+object ZTrait extends ItemFactory[ZTrait, ITrait, MTrait] {
 
   def name = "ZTrait"
 

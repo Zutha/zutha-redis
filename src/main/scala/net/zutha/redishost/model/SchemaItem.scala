@@ -3,10 +3,12 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.exception.SchemaObjectMissingException
 
-private[redishost] trait SchemaObject {
-  type ObjT <: ZObject
-  type ObjTI <: IObject
-  type ObjTM <: MObject
+protected[redishost] trait SchemaItem {
+  type ObjT <: ZItem
+  type ObjTI <: ObjT with IItem
+  type ObjTM <: ObjT with MItem
+
+  def classFactory: ObjectFactory[ObjT, ObjTI, ObjTM]
 
   def name: String
 

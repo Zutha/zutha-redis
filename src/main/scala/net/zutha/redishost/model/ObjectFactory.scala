@@ -1,19 +1,19 @@
 package net.zutha.redishost.model
 
-import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
+import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
 
-private[redishost] trait ObjectFactory
+protected[redishost] trait ObjectFactory
 [
   T <: ZObject,
   TI <: T with IObject,
   TM <: T with MObject
 ]
-  extends SchemaObject
+  extends SchemaItem
 {
 
   def validType_?( obj: ZObject ): Boolean
 
-  private def toT[C <: T]( obj: Option[ZObject]
+  protected def toT[C <: T]( obj: Option[ZObject]
                            ): Option[C] = {
     obj flatMap {o =>
       if(validType_?(o) )

@@ -2,10 +2,12 @@ package net.zutha.redishost.schema
 
 import net.zutha.redishost.model._
 
-object Name extends SchemaObject {
-  type ThisT = ZLiteralType
-  type ThisI = ILiteralType
-  type ThisM = MLiteralType
+object Name extends SchemaItem {
+  type ObjT = ZLiteralType
+  type ObjTM = MLiteralType
+  type ObjTI = ILiteralType
+
+  def classFactory = ZLiteralType
 
   def name = "Name"
 }

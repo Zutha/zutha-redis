@@ -8,6 +8,8 @@ object ZObject extends ObjectFactory[ZObject, IObject, MObject] {
   type ObjTM = MClass
   type ObjTI = IClass
 
+  def classFactory = ZClass
+
   def name = "ZObject"
 
   def validType_?(obj: ZObject): Boolean = ???

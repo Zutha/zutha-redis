@@ -1,11 +1,6 @@
 package net.zutha.redishost.model
 
-import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
-
-object ZDatatype extends ObjectFactory[ZDatatype, IDatatype, MDatatype] {
-  type ObjT = ZItemClass
-  type ObjTM = MItemClass
-  type ObjTI = IItemClass
+object ZDatatype extends ItemFactory[ZDatatype, IDatatype, MDatatype] {
 
   def name = "ZDatatype"
 
