@@ -8,14 +8,18 @@ object Zid {
   val base32 = BaseX(charset)
 
   def apply(zid: String) = {
-    val correctZid = zid match{
-      case Zid(repairedZID) => repairedZID
+    val repairedZid = repair(zid) match{
+      case Some(repaired) => repaired
       case _ => throw new IllegalArgumentException
     }
-    val hostIdLength = Zid.charset.indexOf(correctZid(0)) + 1
-    val hostId = base32.decode( correctZid.substring(0,hostIdLength) )
-    val identifier = base32.decode( correctZid.substring(hostIdLength + 1) )
-    new Zid(correctZid, hostId.toInt, identifier)
+    makeFromZidStr(repairedZid)
+  }
+
+  private def makeFromZidStr(zid: String) = {
+    val hostIdLength = Zid.charset.indexOf(zid(0)) + 1
+    val hostId = base32.decode( zid.substring(0,hostIdLength) )
+    val identifier = base32.decode( zid.substring(hostIdLength + 1) )
+    new Zid(zid, hostId.toInt, identifier)
   }
 
   def apply(hostId: Int, identifier: Int) = {
@@ -35,24 +39,18 @@ object Zid {
       if(zid.length > hostIdLen)
         Some(zid)
       else {
-        None //the id is too short
+        None //the zid is too short
       }
     }
-    case _ => None //the id contains invalid characters
+    case _ => None //the zid contains invalid characters
   }
 
   /**
    * extracts the corrected-syntax form of a ZID if it is valid
    * @param maybeZID string form of a ZID to try to resolve to a valid ZID
-   * @return correctedID
+   * @return a Some(Zid) if valid, otherwise None
    */
-  def unapply(maybeZID: String): Option[String] = repair(maybeZID)
-
-  /**
-   * extracts the string representation of a ZID object
-   * @return (ZID_string)
-   */
-  def unapply(zid: Zid): Option[String] = Some(zid.toString)
+  def unapply(maybeZID: String): Option[Zid] = repair(maybeZID).map(makeFromZidStr(_))
 
   private def correctCharset(zid: String) = {
     zid.toUpperCase.replace('I','1').replace('O', '0').replace('S','5').replace('Z','2')
