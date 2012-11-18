@@ -4,17 +4,17 @@ trait ZFieldMember
 
 trait IFieldMember extends ZFieldMember
 
-case class IRoleFieldMember(role: IRef[IRole], players: List[IRef[IObject]])
+case class IRoleFieldMember(role: IRef[IRole], players: Seq[IRef[IObject]])
   extends IFieldMember
 
-case class ILiteralFieldMember(literalType: IRef[ILiteralType], values: List[LiteralValue])
+case class ILiteralFieldMember(literalType: IRef[ILiteralType], values: Seq[LiteralValue])
   extends IFieldMember
 
 
 trait MFieldMember extends ZFieldMember
 
-case class MRoleFieldMember(role: MRef[MRole], players: List[MRef[MObject]])
+case class MRoleFieldMember(role: MRef[MRole], players: Seq[MRef[MObject]])
   extends MFieldMember
 
-case class MLiteralFieldMember(literalType: MRef[MLiteralType], values: List[LiteralValue])
+case class MLiteralFieldMember(literalType: MRef[MLiteralType], values: Seq[LiteralValue])
   extends MFieldMember

@@ -16,8 +16,8 @@ trait ZFieldSet {
   def parent: ZRef[ZObject]
   def role: ZRef[ZRole]
   def fieldClass: ZRef[ZFieldClass]
-  def fields: FieldList
-  def scopeFilter: ScopeList
+  def fields: FieldSeq
+  def scopeFilter: ScopeSeq
   def scopeMatchType: ScopeMatchType
   def order: String
   def limit: Int
@@ -34,8 +34,8 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
                                             parent: IRef[IObject],
                                             role: IRef[IRole],
                                             fieldClass: IRef[IFieldClass],
-                                            fields: IFieldList,
-                                            scopeFilter: IScopeList,
+                                            fields: IFieldSeq,
+                                            scopeFilter: IScopeSeq,
                                             scopeMatchType: ScopeMatchType,
                                             order: String,
                                             limit: Int,
@@ -56,14 +56,14 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             parent: MRef[MObject],
                                             role: MRef[MRole],
                                             fieldClass: MRef[MFieldClass],
-                                            fields: MFieldList,
-                                            scopeFilter: MScopeList,
+                                            fields: MFieldSeq,
+                                            scopeFilter: MScopeSeq,
                                             scopeMatchType: ScopeMatchType,
                                             order: String,
                                             limit: Int,
                                             offset: Int,
                                             includeDeleted_? : Boolean,
-                                            messages: List[(MsgType, String)]
+                                            messages: Seq[(MsgType, String)]
                                             ) extends ZFieldSet {
 
   // Accessors

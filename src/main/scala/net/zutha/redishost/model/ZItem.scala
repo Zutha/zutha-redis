@@ -68,7 +68,7 @@ trait MItem
 case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
                                                 id: Zids,
                                                 zClass: IRef[IItemClass],
-                                                fieldSets: List[IFieldSetRef]
+                                                fieldSets: Seq[IFieldSetRef]
                                                 )
   extends IItem
 {
@@ -82,8 +82,8 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
                                                id: PersistedId,
                                                zClassOrig: MRef[MItemClass],
                                                zClass: MRef[MItemClass],
-                                               fieldSets: List[MFieldSetRef],
-                                               messages: List[(MsgType, String)] = List(),
+                                               fieldSets: Seq[MFieldSetRef],
+                                               messages: Seq[(MsgType, String)] = Seq(),
                                                deleted_? : Boolean = false
                                                )
   extends ModifiedObject
@@ -91,7 +91,7 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
 {
 	type T <: ModifiedItem
 
-  protected def update( fieldSets: List[MFieldSetRef],
+  protected def update( fieldSets: Seq[MFieldSetRef],
                         deleted_? : Boolean ): T = {
     ModifiedItem( acc, id, zClassOrig, zClass, fieldSets, messages, deleted_? ).asInstanceOf[ModifiedItem with T]
   }
@@ -122,8 +122,8 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
 case class NewItem protected[redishost] ( acc: MutableAccessor,
                                           id: TempId,
                                           zClass: MRef[MItemClass],
-                                          fieldSets: List[MFieldSetRef],
-                                          messages: List[(MsgType, String)] = List(),
+                                          fieldSets: Seq[MFieldSetRef],
+                                          messages: Seq[(MsgType, String)] = Seq(),
                                           deleted_? : Boolean = false
                                           )
   extends NewObject
@@ -131,7 +131,7 @@ case class NewItem protected[redishost] ( acc: MutableAccessor,
 {
   type T <: NewItem
 
-  protected def update( fieldSets: List[MFieldSetRef],
+  protected def update( fieldSets: Seq[MFieldSetRef],
                         deleted_? : Boolean ): T = {
     NewItem( acc, id, zClass, fieldSets, messages, deleted_? ).asInstanceOf[NewItem with T]
   }

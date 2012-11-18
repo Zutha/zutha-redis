@@ -21,17 +21,17 @@ trait ZObject
   def id: ZIdentity
   def key: String = id.key
   def zClass: ZRef[ZClass]
-  def fieldSets: List[ZFieldSetRef]
+  def fieldSets: Seq[ZFieldSetRef]
 
-  def zids: List[Zid] = id match {
-    case TempId(_) => List()
+  def zids: Seq[Zid] = id match {
+    case TempId(_) => Seq()
     case MZids(_, allZids) => allZids
     case Zids(zid, allZids) => allZids
   }
-  def primaryZids: List[Zid] = id match {
-    case TempId(_) => List()
+  def primaryZids: Seq[Zid] = id match {
+    case TempId(_) => Seq()
     case MZids(pZids, _) => pZids
-    case Zids(zid, allZids) => List(zid)
+    case Zids(zid, allZids) => Seq(zid)
   }
 
   def persisted_? = primaryZids.size > 0
@@ -72,7 +72,7 @@ trait IObject
 
   override def zClass: IRef[IClass]
 
-  def fieldSets: List[IFieldSetRef]
+  def fieldSets: Seq[IFieldSetRef]
 
 }
 
@@ -93,15 +93,15 @@ trait MObject
 
   override def zClass: MRef[MClass]
 
-  def fieldSets: List[MFieldSetRef]
+  def fieldSets: Seq[MFieldSetRef]
 
   def deleted_? : Boolean
 
-  def messages: List[(MsgType, String)]
+  def messages: Seq[(MsgType, String)]
 
   // Mutation
 
-  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
+  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = deleted_?
                         ): T
 

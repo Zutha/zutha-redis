@@ -7,11 +7,11 @@ package object model {
   type I = IObject
   type M = MObject
 
-  type ScopeList                = List[(ZRef[ZScopeType], List[ZRef[ZObject]])]
+  type ScopeSeq                = Seq[(ZRef[ZScopeType], Seq[ZRef[ZObject]])]
   type ScopeMap                 = Map[ZRef[ZScopeType], Set[ZRef[ZObject]]]
-  type IScopeList               = List[(IRef[IScopeType], List[IRef[IObject]])]
+  type IScopeSeq               = Seq[(IRef[IScopeType], Seq[IRef[IObject]])]
   type IScopeMap                = Map[IRef[IScopeType], Set[IRef[IObject]]]
-  type MScopeList               = List[(MRef[MScopeType], List[MRef[MObject]])]
+  type MScopeSeq               = Seq[(MRef[MScopeType], Seq[MRef[MObject]])]
   type MScopeMap                = Map[MRef[MScopeType], Set[MRef[MObject]]]
 
   type RolePlayer           = (ZRef[ZRole], ZRef[ZObject])
@@ -34,8 +34,8 @@ package object model {
   type MLiteralSet          = Set[MLiteral]
   type MLiteralMap          = Map[MRef[MLiteralType], Set[LiteralValue]]
 
-  type FieldList            = List[ZRef[ZField]]
-  type IFieldList           = List[IRef[IField]]
-  type MFieldList           = List[MRef[MField]]
+  type FieldSeq            = Seq[ZRef[ZField]]
+  type IFieldSeq           = Seq[IRef[IField]]
+  type MFieldSeq           = Seq[MRef[MField]]
 
 }

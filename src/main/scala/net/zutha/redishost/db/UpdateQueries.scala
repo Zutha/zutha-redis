@@ -28,7 +28,7 @@ trait UpdateQueries { self: MutableAccessor =>
       r.setObjectClass( newId, zClass.key )
       r.addTypeToObject( newId, zClass.key )
     }
-    NewItem( this, TempId(newId), zClass, List(), List() )
+    NewItem( this, TempId(newId), zClass, Seq(), Seq() )
   }
 
   def createField( zClass: MRef[MFieldClass],
@@ -46,15 +46,15 @@ trait UpdateQueries { self: MutableAccessor =>
       r.setFieldScope( newId, scope )
     }
 
-    val literalMembers = literals.mapValues(_.toList).map{ case (lType, values) =>
+    val literalMembers = literals.mapValues(_.toSeq).map{ case (lType, values) =>
       MLiteralFieldMember(lType, values)
-    }.toList
-    val roleMembers = rolePlayers.mapValues(_.toList).map{case (role, players) =>
+    }.toSeq
+    val roleMembers = rolePlayers.mapValues(_.toSeq).map{case (role, players) =>
       MRoleFieldMember(role, players)
-    }.toList
-    val members: List[MFieldMember] = roleMembers ++ literalMembers
-    val scopeList = scope.mapValues(_.toList).toList
-    NewField( this, TempId(newId), zClass, List(), members, scopeList)
+    }.toSeq
+    val members: Seq[MFieldMember] = roleMembers ++ literalMembers
+    val scopeSeq = scope.mapValues(_.toSeq).toSeq
+    NewField( this, TempId(newId), zClass, Seq(), members, scopeSeq)
 
   }
 

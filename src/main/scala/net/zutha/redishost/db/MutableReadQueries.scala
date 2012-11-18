@@ -20,11 +20,11 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     case Zid(zid) => getObjectZids( objKey ).toSeq match {
       case Seq() => dbAcc.getObjectZids( objKey ) match {
         case Seq() => None
-        case zids => Some(MRef(this, Zids(zid, zids.toList.sorted)))
+        case zids => Some(MRef(this, Zids(zid, zids.toSeq.sorted)))
       }
       case zids => getObjectMergedZids( objKey ) match {
-        case Seq() => Some(MRef(this, Zids(zid, zids.toList.sorted)))
-        case mZids => Some(MRef(this, MZids(mZids.toList.sorted, zids.toList.sorted)))
+        case Seq() => Some(MRef(this, Zids(zid, zids.toSeq.sorted)))
+        case mZids => Some(MRef(this, MZids(mZids.toSeq.sorted, zids.toSeq.sorted)))
       }
     }
     case tempId => if ( objectIsNew( tempId ) )
@@ -73,15 +73,15 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   def getFieldSet( parent: MRef[MObject],
                    role: MRef[MRole],
                    fieldClass: MRef[MFieldClass],
-                   scopeFilter: MScopeList,
+                   scopeFilter: MScopeSeq,
                    scopeMatchType: ScopeMatchType,
                    order: String,
                    limit: Int,
                    offset: Int,
                    includeDeleted_? : Boolean
                    ): MFieldSet = {
-    val fields: MFieldList = ???
-    val messages = List()
+    val fields: MFieldSeq = ???
+    val messages = Seq()
     MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType,
       order, limit, offset, includeDeleted_?, messages )
   }

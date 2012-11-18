@@ -5,7 +5,7 @@ sealed trait ZIdentity {
 }
 sealed trait PersistedId extends ZIdentity
 
-sealed case class Zids(zid: Zid, allZids: List[Zid])
+sealed case class Zids(zid: Zid, allZids: Seq[Zid])
   extends PersistedId {
 
   def key = zid.toString
@@ -16,7 +16,7 @@ sealed case class Zids(zid: Zid, allZids: List[Zid])
  * @param mergedZids the primary Zid of each object that has been merged into this one
  * @param allZids the union of Zids of each merged object
  */
-sealed case class MZids(mergedZids: List[Zid], allZids: List[Zid])
+sealed case class MZids(mergedZids: Seq[Zid], allZids: Seq[Zid])
   extends PersistedId {
 
   def key = mergedZids.head.toString

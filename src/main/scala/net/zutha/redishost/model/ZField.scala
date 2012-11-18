@@ -36,8 +36,8 @@ trait ZField extends ZObject
   def id: ZIdentity
 
   def zClass: ZRef[ZFieldClass]
-  def members: List[ZFieldMember]
-  def scope: ScopeList
+  def members: Seq[ZFieldMember]
+  def scope: ScopeSeq
 }
 
 /**
@@ -47,9 +47,9 @@ trait ZField extends ZObject
 case class IField protected[redishost] ( acc: ImmutableAccessor,
                                          id: Zids,
                                          zClass: IRef[IFieldClass],
-                                         fieldSets: List[IFieldSetRef],
-                                         members: List[IFieldMember],
-                                         scope: IScopeList
+                                         fieldSets: Seq[IFieldSetRef],
+                                         members: Seq[IFieldMember],
+                                         scope: IScopeSeq
                                          )
   extends IObject
   with ZField
@@ -75,26 +75,26 @@ trait MField
   // Accessors
 
   def zClass: MRef[MFieldClass]
-  def fieldSets: List[MFieldSetRef]
-  def members: List[MFieldMember]
-  def scope: MScopeList
-  def memberMessages: Map[MRef[MFieldMemberType], List[(MsgType, String)]]
-  def scopeMessages: Map[MRef[MScopeType], List[(MsgType, String)]]
+  def fieldSets: Seq[MFieldSetRef]
+  def members: Seq[MFieldMember]
+  def scope: MScopeSeq
+  def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
+  def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
 
   lazy val rolePlayers: MRolePlayerSet = {
-    val rolePlayerList = members flatMap {m => m match {
+    val rolePlayerSeq = members flatMap {m => m match {
       case MRoleFieldMember(role, players) => players.map (p => (role -> p))
-      case _ => List()
+      case _ => Seq()
     }}
-    rolePlayerList.toSet
+    rolePlayerSeq.toSet
   }
 
   lazy val literals: MLiteralSet = {
-    val literalList = members flatMap {m => m match {
+    val literalSeq = members flatMap {m => m match {
       case MLiteralFieldMember(literalType, values) => values.map (p => (literalType -> p))
-      case _ => List()
+      case _ => Seq()
     }}
-    literalList.toSet
+    literalSeq.toSet
   }
 
   // Mutators
@@ -132,14 +132,14 @@ case class
 ModifiedField protected[redishost] ( acc: MutableAccessor,
                                      id: PersistedId,
                                      zClass: MRef[MFieldClass],
-                                     fieldSets: List[MFieldSetRef],
+                                     fieldSets: Seq[MFieldSetRef],
                                      rolePlayersOrig: MRolePlayerSet,
                                      literalsOrig: MLiteralSet,
-                                     members: List[MFieldMember] = List(),
-                                     scope: MScopeList = List(),
-                                     messages: List[(MsgType, String)] = List(),
-                                     memberMessages: Map[MRef[MFieldMemberType], List[(MsgType, String)]],
-                                     scopeMessages: Map[MRef[MScopeType], List[(MsgType, String)]],
+                                     members: Seq[MFieldMember] = Seq(),
+                                     scope: MScopeSeq = Seq(),
+                                     messages: Seq[(MsgType, String)] = Seq(),
+                                     memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]],
+                                     scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]],
                                      deleted_? : Boolean = false
                                      )
   extends ModifiedObject
@@ -161,7 +161,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
 
   //  Mutators
 
-  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
+  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false
                         ): ModifiedField = {
     // TODO update using accessor
@@ -193,12 +193,12 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
 case class NewField protected[redishost] ( acc: MutableAccessor,
                                            id: TempId,
                                            zClass: MRef[MFieldClass],
-                                           fieldSets: List[MFieldSetRef],
-                                           members: List[MFieldMember] = List(),
-                                           scope: MScopeList = List(),
-                                           messages: List[(MsgType, String)] = List(),
-                                           memberMessages: Map[MRef[MFieldMemberType], List[(MsgType, String)]] = Map(),
-                                           scopeMessages: Map[MRef[MScopeType], List[(MsgType, String)]] = Map(),
+                                           fieldSets: Seq[MFieldSetRef],
+                                           members: Seq[MFieldMember] = Seq(),
+                                           scope: MScopeSeq = Seq(),
+                                           messages: Seq[(MsgType, String)] = Seq(),
+                                           memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                           scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
                                            deleted_? : Boolean = false
                                            )
   extends NewObject
@@ -206,7 +206,7 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
 {
 	type T = NewField
 
-  protected def update( fieldSets: List[MFieldSetRef] = fieldSets,
+  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false ): NewField = {
     // TODO update using accessor
     NewField( acc, id, zClass, fieldSets, members, scope,
