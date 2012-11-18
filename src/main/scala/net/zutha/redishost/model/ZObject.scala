@@ -3,7 +3,11 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
-object ZObject extends ObjectFactory[ZObject, IObject, MObject] {
+object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
+  type ObjC = ZClass
+  type ObjCI = IClass
+  type ObjCM = MClass
+
   type ObjT = ZClass
   type ObjTM = MClass
   type ObjTI = IClass

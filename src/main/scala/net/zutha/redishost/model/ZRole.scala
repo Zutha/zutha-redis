@@ -1,10 +1,15 @@
 package net.zutha.redishost.model
 
-object ZRole extends ItemFactory[ZRole, IRole, MRole] {
+object ZRole extends ZItemClassCompanion[ZRole, IRole, MRole] {
+
+  type ObjT = ZItemClass with ZRole with ZTrait
+  type ObjTI = IItemClass with IRole with ITrait
+  type ObjTM = MItemClass with MRole with MTrait
 
   def name = "ZRole"
 
   def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZRole

@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZDatatype extends ItemFactory[ZDatatype, IDatatype, MDatatype] {
+object ZDatatype extends ZItemClassCompanion[ZDatatype, IDatatype, MDatatype] {
 
   def name = "ZDatatype"
 

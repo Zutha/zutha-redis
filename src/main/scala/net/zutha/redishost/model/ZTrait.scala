@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZTrait extends ItemFactory[ZTrait, ITrait, MTrait] {
+object ZTrait extends ZItemClassCompanion[ZTrait, ITrait, MTrait] {
 
   def name = "ZTrait"
 

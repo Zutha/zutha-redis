@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZEntity extends ItemFactory[ZEntity, IEntity, MEntity] {
+object ZEntity extends ZItemClassCompanion[ZEntity, IEntity, MEntity] {
 
   def name = "ZEntity"
 

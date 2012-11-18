@@ -4,7 +4,7 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
 
-object ZField extends FieldFactory[ZField, IField, MField] {
+object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
   def name = "ZField"
 

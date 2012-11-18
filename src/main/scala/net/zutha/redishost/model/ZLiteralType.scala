@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZLiteralType extends ItemFactory[ZLiteralType, ILiteralType, MLiteralType] {
+object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
 
   def name = "ZLiteralType"
 

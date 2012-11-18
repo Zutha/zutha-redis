@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZScopeType extends ItemFactory[ZScopeType, IScopeType, MScopeType] {
+object ZScopeType extends ZItemClassCompanion[ZScopeType, IScopeType, MScopeType] {
 
   def name = "ZScopeType"
 

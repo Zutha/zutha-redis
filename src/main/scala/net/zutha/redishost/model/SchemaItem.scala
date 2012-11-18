@@ -4,16 +4,21 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.exception.SchemaObjectMissingException
 
 object SchemaItem {
+  import scala.language.implicitConversions
   implicit def siToRefM[T <: MItem](si: SchemaItem{ type ObjTM = T })( implicit acc: MutableAccessor ): MRef[T] = si.refM( acc )
   implicit def siToRefI[T <: IItem](si: SchemaItem{ type ObjTI = T })( implicit acc: ImmutableAccessor ): IRef[T] = si.refI
 }
 
 protected[redishost] trait SchemaItem {
-  type ObjT <: ZItem
-  type ObjTI <: ObjT with IItem
-  type ObjTM <: ObjT with MItem
+  type ObjC <: ZItem
+  type ObjCI <: ObjC with IItem
+  type ObjCM <: ObjC with MItem
 
-  def classFactory: ObjectFactory[ObjT, ObjTI, ObjTM]
+  type ObjT <: ObjC
+  type ObjTI <: ObjCI
+  type ObjTM <: ObjCM
+
+  def classFactory: ZItemClassCompanion[ObjC, ObjCI, ObjCM]
 
   def name: String
 

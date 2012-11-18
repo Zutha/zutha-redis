@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-object ZFieldClass extends ItemFactory[ZFieldClass, IFieldClass, MFieldClass] {
+object ZFieldClass extends ZItemClassCompanion[ZFieldClass, IFieldClass, MFieldClass] {
 
   def name = "ZFieldClass"
 

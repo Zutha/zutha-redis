@@ -2,7 +2,7 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
 
-protected[redishost] trait ObjectFactory
+protected[redishost] trait ZClassCompanion
 [
   T <: ZObject,
   TI <: T with IObject,
