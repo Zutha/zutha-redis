@@ -12,7 +12,8 @@ object TestApp extends App {
   val rref: MRef[MRole] = r.ref
 
   implicit def acc: MutableAccessor = ???
-  val tRef = ZTrait.refM
+
+  val tRef: MRef[MItemClass] = ZTrait
   val ic: MItemClass = tRef.get
 }
 
