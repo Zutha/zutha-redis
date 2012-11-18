@@ -20,15 +20,15 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     case Zid(zid) => getObjectZids( objKey ).toSeq match {
       case Seq() => dbAcc.getObjectZids( objKey ) match {
         case Seq() => None
-        case zids => Some(MRef(this, Zids(zid, zids.toSeq.sorted)))
+        case zids => Some(MRef(Zids(zid, zids.toSeq.sorted)))
       }
       case zids => getObjectMergedZids( objKey ) match {
-        case Seq() => Some(MRef(this, Zids(zid, zids.toSeq.sorted)))
-        case mZids => Some(MRef(this, MZids(mZids.toSeq.sorted, zids.toSeq.sorted)))
+        case Seq() => Some(MRef(Zids(zid, zids.toSeq.sorted)))
+        case mZids => Some(MRef(MZids(mZids.toSeq.sorted, zids.toSeq.sorted)))
       }
     }
     case tempId => if ( objectIsNew( tempId ) )
-      Some(MRef(this, TempId( tempId )))
+      Some(MRef(TempId( tempId )))
     else
       None
   }
@@ -82,7 +82,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
                    ): MFieldSet = {
     val fields: MFieldSeq = ???
     val messages = Seq()
-    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType,
+    MFieldSet( parent, role, fieldClass, fields, scopeFilter, scopeMatchType,
       order, limit, offset, includeDeleted_?, messages )
   }
 

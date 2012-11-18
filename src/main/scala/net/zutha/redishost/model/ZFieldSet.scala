@@ -30,8 +30,7 @@ trait ZFieldSet {
 /**
  * A container for immutable fields of a certain type owned by a specific item
  */
-case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
-                                            parent: IRef[IObject],
+case class IFieldSet protected[redishost] ( parent: IRef[IObject],
                                             role: IRef[IRole],
                                             fieldClass: IRef[IFieldClass],
                                             fields: IFieldSeq,
@@ -40,7 +39,7 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
                                             order: String,
                                             limit: Int,
                                             offset: Int
-                                            ) extends ZFieldSet {
+                                            )( implicit val acc: ImmutableAccessor ) extends ZFieldSet {
 
   def reload: IFieldSet = {
     acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, order, limit, offset )
@@ -52,8 +51,7 @@ case class IFieldSet protected[redishost] ( acc: ImmutableAccessor,
 /**
  * A FieldSet that can be modified
  */
-case class MFieldSet protected[redishost] ( acc: MutableAccessor,
-                                            parent: MRef[MObject],
+case class MFieldSet protected[redishost] ( parent: MRef[MObject],
                                             role: MRef[MRole],
                                             fieldClass: MRef[MFieldClass],
                                             fields: MFieldSeq,
@@ -64,12 +62,12 @@ case class MFieldSet protected[redishost] ( acc: MutableAccessor,
                                             offset: Int,
                                             includeDeleted_? : Boolean,
                                             messages: Seq[(MsgType, String)]
-                                            ) extends ZFieldSet {
+                                            )( implicit val acc: MutableAccessor ) extends ZFieldSet {
 
   // Accessors
 
   def newField = {
-    val field = ZField(acc, fieldClass, role -> parent)
+    val field = ZField(fieldClass, role -> parent)
     field
   }
 

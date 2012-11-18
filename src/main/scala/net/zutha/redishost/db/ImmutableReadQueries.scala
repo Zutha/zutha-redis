@@ -8,7 +8,7 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
   def getObjectRef( objKey: String ): Option[IRef[IObject]] = objKey match {
     case Zid(zid) => getObjectZids( objKey ).toSeq match {
       case Seq() => None
-      case zids => Some(IRef(this, Zids(zid, zids.toSeq.sorted)))
+      case zids => Some(IRef(Zids(zid, zids.toSeq.sorted)))
     }
     case _ => None
   }
@@ -52,7 +52,7 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
                    offset: Int
                    ): IFieldSet = {
     val fields: IFieldSeq = ???
-    IFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset )
+    IFieldSet( parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset )
   }
 
 

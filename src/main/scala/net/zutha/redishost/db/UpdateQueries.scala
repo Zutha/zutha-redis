@@ -19,7 +19,7 @@ trait UpdateQueries { self: MutableAccessor =>
   protected[redishost] def createSchemaRef( name: String ): MRef[MObject] = {
     val newId = createNewObject
     redis.indexAddName( name, newId )
-    MRef(this, TempId(newId))
+    MRef(TempId(newId))
   }
 
   def createItem( zClass: MRef[MItemClass] ): NewItem = {
@@ -28,7 +28,7 @@ trait UpdateQueries { self: MutableAccessor =>
       r.setObjectClass( newId, zClass.key )
       r.addTypeToObject( newId, zClass.key )
     }
-    NewItem( this, TempId(newId), zClass, Seq(), Seq() )
+    NewItem( TempId(newId), zClass, Seq(), Seq() )
   }
 
   def createField( zClass: MRef[MFieldClass],
@@ -54,7 +54,7 @@ trait UpdateQueries { self: MutableAccessor =>
     }.toSeq
     val members: Seq[MFieldMember] = roleMembers ++ literalMembers
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
-    NewField( this, TempId(newId), zClass, Seq(), members, scopeSeq)
+    NewField( TempId(newId), zClass, Seq(), members, scopeSeq)
 
   }
 

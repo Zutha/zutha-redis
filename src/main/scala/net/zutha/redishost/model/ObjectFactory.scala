@@ -11,10 +11,9 @@ private[redishost] trait ObjectFactory
   extends SchemaObject
 {
 
-  def validType_?(obj: ZObject): Boolean
+  def validType_?( obj: ZObject ): Boolean
 
-  private def toT[C <: T]( acc: Accessor,
-                           obj: Option[ZObject]
+  private def toT[C <: T]( obj: Option[ZObject]
                            ): Option[C] = {
     obj flatMap {o =>
       if(validType_?(o) )
@@ -26,14 +25,14 @@ private[redishost] trait ObjectFactory
     }
   }
 
-  def apply(acc: ImmutableAccessor, id: Zid): Option[TI] = {
+  def apply( id: Zid )( implicit acc: ImmutableAccessor ): Option[TI] = {
     val obj = acc.getObject(id)
-    toT[TI](acc, obj)
+    toT[TI](obj)
   }
 
-  def apply(acc: MutableAccessor, id: ZIdentity): Option[TM] = {
+  def apply( id: ZIdentity )( implicit acc: MutableAccessor ): Option[TM] = {
     val obj = acc.getObject(id)
-    toT[TM](acc, obj)
+    toT[TM](obj)
   }
 
 }

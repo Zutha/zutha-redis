@@ -15,10 +15,9 @@ object ZField extends ObjectFactory[ZField, IField, MField] {
    * @param rolePlayers
    * @return
    */
-  def apply( acc: MutableAccessor,
-             zClass: MRef[MFieldClass],
+  def apply( zClass: MRef[MFieldClass],
              rolePlayers: MRolePlayer*
-             ): NewField = {
+             )( implicit acc: MutableAccessor ): NewField = {
     val rps = rolePlayers.groupBy(_._1).mapValues(_.map(_._2).toSet)
     val literals: MLiteralMap = Map()
     val scope: MScopeMap = Map()
@@ -44,13 +43,12 @@ trait ZField extends ZObject
  * An immutable Field that corresponds to a Field in the database
  *
  */
-case class IField protected[redishost] ( acc: ImmutableAccessor,
-                                         id: Zids,
+case class IField protected[redishost] ( id: Zids,
                                          zClass: IRef[IFieldClass],
                                          fieldSets: Seq[IFieldSetRef],
                                          members: Seq[IFieldMember],
                                          scope: IScopeSeq
-                                         )
+                                         )( implicit val acc: ImmutableAccessor )
   extends IObject
   with ZField
 {
@@ -129,8 +127,7 @@ trait MField
  * A Persisted Field that possibly has unsaved modifications
  */
 case class
-ModifiedField protected[redishost] ( acc: MutableAccessor,
-                                     id: PersistedId,
+ModifiedField protected[redishost] ( id: PersistedId,
                                      zClass: MRef[MFieldClass],
                                      fieldSets: Seq[MFieldSetRef],
                                      rolePlayersOrig: MRolePlayerSet,
@@ -141,7 +138,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
                                      memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]],
                                      scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]],
                                      deleted_? : Boolean = false
-                                     )
+                                     )( implicit val acc: MutableAccessor )
   extends ModifiedObject
   with MField
 {
@@ -165,7 +162,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
                         deleted_? : Boolean = false
                         ): ModifiedField = {
     // TODO update using accessor
-    ModifiedField( acc, id, zClass, fieldSets,
+    ModifiedField( id, zClass, fieldSets,
       rolePlayersOrig, literalsOrig, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
@@ -173,7 +170,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
                               literals: MLiteralSet = literals
                               ): ModifiedField = {
     // TODO update using accessor
-    ModifiedField( acc, id, zClass, fieldSets,
+    ModifiedField( id, zClass, fieldSets,
       rolePlayersOrig, literalsOrig, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
@@ -190,8 +187,7 @@ ModifiedField protected[redishost] ( acc: MutableAccessor,
 /**
  * A Field that has not been persisted to the database
  */
-case class NewField protected[redishost] ( acc: MutableAccessor,
-                                           id: TempId,
+case class NewField protected[redishost] ( id: TempId,
                                            zClass: MRef[MFieldClass],
                                            fieldSets: Seq[MFieldSetRef],
                                            members: Seq[MFieldMember] = Seq(),
@@ -200,7 +196,7 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
                                            memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
                                            scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
                                            deleted_? : Boolean = false
-                                           )
+                                           )( implicit val acc: MutableAccessor )
   extends NewObject
   with MField
 {
@@ -209,14 +205,14 @@ case class NewField protected[redishost] ( acc: MutableAccessor,
   protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
                         deleted_? : Boolean = false ): NewField = {
     // TODO update using accessor
-    NewField( acc, id, zClass, fieldSets, members, scope,
+    NewField( id, zClass, fieldSets, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerSet = rolePlayers,
                               literals: MLiteralSet = literals
                               ): NewField = {
     // TODO update using accessor
-    NewField( acc, id, zClass, fieldSets, members, scope,
+    NewField( id, zClass, fieldSets, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
 

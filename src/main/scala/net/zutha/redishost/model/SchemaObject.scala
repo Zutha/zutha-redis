@@ -10,7 +10,7 @@ private[redishost] trait SchemaObject {
 
   def name: String
 
-  def getRef(acc: ImmutableAccessor): IRef[ObjTI] = {
+  def refI( implicit acc: ImmutableAccessor ): IRef[ObjTI] = {
     val ref = acc.lookupObjectIdByName( name ) match {
       case Some(key) => acc.getObjectRef(key).get
       case None => throw new SchemaObjectMissingException( name )
@@ -18,7 +18,7 @@ private[redishost] trait SchemaObject {
     ref.asInstanceOf[IRef[ObjTI]]
   }
 
-  def getRef(acc: MutableAccessor): MRef[ObjTM] = {
+  def refM( implicit acc: MutableAccessor ): MRef[ObjTM] = {
     val ref = acc.lookupObjectIdByName(name) match {
       case Some(key) => acc.getObjectRef(key).get
       case None => acc.createSchemaRef( name )

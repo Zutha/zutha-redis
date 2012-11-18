@@ -18,11 +18,10 @@ trait ZFieldSetRef
            ): T
 }
 
-case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
-                                          parent: IRef[IObject],
+case class IFieldSetRef protected[model]( parent: IRef[IObject],
                                           role: IRef[IRole],
                                           fieldClass: IRef[IFieldClass]
-                                          )
+                                          )( implicit val acc: ImmutableAccessor )
   extends ZFieldSetRef
 {
   type T = IFieldSet
@@ -44,11 +43,10 @@ case class IFieldSetRef protected[model]( acc: ImmutableAccessor,
   }
 }
 
-case class MFieldSetRef protected[model]( acc: MutableAccessor,
-                                          parent: MRef[MObject],
+case class MFieldSetRef protected[model]( parent: MRef[MObject],
                                           role: MRef[MRole],
                                           fieldClass: MRef[MFieldClass]
-                                          )
+                                          )( implicit val acc: MutableAccessor )
   extends ZFieldSetRef
 {
   type T = MFieldSet

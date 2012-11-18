@@ -16,13 +16,13 @@ private[model] trait HasIRef
 {
   type T <: IObject
 
-  def acc: ImmutableAccessor
+  implicit def acc: ImmutableAccessor
 
   def id: Zids
 
-  def ref: IRef[T] = IRef[T]( acc, id )
+  def ref: IRef[T] = IRef[T]( id )
 
-  def reload( acc: ImmutableAccessor, limit: Int ): T = ???
+  def reload( limit: Int )( implicit acc: ImmutableAccessor ): T = ???
 }
 
 private[model] trait HasMRef
@@ -30,11 +30,11 @@ private[model] trait HasMRef
 {
   type T <: MObject
 
-  def acc: MutableAccessor
+  implicit def acc: MutableAccessor
 
   def id: ZIdentity
 
-  def ref = MRef[T]( acc, id )
+  def ref = MRef[T]( id )
 
-  def reload( acc: MutableAccessor, limit: Int ): T = ???
+  def reload( limit: Int )( implicit acc: MutableAccessor ): T = ???
 }

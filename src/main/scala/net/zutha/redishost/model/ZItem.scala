@@ -8,9 +8,8 @@ object ZItem extends ObjectFactory[ZItem, IItem, MItem] {
 
   def validType_?(obj: ZObject): Boolean = ???
 
-  def apply( acc: MutableAccessor,
-             zClass: MRef[MItemClass]
-             ): NewItem = {
+  def apply( zClass: MRef[MItemClass]
+             )( implicit acc: MutableAccessor ): NewItem = {
     acc.createItem( zClass )
   }
 
@@ -65,11 +64,10 @@ trait MItem
 /**
  * An immutable Item that corresponds to an Item in the database
  */
-case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
-                                                id: Zids,
+case class ImmutableItem protected[redishost] ( id: Zids,
                                                 zClass: IRef[IItemClass],
                                                 fieldSets: Seq[IFieldSetRef]
-                                                )
+                                                )( implicit val acc: ImmutableAccessor )
   extends IItem
 {
 	type T <: IItem
@@ -78,14 +76,13 @@ case class ImmutableItem protected[redishost] ( acc: ImmutableAccessor,
 /**
  * A Persisted Item that possibly has unsaved modifications
  */
-case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
-                                               id: PersistedId,
+case class ModifiedItem protected[redishost] ( id: PersistedId,
                                                zClassOrig: MRef[MItemClass],
                                                zClass: MRef[MItemClass],
                                                fieldSets: Seq[MFieldSetRef],
                                                messages: Seq[(MsgType, String)] = Seq(),
                                                deleted_? : Boolean = false
-                                               )
+                                               )( implicit val acc: MutableAccessor )
   extends ModifiedObject
   with MItem
 {
@@ -93,11 +90,11 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
 
   protected def update( fieldSets: Seq[MFieldSetRef],
                         deleted_? : Boolean ): T = {
-    ModifiedItem( acc, id, zClassOrig, zClass, fieldSets, messages, deleted_? ).asInstanceOf[ModifiedItem with T]
+    ModifiedItem( id, zClassOrig, zClass, fieldSets, messages, deleted_? ).asInstanceOf[ModifiedItem with T]
   }
 
   protected def updateClass(zClass: MRef[MItemClass]): T =
-    ModifiedItem( acc, id, zClassOrig, zClass, fieldSets, messages, deleted_? ).asInstanceOf[ModifiedItem with T]
+    ModifiedItem( id, zClassOrig, zClass, fieldSets, messages, deleted_? ).asInstanceOf[ModifiedItem with T]
 
 //  def merge(other: ModifiedItem): ModifiedItem = {
 //    //TODO cater for merging
@@ -119,13 +116,12 @@ case class ModifiedItem protected[redishost] ( acc: MutableAccessor,
 /**
  * An Item that has not been persisted to the database
  */
-case class NewItem protected[redishost] ( acc: MutableAccessor,
-                                          id: TempId,
+case class NewItem protected[redishost] ( id: TempId,
                                           zClass: MRef[MItemClass],
                                           fieldSets: Seq[MFieldSetRef],
                                           messages: Seq[(MsgType, String)] = Seq(),
                                           deleted_? : Boolean = false
-                                          )
+                                          )( implicit val acc: MutableAccessor )
   extends NewObject
   with MItem
 {
@@ -133,11 +129,11 @@ case class NewItem protected[redishost] ( acc: MutableAccessor,
 
   protected def update( fieldSets: Seq[MFieldSetRef],
                         deleted_? : Boolean ): T = {
-    NewItem( acc, id, zClass, fieldSets, messages, deleted_? ).asInstanceOf[NewItem with T]
+    NewItem( id, zClass, fieldSets, messages, deleted_? ).asInstanceOf[NewItem with T]
   }
 
   protected def updateClass(zClass: MRef[MItemClass]): T = {
-    NewItem( acc, id, zClass, fieldSets, messages, deleted_? ).asInstanceOf[NewItem with T]
+    NewItem( id, zClass, fieldSets, messages, deleted_? ).asInstanceOf[NewItem with T]
   }
 
 
