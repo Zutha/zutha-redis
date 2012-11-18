@@ -2,8 +2,8 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{Accessor, ImmutableAccessor, MutableAccessor}
 
-object ZType extends ZObjectFactory[ZType, IType, MType] {
-  def typeName = "ZType"
+object ZType extends ObjectFactory[ZType, IType, MType] {
+  def name = "ZType"
 
   def validType_?(obj: ZObject): Boolean = ???
 }

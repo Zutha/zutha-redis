@@ -3,8 +3,8 @@ package net.zutha.redishost.model
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
-object ZItem extends ZObjectFactory[ZItem, IItem, MItem] {
-  def typeName = "ZItem"
+object ZItem extends ObjectFactory[ZItem, IItem, MItem] {
+  def name = "ZItem"
 
   def validType_?(obj: ZObject): Boolean = ???
 
@@ -13,6 +13,8 @@ object ZItem extends ZObjectFactory[ZItem, IItem, MItem] {
              ): NewItem = {
     acc.createItem( zClass )
   }
+
+
 }
 
 

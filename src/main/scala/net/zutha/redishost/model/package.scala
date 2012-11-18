@@ -4,6 +4,9 @@ package object model {
 
   def ??? : Nothing = throw new Error("Not Implemented")
 
+  type I = IObject
+  type M = MObject
+
   type ScopeList                = List[(ZRef[ZScopeType], List[ZRef[ZObject]])]
   type ScopeMap                 = Map[ZRef[ZScopeType], Set[ZRef[ZObject]]]
   type IScopeList               = List[(IRef[IScopeType], List[IRef[IObject]])]

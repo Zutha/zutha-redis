@@ -5,7 +5,15 @@ import net.zutha.redishost.model.ScopeMatchType._
 
 trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
 
-  def getObjectRaw(id: Zid, fieldLimit: Int = 0): Option[ZObject] = ???
+  def getObjectRef( objKey: String ): Option[IRef[IObject]] = objKey match {
+    case Zid(zid) => getObjectZids( objKey ).toSeq match {
+      case Seq() => None
+      case zids => Some(IRef(this, Zids(zid, zids.toList.sorted)))
+    }
+    case _ => None
+  }
+
+  def getObjectRaw( objKey: String, fieldLimit: Int = 0 ): Option[ZObject] = ???
 
   def getObject(id: Zid, fieldLimit: Int = 0): Option[IObject] = {
     ???

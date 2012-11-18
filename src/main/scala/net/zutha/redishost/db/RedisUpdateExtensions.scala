@@ -1,26 +1,21 @@
 package net.zutha.redishost.db
 
+import com.redis.RedisCommand
 import net.zutha.redishost.model._
-import com.redis.{RedisCommand}
 
-protected[db] trait RedisUpdateQueries extends RedisQueries {
+protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
-  // Note: all these methods should be protected[db].
-  // They should only be used by an Accessor to commit changes to its database
-  // An ImmutableAccessor will only ever receive update instructions from a MutableAccessor
-
-
-  def setObjectClass( r: RedisCommand, objId: String, classId: String ) {
-    r.hset( objKey(objId), "class", objKey(classId) )
+  def setObjectClass( objId: String, classId: String ) {
+    r.hset( objHashKey(objId), "class", classId )
     r.sadd( classInstancesKey(classId), objId )
   }
 
-  def addTypeToObject( r: RedisCommand, objId: String, typeId: String ) {
+  def addTypeToObject( objId: String, typeId: String ) {
     r.sadd( objDirectTypesKey(objId), typeId )
     r.sunionstore( objAllTypesKey(objId), objAllTypesKey(objId), typeAllSupertypesKey(typeId) )
   }
 
-  def setFieldScope( r: RedisCommand, fieldId: String, scope: MScopeMap ) {
+  def setFieldScope( fieldId: String, scope: MScopeMap ) {
     scope foreach {s =>
       val key = fieldScopesKey(fieldId, s._1.key)
       val scopeItems: Seq[String] = s._2.map(_.key).toSeq
@@ -31,7 +26,7 @@ protected[db] trait RedisUpdateQueries extends RedisQueries {
     }
   }
 
-  def addRolePlayersToField( r: RedisCommand, fieldId: String, rolePlayers: MRolePlayerMap ) {
+  def addRolePlayersToField( fieldId: String, rolePlayers: MRolePlayerMap ) {
     rolePlayers foreach { case (role, players) =>
       val key = fieldRolePlayersKey( fieldId, role.key )
       val playerIds = players.map(_.key)
@@ -41,7 +36,7 @@ protected[db] trait RedisUpdateQueries extends RedisQueries {
     }
   }
 
-  def addLiteralsToField( r: RedisCommand, fieldId: String, literals: MLiteralMap ) {
+  def addLiteralsToField( fieldId: String, literals: MLiteralMap ) {
     literals foreach { case (literalType, players) =>
       val key = fieldLiteralsKey( fieldId, literalType.key )
       val literalStrings = players.map(_.toString)
@@ -49,5 +44,11 @@ protected[db] trait RedisUpdateQueries extends RedisQueries {
         r.sadd( key, literalStrings.head, literalStrings.tail )
       }
     }
+  }
+
+  // ----- Literals Index -----
+
+  def indexAddName( name: String, objKey: String ) {
+    r.hset( nameHashKey, name, objKey )
   }
 }

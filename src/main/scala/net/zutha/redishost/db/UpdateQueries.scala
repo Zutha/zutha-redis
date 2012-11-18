@@ -6,13 +6,27 @@ import net.zutha.redishost.model.NewField
 import net.zutha.redishost.model.MRef
 import net.zutha.redishost.model.NewItem
 
-trait UpdateQueries extends Queries { self: MutableAccessor =>
+trait UpdateQueries { self: MutableAccessor =>
+
+  /**
+   * create a new object with a tempId
+   * @return the tempId of the new object
+   */
+  protected[db] def createNewObject: String = {
+    redis.evalBulk[String]( Lua("create_temp_object"), List( idCounterKey ), List( OBJ_PREFIX, objIsNewHKey )).get
+  }
+
+  protected[redishost] def createSchemaRef( name: String ): MRef[MObject] = {
+    val newId = createNewObject
+    redis.indexAddName( name, newId )
+    MRef(this, TempId(newId))
+  }
 
   def createItem( zClass: MRef[MItemClass] ): NewItem = {
-    val newId = nextId
+    val newId = createNewObject
     redis.pipeline {r =>
-      setObjectClass( r, newId, zClass.key )
-      addTypeToObject( r, newId, zClass.key )
+      r.setObjectClass( newId, zClass.key )
+      r.addTypeToObject( newId, zClass.key )
     }
     NewItem( this, TempId(newId), zClass, List(), List() )
   }
@@ -22,14 +36,14 @@ trait UpdateQueries extends Queries { self: MutableAccessor =>
                    literals: MLiteralMap,
                    scope: MScopeMap
   ): NewField = {
-    val newId = nextId
+    val newId = createNewObject
 
     redis.pipeline {r =>
-      setObjectClass( r, newId, zClass.key )
-      addTypeToObject( r, newId, zClass.key )
-      addRolePlayersToField( r, newId, rolePlayers )
-      addLiteralsToField( r, newId, literals )
-      setFieldScope( r, newId, scope )
+      r.setObjectClass( newId, zClass.key )
+      r.addTypeToObject( newId, zClass.key )
+      r.addRolePlayersToField( newId, rolePlayers )
+      r.addLiteralsToField( newId, literals )
+      r.setFieldScope( newId, scope )
     }
 
     val literalMembers = literals.mapValues(_.toList).map{ case (lType, values) =>
@@ -43,4 +57,5 @@ trait UpdateQueries extends Queries { self: MutableAccessor =>
     NewField( this, TempId(newId), zClass, List(), members, scopeList)
 
   }
+
 }

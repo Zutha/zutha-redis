@@ -13,13 +13,13 @@ sealed case class Zids(zid: Zid, allZids: List[Zid])
 
 /**
  * Merged Zids (Identity for an object that has been merged)
- * @param primaryZids the primary Zid of each object that has been merged into this one
+ * @param mergedZids the primary Zid of each object that has been merged into this one
  * @param allZids the union of Zids of each merged object
  */
-sealed case class MZids(primaryZids: List[Zid], allZids: List[Zid])
+sealed case class MZids(mergedZids: List[Zid], allZids: List[Zid])
   extends PersistedId {
 
-  def key = primaryZids.head.toString
+  def key = mergedZids.head.toString
 }
 
 sealed case class TempId(id: String)

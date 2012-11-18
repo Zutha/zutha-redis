@@ -4,8 +4,8 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
 
-object ZField extends ZObjectFactory[ZField, IField, MField] {
-  def typeName = "ZField"
+object ZField extends ObjectFactory[ZField, IField, MField] {
+  def name = "ZField"
 
   def validType_?(obj: ZObject): Boolean = ???
 

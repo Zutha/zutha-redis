@@ -1,10 +1,19 @@
 package net.zutha.redishost.db
 
-import com.redis.RedisClient
 import net.zutha.redishost.model._
 
-trait ReadQueries extends Queries {
+trait ReadQueries { self: Accessor =>
 
-  def getObjectRaw(id: Zid, fieldLimit: Int = 0): Option[ZObject]
+  def lookupObjectIdByPSI( psi: String ): Option[String] = redis.hget( psiHashKey, psi )
+
+  def lookupObjectIdByName( name: String ): Option[String] = redis.hget( nameHashKey, name )
+
+  def getObjectZids( objKey: String ): Set[Zid] = {
+    redis.smembers[Zid]( objZidsKey(objKey) ).get.map(_.get)
+  }
+
+  def getObjectRef( objKey: String ): Option[ZRef[ZObject]]
+
+  def getObjectRaw( objKey: String, fieldLimit: Int = 0 ): Option[ZObject]
 
 }

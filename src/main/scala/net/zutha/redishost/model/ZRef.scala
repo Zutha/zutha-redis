@@ -12,7 +12,7 @@ trait ZRef[+T <: ZObject]
   def key: String = id.key
 }
 
-case class IRef[+T <: IObject] protected[model]( acc: ImmutableAccessor, id: Zids )
+case class IRef[+T <: IObject] protected[redishost]( acc: ImmutableAccessor, id: Zids )
   extends ZRef[T]
 {
 
@@ -21,7 +21,7 @@ case class IRef[+T <: IObject] protected[model]( acc: ImmutableAccessor, id: Zid
   def zid: Zid = id.zid
 }
 
-case class MRef[+T <: MObject] protected[model] ( acc: MutableAccessor, id: ZIdentity)
+case class MRef[+T <: MObject] protected[redishost] ( acc: MutableAccessor, id: ZIdentity)
   extends ZRef[T]
 {
   def get: T = acc.getObjectT(id).get

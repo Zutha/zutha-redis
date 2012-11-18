@@ -5,12 +5,39 @@ import net.zutha.redishost.model.ScopeMatchType._
 
 trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
-  protected def dbAcc: ImmutableAccessor
+  def objectIsNew( objKey: String ): Boolean = {
+    redis.hexists( objHashKey( objKey ), objIsNewHKey )
+  }
+  override def getObjectZids( objKey: String ): Set[Zid] = {
+    super.getObjectZids( objKey ) union dbAcc.getObjectZids( objKey )
+  }
 
-  def getObjectRaw(id: Zid, fieldLimit: Int = 0): Option[ZObject] = ???
+  def getObjectMergedZids( objKey: String ): Set[Zid] = {
+    redis.smembers[Zid]( objMergedZidsKey(objKey) ).get.map(_.get)
+  }
 
-  // QUESTION why doesn't this override definition in ReadQueries?
-  def getObject(id: ZIdentity, fieldLimit: Int = 0): Option[MObject] = {
+  def getObjectRef( objKey: String ): Option[MRef[MObject]] = objKey match {
+    case Zid(zid) => getObjectZids( objKey ).toSeq match {
+      case Seq() => dbAcc.getObjectZids( objKey ) match {
+        case Seq() => None
+        case zids => Some(MRef(this, Zids(zid, zids.toList.sorted)))
+      }
+      case zids => getObjectMergedZids( objKey ) match {
+        case Seq() => Some(MRef(this, Zids(zid, zids.toList.sorted)))
+        case mZids => Some(MRef(this, MZids(mZids.toList.sorted, zids.toList.sorted)))
+      }
+    }
+    case tempId => if ( objectIsNew( tempId ) )
+      Some(MRef(this, TempId( tempId )))
+    else
+      None
+  }
+
+  def getObjectRaw( objKey: String, fieldLimit: Int = 0 ): Option[ZObject] = {
+    ???
+  }
+
+  def getObject( id: ZIdentity, fieldLimit: Int = 0 ): Option[MObject] = {
     val obj = id match {
       case MZids(pZids, allZids) => dbAcc.getObject(pZids.head) //TODO merge results
       case Zids(zid, allZids) => dbAcc.getObject(zid)
@@ -20,7 +47,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     ???
   }
 
-  def getObjectT[T <: MObject](id: ZIdentity, fieldLimit: Int = 0): Option[T] = {
+  def getObjectT[T <: MObject]( id: ZIdentity, fieldLimit: Int = 0 ): Option[T] = {
     getObject(id, fieldLimit) map (_.asInstanceOf[T])
   }
 
@@ -33,12 +60,12 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   }
 
   // TODO: implement stub
-  def getRolePlayersOfField(field: MRef[MField]): MRolePlayerSet = {
+  def getRolePlayersOfField( field: MRef[MField] ): MRolePlayerSet = {
     ???
   }
 
   //  TODO: implement stub
-  def getLiteralsOfField(field: MRef[MField]): MLiteralSet = {
+  def getLiteralsOfField( field: MRef[MField] ): MLiteralSet = {
     ???
   }
 
@@ -55,11 +82,12 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
                    ): MFieldSet = {
     val fields: MFieldList = ???
     val messages = List()
-    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset, includeDeleted_?, messages)
+    MFieldSet( this, parent, role, fieldClass, fields, scopeFilter, scopeMatchType,
+      order, limit, offset, includeDeleted_?, messages )
   }
 
   // TODO: implement stub
-  def getUpdatedItem( item: MRef[ModifiedItem], fieldLimit: Int = 0): ModifiedItem = ???
+  def getUpdatedItem( item: MRef[ModifiedItem], fieldLimit: Int = 0 ): ModifiedItem = ???
 
   // TODO: implement stub
   def getUpdatedField( field: MRef[ModifiedField], fieldLimit: Int = 0 ): ModifiedField = ???

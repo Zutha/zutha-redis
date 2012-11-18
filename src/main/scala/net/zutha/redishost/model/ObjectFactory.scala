@@ -2,21 +2,20 @@ package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 
-private[model] trait ZObjectFactory
+private[redishost] trait ObjectFactory
 [
   T <: ZObject,
   TI <: T with IObject,
   TM <: T with MObject
 ]
+  extends SchemaObject
 {
-
-  def typeName: String
 
   def validType_?(obj: ZObject): Boolean
 
   private def toT[C <: T]( acc: Accessor,
-                                     obj: Option[ZObject]
-                                     ): Option[C] = {
+                           obj: Option[ZObject]
+                           ): Option[C] = {
     obj flatMap {o =>
       if(validType_?(o) )
         Some(o.asInstanceOf[C])
@@ -37,11 +36,4 @@ private[model] trait ZObjectFactory
     toT[TM](acc, obj)
   }
 
-  def getI(acc: ImmutableAccessor): TI = {
-    ??? //TODO lookup using typeName
-  }
-
-  def getA(acc: MutableAccessor): TM = {
-    ??? //TODO lookup using typeName
-  }
 }
