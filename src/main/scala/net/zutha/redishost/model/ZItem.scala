@@ -4,6 +4,10 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
 object ZItem extends ObjectFactory[ZItem, IItem, MItem] {
+  type ObjT = ZItemClass
+  type ObjTM = MItemClass
+  type ObjTI = IItemClass
+
   def name = "ZItem"
 
   def validType_?(obj: ZObject): Boolean = ???
@@ -12,8 +16,6 @@ object ZItem extends ObjectFactory[ZItem, IItem, MItem] {
              )( implicit acc: MutableAccessor ): NewItem = {
     acc.createItem( zClass )
   }
-
-
 }
 
 

@@ -4,6 +4,10 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
 object ZObject extends ObjectFactory[ZObject, IObject, MObject] {
+  type ObjT = ZClass
+  type ObjTM = MClass
+  type ObjTI = IClass
+
   def name = "ZObject"
 
   def validType_?(obj: ZObject): Boolean = ???

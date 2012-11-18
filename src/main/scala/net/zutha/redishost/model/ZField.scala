@@ -5,6 +5,10 @@ import net.zutha.redishost.model.MsgType._
 
 
 object ZField extends ObjectFactory[ZField, IField, MField] {
+  type ObjT = ZFieldClass
+  type ObjTM = MFieldClass
+  type ObjTI = IFieldClass
+
   def name = "ZField"
 
   def validType_?(obj: ZObject): Boolean = ???
