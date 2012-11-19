@@ -36,7 +36,7 @@ protected[redishost] trait SchemaItem {
   def refM( implicit acc: MutableAccessor ): MRef[ObjTM] = {
     val ref = acc.lookupObjectIdByName(name) match {
       case Some(key) => acc.getObjectRef(key).get
-      case None => acc.createSchemaRef( Name(name) )
+      case None => MRef(TempId( Name(name).indexForm ))
     }
     ref.asInstanceOf[MRef[ObjTM]]
   }

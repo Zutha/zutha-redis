@@ -8,12 +8,19 @@ import literal.Name
 
 trait UpdateQueries { self: MutableAccessor =>
 
+  protected[db] def nextId: String = {
+    val next = redis.incr( idCounterKey ).get
+    "tmp:" + next.toString
+  }
+
   /**
    * create a new object with a tempId
    * @return the tempId of the new object
    */
   protected[db] def createNewObject: String = {
-    redis.evalBulk[String]( Lua("create_temp_object"), List( idCounterKey ), List( OBJ_PREFIX, objIsNewHKey )).get
+    val newId = nextId
+    redis.hset( OBJ_PREFIX + newId, objIsNewHKey, newId )
+    newId
   }
 
   protected[redishost] def createSchemaRef( name: Name ): MRef[MObject] = {
@@ -25,8 +32,7 @@ trait UpdateQueries { self: MutableAccessor =>
   def createItem( zClass: MRef[MItemClass] ): NewItem = {
     val newId = createNewObject
     redis.pipeline {r =>
-      r.setObjectClass( newId, zClass.key )
-      r.addTypeToObject( newId, zClass.key )
+      r.specifyObjectClass( newId, zClass.key )
     }
     NewItem( TempId(newId), zClass, Seq(), Seq() )
   }
@@ -39,7 +45,7 @@ trait UpdateQueries { self: MutableAccessor =>
     val newId = createNewObject
 
     redis.pipeline {r =>
-      r.setObjectClass( newId, zClass.key )
+      r.specifyObjectClass( newId, zClass.key )
       r.addTypeToObject( newId, zClass.key )
       r.addRolePlayersToField( newId, rolePlayers )
       r.addLiteralsToField( newId, literals )

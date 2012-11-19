@@ -8,9 +8,10 @@ import itemclass._
 
 protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
-  def setObjectClass( objId: String, classId: String ) {
+  def specifyObjectClass( objId: String, classId: String ) {
     r.hset( objHashKey(objId), "class", classId )
     r.sadd( classInstancesKey(classId), objId )
+    addTypeToObject( objId, classId )
   }
 
   def addTypeToObject( objId: String, typeId: String ) {
