@@ -4,7 +4,7 @@ import net.zutha.redishost.model.companion.ZItemClassCompanion
 
 object ZType extends ZItemClassCompanion[ZType, IType, MType] {
 
-  def name = "ZType"
+  def name = "Type"
 
   def validType_?(obj: ZObject): Boolean = ???
 }

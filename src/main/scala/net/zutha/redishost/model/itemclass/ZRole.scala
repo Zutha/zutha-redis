@@ -8,7 +8,7 @@ object ZRole extends ZItemClassCompanion[ZRole, IRole, MRole] {
   type ObjTI = IItemClass with IRole with ITrait
   type ObjTM = MItemClass with MRole with MTrait
 
-  def name = "ZRole"
+  def name = "Role"
 
   def validType_?(obj: ZObject): Boolean = ???
 

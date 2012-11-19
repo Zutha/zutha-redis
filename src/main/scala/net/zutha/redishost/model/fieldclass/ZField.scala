@@ -9,7 +9,7 @@ import MsgType._
 
 object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
-  def name = "ZField"
+  def name = "Field"
 
   def validType_?(obj: ZObject): Boolean = ???
 

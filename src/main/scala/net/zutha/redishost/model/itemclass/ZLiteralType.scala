@@ -4,7 +4,7 @@ import net.zutha.redishost.model.companion.ZItemClassCompanion
 
 object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
 
-  def name = "ZLiteralType"
+  def name = "LiteralType"
 
   def validType_?(obj: ZObject): Boolean = ???
 }

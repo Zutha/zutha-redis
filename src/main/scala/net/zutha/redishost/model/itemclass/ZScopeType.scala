@@ -4,7 +4,7 @@ import net.zutha.redishost.model.companion.ZItemClassCompanion
 
 object ZScopeType extends ZItemClassCompanion[ZScopeType, IScopeType, MScopeType] {
 
-  def name = "ZScopeType"
+  def name = "ScopeType"
 
   def validType_?(obj: ZObject): Boolean = ???
 }

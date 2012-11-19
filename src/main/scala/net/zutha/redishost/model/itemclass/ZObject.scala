@@ -17,7 +17,7 @@ object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
 
   def classFactory = ZClass
 
-  def name = "ZObject"
+  def name = "Object"
 
   def validType_?(obj: ZObject): Boolean = ???
 }

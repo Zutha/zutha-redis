@@ -5,7 +5,7 @@ import companion.ZItemClassCompanion
 
 object ZObjectType extends ZItemClassCompanion[ZObjectType, IObjectType, MObjectType] {
 
-  def name = "ZObjectType"
+  def name = "ObjectType"
 
   def validType_?(obj: ZObject): Boolean = ???
 }
