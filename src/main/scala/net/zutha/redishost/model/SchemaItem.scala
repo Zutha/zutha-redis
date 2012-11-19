@@ -18,8 +18,8 @@ protected[redishost] trait SchemaItem {
   type ObjCM <: ObjC with MItem
 
   type ObjT <: ObjC
-  type ObjTI <: ObjCI
-  type ObjTM <: ObjCM
+  type ObjTI <: ObjT with ObjCI
+  type ObjTM <: ObjT with ObjCM
 
   def classFactory: ZItemClassCompanion[ObjC, ObjCI, ObjCM]
 

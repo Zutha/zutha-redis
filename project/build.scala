@@ -38,8 +38,8 @@ object ZuthaBuild extends Build {
         Seq(
         	"net.debasishg" % "redisclient_2.9.2" % "[2.7,)",
         	"diff_match_patch" % "diff_match_patch" % "current",
-          "org.scala-lang" %  "scala-library" % v,
           "org.scalatest" % ("scalatest_" + v) % "2.0.M4" % "test",
+          "org.scala-lang" %  "scala-library" % v,
           "com.intellij" % "annotations" % "9.0.4"
         )
     }

@@ -11,9 +11,9 @@ object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
   type ObjCI = IClass
   type ObjCM = MClass
 
-  type ObjT = ZClass
-  type ObjTM = MClass
-  type ObjTI = IClass
+  type ObjT = ZClass with ZRole
+  type ObjTM = MClass with MRole
+  type ObjTI = IClass with IRole
 
   def classFactory = ZClass
 
