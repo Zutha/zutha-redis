@@ -4,6 +4,7 @@ import net.zutha.redishost.model._
 import fieldclass._
 import fieldset._
 import itemclass._
+import literal.Name
 
 trait UpdateQueries { self: MutableAccessor =>
 
@@ -15,9 +16,9 @@ trait UpdateQueries { self: MutableAccessor =>
     redis.evalBulk[String]( Lua("create_temp_object"), List( idCounterKey ), List( OBJ_PREFIX, objIsNewHKey )).get
   }
 
-  protected[redishost] def createSchemaRef( name: String ): MRef[MObject] = {
+  protected[redishost] def createSchemaRef( name: Name ): MRef[MObject] = {
     val newId = createNewObject
-    redis.indexAddName( name, newId )
+    redis.indexAddName( name.value, newId )
     MRef(TempId(newId))
   }
 

@@ -1,6 +1,7 @@
 package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model._
+import literal.LiteralValue
 
 trait ZFieldMember
 

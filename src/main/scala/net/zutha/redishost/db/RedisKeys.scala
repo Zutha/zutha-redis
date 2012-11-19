@@ -1,6 +1,6 @@
 package net.zutha.redishost.db
 
-import net.zutha.redishost.model.literaltype.{PSI, Name}
+import net.zutha.redishost.model.literal.{PSI, Name}
 
 protected[db] trait RedisKeys {
 

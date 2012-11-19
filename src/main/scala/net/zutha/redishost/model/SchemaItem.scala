@@ -2,6 +2,7 @@ package net.zutha.redishost.model
 
 import companion.ZItemClassCompanion
 import itemclass._
+import literal.Name
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.exception.SchemaObjectMissingException
 
@@ -35,7 +36,7 @@ protected[redishost] trait SchemaItem {
   def refM( implicit acc: MutableAccessor ): MRef[ObjTM] = {
     val ref = acc.lookupObjectIdByName(name) match {
       case Some(key) => acc.getObjectRef(key).get
-      case None => acc.createSchemaRef( name )
+      case None => acc.createSchemaRef( Name(name) )
     }
     ref.asInstanceOf[MRef[ObjTM]]
   }

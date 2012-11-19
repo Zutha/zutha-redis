@@ -1,5 +1,7 @@
 package net.zutha.redishost
 
+import model.literal.LiteralValue
+
 package object model {
   import itemclass._
   import fieldclass._
