@@ -16,12 +16,37 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
   /**
    * Create a new Field
    * @param zClass the FieldClass of the new Field
-   * @param rolePlayers
+   * @param rolePlayers the rolePlayers of the field
    * @return
    */
-  def apply( zClass: MRef[MFieldClass],
-             rolePlayers: MRolePlayer*
-             )( implicit acc: MutableAccessor ): NewField = {
+  def apply( zClass: MRef[MFieldClass], rolePlayers: MRolePlayer* )
+           ( implicit acc: MutableAccessor ): NewField = {
+    apply( zClass )( rolePlayers:_* )()
+  }
+
+  /**
+   * Create a new Property Field
+   * @param zClass the FieldClass of the new Field
+   * @param rolePlayer the rolePlayer pointing to the property parent item
+   * @param literal the literal value of the property field
+   * @return
+   */
+  def apply( zClass: MRef[MFieldClass], rolePlayer: MRolePlayer, literal: MLiteral )
+           ( implicit acc: MutableAccessor ): NewField = {
+    apply( zClass )()( literal )
+  }
+
+  /**
+   * Create a new Field
+   * @param zClass the FieldClass of the new Field
+   * @param rolePlayers the rolePlayers of the field
+   * @param literals the literal members of the field
+   * @return
+   */
+  def apply( zClass: MRef[MFieldClass] )
+           ( rolePlayers: MRolePlayer* )
+           ( literals: MLiteral* )
+           ( implicit acc: MutableAccessor ): NewField = {
     val rps = rolePlayers.groupBy(_._1).mapValues(_.map(_._2).toSet)
     val literals: MLiteralMap = Map()
     val scope: MScopeMap = Map()

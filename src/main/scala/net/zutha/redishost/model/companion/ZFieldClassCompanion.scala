@@ -16,5 +16,9 @@ protected[redishost] trait ZFieldClassCompanion
   type ObjCM = MFieldClass
   type ObjCI = IFieldClass
 
+  type ObjT = ZFieldClass
+  type ObjTM = MFieldClass
+  type ObjTI = IFieldClass
+
   def classFactory = ZFieldClass
 }
