@@ -1,4 +1,6 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.itemclass
+
+import net.zutha.redishost.model.companion.ZItemClassCompanion
 
 object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
 

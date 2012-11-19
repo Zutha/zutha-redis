@@ -1,6 +1,8 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.companion
 
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
+import net.zutha.redishost.model._
+import itemclass._
 
 protected[redishost] trait ZClassCompanion
 [

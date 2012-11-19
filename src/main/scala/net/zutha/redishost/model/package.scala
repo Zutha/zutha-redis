@@ -1,8 +1,8 @@
 package net.zutha.redishost
 
 package object model {
-
-  def ??? : Nothing = throw new Error("Not Implemented")
+  import itemclass._
+  import fieldclass._
 
   type I = IObject
   type M = MObject

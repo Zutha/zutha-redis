@@ -1,7 +1,7 @@
 package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-
+import itemclass._
 
 trait ZRef[+T <: ZObject]
 {

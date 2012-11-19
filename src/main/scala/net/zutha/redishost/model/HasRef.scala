@@ -1,6 +1,7 @@
 package net.zutha.redishost.model
 
 import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
+import itemclass._
 
 private[model] trait HasRef {
   type T <: ZObject

@@ -1,5 +1,7 @@
 package net.zutha.redishost.model
 
+import companion.ZItemClassCompanion
+import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.exception.SchemaObjectMissingException
 

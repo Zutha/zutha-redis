@@ -2,6 +2,7 @@ package net.zutha.redishost
 
 import db.{MutableAccessor, DB}
 import model._
+import itemclass.{MItemClass, ZTrait, MRole}
 import model.MRef
 
 //import db.DB

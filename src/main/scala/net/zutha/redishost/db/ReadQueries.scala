@@ -1,6 +1,7 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
+import itemclass._
 
 trait ReadQueries { self: Accessor =>
 

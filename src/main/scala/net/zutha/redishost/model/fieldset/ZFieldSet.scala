@@ -1,4 +1,8 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.fieldset
+
+import net.zutha.redishost.model._
+import fieldclass._
+import itemclass._
 
 import net.zutha.redishost.db._
 import ScopeMatchType._

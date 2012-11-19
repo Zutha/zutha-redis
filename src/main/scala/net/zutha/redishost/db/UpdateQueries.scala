@@ -1,10 +1,9 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
-import net.zutha.redishost.model.TempId
-import net.zutha.redishost.model.NewField
-import net.zutha.redishost.model.MRef
-import net.zutha.redishost.model.NewItem
+import fieldclass._
+import fieldset._
+import itemclass._
 
 trait UpdateQueries { self: MutableAccessor =>
 

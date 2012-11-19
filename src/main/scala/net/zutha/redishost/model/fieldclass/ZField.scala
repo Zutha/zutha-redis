@@ -1,8 +1,11 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-import net.zutha.redishost.model.MsgType._
-
+import net.zutha.redishost.model._
+import fieldset._
+import itemclass._
+import companion.ZFieldClassCompanion
+import MsgType._
 
 object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 

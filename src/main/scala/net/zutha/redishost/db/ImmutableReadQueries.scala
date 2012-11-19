@@ -1,6 +1,9 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
+import fieldclass._
+import fieldset._
+import itemclass._
 import net.zutha.redishost.model.ScopeMatchType._
 
 trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>

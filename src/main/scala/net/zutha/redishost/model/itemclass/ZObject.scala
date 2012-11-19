@@ -1,7 +1,10 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-import net.zutha.redishost.model.MsgType._
+import net.zutha.redishost.model._
+import companion.ZClassCompanion
+import fieldset._
+import MsgType._
 
 object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
   type ObjC = ZClass

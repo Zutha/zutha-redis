@@ -1,8 +1,9 @@
-package net.zutha.redishost.model
+package net.zutha.redishost.model.fieldset
 
+import net.zutha.redishost.model._
+import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-import net.zutha.redishost.model.ScopeMatchType._
-
+import ScopeMatchType._
 
 trait ZFieldSetRef
 {
