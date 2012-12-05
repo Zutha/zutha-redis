@@ -8,8 +8,8 @@ import net.zutha.redishost.exception.SchemaObjectMissingException
 
 object SchemaItem {
   import scala.language.implicitConversions
-  implicit def siToRefM[T <: MItem](si: SchemaItem{ type ObjTM = T })( implicit acc: MutableAccessor ): MRef[T] = si.refM( acc )
-  implicit def siToRefI[T <: IItem](si: SchemaItem{ type ObjTI = T })( implicit acc: ImmutableAccessor ): IRef[T] = si.refI
+  implicit def schemaItemToRefM[T <: MItem](si: SchemaItem{ type ObjTM = T })( implicit acc: MutableAccessor ): MRef[T] = si.refM( acc )
+  implicit def schemaItemToRefI[T <: IItem](si: SchemaItem{ type ObjTI = T })( implicit acc: ImmutableAccessor ): IRef[T] = si.refI
 }
 
 protected[redishost] trait SchemaItem {
@@ -36,7 +36,7 @@ protected[redishost] trait SchemaItem {
   def refM( implicit acc: MutableAccessor ): MRef[ObjTM] = {
     val ref = acc.lookupObjectIdByName(name) match {
       case Some(key) => acc.getObjectRef(key).get
-      case None => MRef(TempId( Name(name).indexForm ))
+      case None => MRef(TempId( Name(name).psiForm ))
     }
     ref.asInstanceOf[MRef[ObjTM]]
   }

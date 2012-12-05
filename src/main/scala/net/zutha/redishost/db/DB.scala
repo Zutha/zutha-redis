@@ -6,7 +6,7 @@ object DB {
 
   def getMutableAccessor: MutableAccessor = {
     val privateRedis = new RedisClient()
-    privateRedis.select(1)
+    privateRedis.select(1) //TODO return a new empty database for each call
     new MutableAccessor(privateRedis, getImmutableAccessor)
   }
   def getImmutableAccessor: ImmutableAccessor = {

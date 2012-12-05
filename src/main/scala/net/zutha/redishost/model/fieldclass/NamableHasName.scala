@@ -13,7 +13,7 @@ object NamableHasName extends ZFieldClassCompanion[ZField, IField, MField] {
 
   def apply( namable: MRef[MItem], name: Name )
            (implicit acc: MutableAccessor ): NewField = {
-    ZField( NamableHasName )( Namable.refM -> namable )( Name.refM -> name )
+    ZField( NamableHasName, Namable.refM -> namable, Name.refM -> name )
   }
 
   def validType_?(obj: ZObject) = ???

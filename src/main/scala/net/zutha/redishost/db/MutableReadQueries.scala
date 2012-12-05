@@ -44,7 +44,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     val obj = id match {
       case MZids(pZids, allZids) => dbAcc.getObject(pZids.head) //TODO merge results
       case Zids(zid, allZids) => dbAcc.getObject(zid)
-      case TempId(uuid) => None
+      case TempId(idStr) => None
     }
 
     ???

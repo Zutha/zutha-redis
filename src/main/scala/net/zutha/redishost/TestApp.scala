@@ -1,20 +1,11 @@
 package net.zutha.redishost
 
-import db.{MutableAccessor, DB}
-import model._
-import itemclass.{MItemClass, ZTrait, MRole}
-import model.MRef
-
-//import db.DB
+import db.DB
+import schema.SchemaBuilder
 
 object TestApp extends App {
 
-  val r: MRole = ???
-  val rref: MRef[MRole] = r.ref
-
-  implicit def acc: MutableAccessor = ???
-
-  val tRef: MRef[MItemClass] = ZTrait
-  val ic: MItemClass = tRef.get
+  implicit val acc = DB.getMutableAccessor
+  SchemaBuilder.build()
 }
 

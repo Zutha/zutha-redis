@@ -11,5 +11,7 @@ object Name extends ZLiteralTypeCompanion {
 }
 
 case class Name( value: String ) extends LiteralValue {
-  def indexForm: String = value.toLowerCase.replace(' ', '-')
+  // replace everything but letters and numbers with underscore
+  // this form will be used in queries so it should not have any special characters
+  def psiForm: String = value.toLowerCase.replaceAll("[^a-z0-9]+", "_")
 }

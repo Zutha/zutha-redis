@@ -40,14 +40,12 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
     }
   }
 
-  def addLiteralsToField( fieldId: String, literals: MLiteralMap ) {
-    literals foreach { case (literalType, players) =>
+  def setFieldLiterals( fieldId: String, literals: MLiteralSet ) {
+    val kvs = literals.toSeq map { case (literalType, literalValue) =>
       val key = fieldLiteralsKey( fieldId, literalType.key )
-      val literalStrings = players.map(_.toString)
-      if ( literalStrings.size > 0 ){
-        r.sadd( key, literalStrings.head, literalStrings.tail )
-      }
+      ( key -> literalValue.toString )
     }
+    r.mset( kvs:_* )
   }
 
   // ----- Literals Index -----

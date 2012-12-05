@@ -77,8 +77,6 @@ trait IObject
 {
 	type T <: IObject
 
-  def acc: ImmutableAccessor
-
   def id: Zids
 
   def zid: Zid = id.zid
@@ -100,8 +98,6 @@ trait MObject
 	type T <: MObject
 
   // Accessors
-  def acc: MutableAccessor
-
   def id: ZIdentity
 
   override def zClass: MRef[MClass]

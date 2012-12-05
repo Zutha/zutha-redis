@@ -37,31 +37,41 @@ trait UpdateQueries { self: MutableAccessor =>
     NewItem( TempId(newId), zClass, Seq(), Seq() )
   }
 
+  /**
+   * Create a new field of the given class
+   * @param zClass the class of field to create
+   * @param rolePlayers a set of rolePlayers to put in the new field
+   * @param literals a set of literal values to put in the new field
+   * @param scope the scope in which the new field will be applicable
+   * @return a subclass of NewField, depending on the field class requested by zClass
+   */
   def createField( zClass: MRef[MFieldClass],
-                   rolePlayers: MRolePlayerMap,
-                   literals: MLiteralMap,
+                   rolePlayers: MRolePlayerSet,
+                   literals: MLiteralSet,
                    scope: MScopeMap
-  ): NewField = {
+                   ): NewField = {
     val newId = createNewObject
 
     redis.pipeline {r =>
       r.specifyObjectClass( newId, zClass.key )
       r.addTypeToObject( newId, zClass.key )
       r.addRolePlayersToField( newId, rolePlayers )
-      r.addLiteralsToField( newId, literals )
+      r.setFieldLiterals( newId, literals )
       r.setFieldScope( newId, scope )
     }
 
-    val literalMembers = literals.mapValues(_.toSeq).map{ case (lType, values) =>
-      MLiteralFieldMember(lType, values)
+    val literalMembers = literals.map{ case (lType, value) =>
+      MLiteralFieldMember(lType, value)
     }.toSeq
     val roleMembers = rolePlayers.mapValues(_.toSeq).map{case (role, players) =>
       MRoleFieldMember(role, players)
     }.toSeq
     val members: Seq[MFieldMember] = roleMembers ++ literalMembers
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
-    NewField( TempId(newId), zClass, Seq(), members, scopeSeq)
 
+    //TODO create simpler FieldType if applicable
+    NewComplexField( TempId(newId), zClass, Seq(), members, scopeSeq)
   }
+
 
 }
