@@ -4,8 +4,10 @@ import net.zutha.redishost.model.MRef
 import net.zutha.redishost.model.itemclass.MFieldClass
 import net.zutha.redishost.db.MutableAccessor
 
-class FieldClassBuilder( override val ref: MRef[MFieldClass] )( implicit override val acc: MutableAccessor )
+class FieldClassBuilder( ref: MRef[MFieldClass] )
+                       ( implicit override val acc: MutableAccessor )
   extends ClassBuilder( ref )
+  with Builder[FieldClassBuilder]
 {
 
 }

@@ -8,6 +8,7 @@ trait ItemClasses { self: SchemaBuilder =>
 
   }
 
+
   role(ZObject){ b =>
 
   }

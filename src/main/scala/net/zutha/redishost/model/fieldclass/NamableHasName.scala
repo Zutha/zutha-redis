@@ -12,7 +12,8 @@ object NamableHasName extends ZFieldClassCompanion[ZField, IField, MField] {
   def name = "Namable Has Name"
 
   def apply( namable: MRef[MItem], name: Name )
-           (implicit acc: MutableAccessor ): NewField = {
+           (implicit acc: MutableAccessor ): NewPropertyField = {
+    // TODO verify that namable isa Namable
     ZField( NamableHasName, Namable.refM -> namable, Name.refM -> name )
   }
 

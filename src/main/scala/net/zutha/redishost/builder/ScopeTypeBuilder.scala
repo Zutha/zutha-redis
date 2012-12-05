@@ -4,8 +4,10 @@ import net.zutha.redishost.model.MRef
 import net.zutha.redishost.model.itemclass.MScopeType
 import net.zutha.redishost.db.MutableAccessor
 
-class ScopeTypeBuilder( val ref: MRef[MScopeType] )( implicit val acc: MutableAccessor )
+class ScopeTypeBuilder( val ref: MRef[MScopeType] )
+                      ( implicit val acc: MutableAccessor )
   extends ItemBuilder
+  with Builder[ScopeTypeBuilder]
 {
 
 }
