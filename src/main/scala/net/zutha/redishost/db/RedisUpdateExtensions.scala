@@ -2,7 +2,7 @@ package net.zutha.redishost.db
 
 import com.redis.RedisCommand
 import net.zutha.redishost.model._
-import fieldmember.MLiteral
+import fieldmember.{MRolePlayer, MLiteral}
 
 protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
@@ -28,17 +28,17 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
     }
   }
 
-  def addRolePlayersToField( fieldId: String, rolePlayers: MRolePlayerMap ) {
-    rolePlayers foreach { case (role, players) =>
+  def addRolePlayersToField( fieldId: String, rolePlayers: Set[MRolePlayer] ) {
+    rolePlayers.groupBy(_.role) foreach { case (role, rolePlayers) =>
       val key = fieldRolePlayersKey( fieldId, role.key )
-      val playerIds = players.map(_.key)
+      val playerIds = rolePlayers.map(_.player.key)
       if ( playerIds.size > 0 ){
         r.sadd( key, playerIds.head, playerIds.tail )
       }
     }
   }
 
-  def setFieldLiterals( fieldId: String, literals: MLiteralSet ) {
+  def setFieldLiterals( fieldId: String, literals: Set[MLiteral] ) {
     val kvs = literals.toSeq map { case MLiteral( literalType, value ) =>
       val key = fieldLiteralsKey( fieldId, literalType.key )
       ( key -> value.toString )

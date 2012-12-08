@@ -2,7 +2,9 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import fieldclass._
+import fieldmember.{MLiteral, MRolePlayer, MRoleFieldMember, MFieldMember}
 import itemclass._
+import net.zutha.redishost.exception.SchemaException
 
 trait UpdateQueries { self: MutableAccessor =>
 
@@ -38,13 +40,13 @@ trait UpdateQueries { self: MutableAccessor =>
    * @return a subclass of NewField, depending on the field class requested by zClass
    */
   def createField( zClass: MRef[MFieldClass],
-                   rolePlayers: MRolePlayerSet,
-                   literals: MLiteralSet,
+                   rolePlayers: Set[MRolePlayer],
+                   literals: Set[MLiteral],
                    scope: MScopeMap
                    ): NewField = {
     val newId = createNewObject
 
-    //TODO verify provided field components against fieldClass declarations
+    //TODO validate provided field components against fieldClass declarations
 
     redis.pipeline {r =>
       r.specifyObjectClass( newId, zClass.key )
@@ -54,15 +56,46 @@ trait UpdateQueries { self: MutableAccessor =>
       r.setFieldScope( newId, scope )
     }
 
-    val roleMembers = rolePlayers.mapValues(_.toSeq).map{case (role, players) =>
-      MRoleFieldMember(role, players)
+    val roleMembers = rolePlayers.groupBy(_.role).map{ case (role, rps) =>
+      MRoleFieldMember(role, rps.map(_.player).toSeq )
     }.toSeq
-    val members: Seq[MFieldMember] = roleMembers ++ literals
+    val literalMembers = literals.toSeq
+    val members: Seq[MFieldMember] = roleMembers ++ literalMembers
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
 
     //TODO create simpler FieldType if applicable
     NewComplexField( TempId(newId), zClass, Seq(), members, scopeSeq)
   }
 
+  /**
+   * modify the rolePlayers of a NewBinaryField or
+   * replace a ModifiedBinaryField with a NewBinaryField of the same FieldClass but different rolePlayers
+   * @param field the NewBinaryField to be updated or the ModifiedBinaryField to be updated/replaced
+   * @param rolePlayer1 the new value of one of the two RolePlayers of this Binary Field
+   * @param rolePlayer2 the new value of the other RolePlayer of this Binary Field
+   * @return the same NewBinaryField updated with the given rolePlayers
+   *         or a NewBinaryField that has the same FieldClass as `field`
+   *         but with the given rolePlayers
+   */
+  def updateField( field: MBinaryField,
+                   rolePlayer1: MRolePlayer,
+                   rolePlayer2: MRolePlayer
+                   ): NewBinaryField = field match {
+    case NewBinaryField( id, zClass, fieldSets, rp1, rp2, scope,
+                         msgs, memberMsgs, scopeMsgs, deleted_? ) => {
+      // TODO update redis
+      NewBinaryField( id, zClass, fieldSets, rolePlayer1, rolePlayer2, scope,
+        msgs, memberMsgs, scopeMsgs, deleted_? )
+    }
+    case ModifiedBinaryField( modifiedFieldId, zClass, fieldSets, rp1, rp2, scope,
+                              msgs, memberMsgs, scopeMsgs, deleted_? ) => {
+      // TODO delete modifiedField
+      createField( zClass, Set( rolePlayer1, rolePlayer2 ), Set(), scope ) match {
+        case f: NewBinaryField => f
+        case f => throw new SchemaException(
+          "A binary field should have been created. Actually returned: " + f.toString )
+      }
+    }
+  }
 
 }

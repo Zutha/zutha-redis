@@ -2,6 +2,7 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import fieldclass._
+import fieldmember.{ILiteral, IRolePlayer}
 import fieldset._
 import itemclass._
 import net.zutha.redishost.model.ScopeMatchType._
@@ -37,12 +38,12 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
   }
 
   // TODO: implement stub
-  def getRolePlayersOfField(field: IRef[IField]): IRolePlayerSet = {
+  def getRolePlayersOfField(field: IRef[IField]): Set[IRolePlayer] = {
     ???
   }
 
   //  TODO: implement stub
-  def getLiteralsOfField(field: IRef[IField]): ILiteralSet = {
+  def getLiteralsOfField(field: IRef[IField]): Set[ILiteral] = {
     ???
   }
 

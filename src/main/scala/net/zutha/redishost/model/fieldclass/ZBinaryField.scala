@@ -1,6 +1,7 @@
 package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.model._
+import fieldmember._
 import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
@@ -42,9 +43,19 @@ trait MBinaryField
 
   def members: Seq[MFieldMember] = Seq( rolePlayer1, rolePlayer2 )
   override lazy val rolePlayers = Set( rolePlayer1, rolePlayer2 )
-  override lazy val literals: MLiteralSet = Set()
+  override lazy val literals: Set[MLiteral] = Set()
 
+  protected def updateRolePlayers( rolePlayers: Set[MRolePlayer] = rolePlayers
+                                   ): NewBinaryField = {
+    val rps1 = rolePlayers.filter( _.role == rolePlayer1.role)
+    val rps2 = rolePlayers.filter( _.role == rolePlayer2.role)
+    require(rps1.size <= 1 && rps2.size <= 1, "A Binary Field must have only one player for each role")
 
+    val rp1 = rps1.headOption.getOrElse(rolePlayer1)
+    val rp2 = rps2.headOption.getOrElse(rolePlayer2)
+
+    acc.updateField( this, rp1, rp2 )
+  }
 }
 
 /**
@@ -69,8 +80,8 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
 
   // Getters
 
-  def literalsOrig: MLiteralSet = Set()
-  def rolePlayersOrig: MRolePlayerSet = Set( rolePlayer1, rolePlayer2 )
+  def literalsOrig: Set[MLiteral] = Set()
+  def rolePlayersOrig: Set[MRolePlayer] = Set( rolePlayer1, rolePlayer2 )
 
   //  Mutators
 
@@ -90,21 +101,11 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
    * @param literals this parameter will be ignored for binary fields.
    * @return the deleted old binary field
    */
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): ModifiedBinaryField = {
-    val rps1 = rolePlayers.get(rolePlayer1._1).getOrElse(Set(rolePlayer1._2))
-    val rps2 = rolePlayers.get(rolePlayer2._1).getOrElse(Set(rolePlayer2._2))
-    require(rps1.size == 1 && rps2.size == 1, "A Binary Field must have exactly one player for each role")
-
-    val rp1 = (rolePlayer1._1 -> rps1.head)
-    val rp2 = (rolePlayer2._1 -> rps2.head)
-    acc.createField( zClass, Set(rp1, rp2), Set(), scope )
-
-    // TODO delete using accessor
-    ModifiedBinaryField( id, zClass, fieldSets,
-      rolePlayer1, rolePlayer2, scope,
-      messages, memberMessages, scopeMessages, deleted_? = true )
+    updateRolePlayers( rolePlayers )
+    acc.getField( this.ref ) // get the deleted old field and return it
   }
 }
 
@@ -146,19 +147,9 @@ NewBinaryField protected[redishost] ( id: TempId,
    * @param literals this parameter will be ignored for binary fields.
    * @return the updated binary field
    */
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): NewBinaryField = {
-    val rps1 = rolePlayers.get(rolePlayer1._1).getOrElse(Set(rolePlayer1._2))
-    val rps2 = rolePlayers.get(rolePlayer2._1).getOrElse(Set(rolePlayer2._2))
-    require(rps1.size == 1 && rps2.size == 1, "A Binary Field must have exactly one player for each role")
-
-    val rp1 = (rolePlayer1._1 -> rps1.head)
-    val rp2 = (rolePlayer2._1 -> rps2.head)
-//    acc.createBinaryField( zClass, rp1, rp2, scope )
-    // TODO update using accessor
-    NewBinaryField( id, zClass, fieldSets,
-      rp1, rp2, scope,
-      messages, memberMessages, scopeMessages, deleted_? = false )
+    updateRolePlayers( rolePlayers )
   }
 }

@@ -1,11 +1,11 @@
 package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.model._
-import fieldmember.{ILiteral, MLiteral}
-import fieldset.{MFieldSetRef, IFieldSetRef}
+import MsgType._
+import fieldmember._
+import fieldset._
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-import net.zutha.redishost.model.MsgType._
 
 trait ZPropertyField
   extends ZField
@@ -69,8 +69,8 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
 
   // Getters
 
-  def literalsOrig: MLiteralSet = Set( literalOrig )
-  def rolePlayersOrig: MRolePlayerSet = Set( rolePlayer )
+  def literalsOrig: Set[MLiteral] = Set( literalOrig )
+  def rolePlayersOrig: Set[MRolePlayer] = Set( rolePlayer )
 
   //  Mutators
 
@@ -82,8 +82,8 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
       rolePlayer, literalOrig, literal, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): ModifiedPropertyField = {
     // TODO update using accessor
     ModifiedPropertyField( id, zClass, fieldSets,
@@ -122,8 +122,8 @@ NewPropertyField protected[redishost] ( id: TempId,
       rolePlayer, literal, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): NewPropertyField = {
     // TODO update using accessor
     NewPropertyField( id, zClass, fieldSets,

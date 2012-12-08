@@ -1,6 +1,7 @@
 package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.model._
+import fieldmember.{MLiteral, MRolePlayer, MFieldMember, IFieldMember}
 import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
@@ -42,8 +43,8 @@ case class
 ModifiedComplexField protected[redishost] ( id: PersistedId,
                                             zClass: MRef[MFieldClass],
                                             fieldSets: Seq[MFieldSetRef],
-                                            rolePlayersOrig: MRolePlayerSet,
-                                            literalsOrig: MLiteralSet,
+                                            rolePlayersOrig: Set[MRolePlayer],
+                                            literalsOrig: Set[MLiteral],
                                             members: Seq[MFieldMember] = Seq(),
                                             scope: MScopeSeq = Seq(),
                                             messages: Seq[(MsgType, String)] = Seq(),
@@ -66,8 +67,8 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
       rolePlayersOrig, literalsOrig, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): ModifiedComplexField = {
     // TODO update using accessor
     ModifiedComplexField( id, zClass, fieldSets,
@@ -101,8 +102,8 @@ case class NewComplexField protected[redishost] ( id: TempId,
     NewComplexField( id, zClass, fieldSets, members, scope,
       messages, memberMessages, scopeMessages, deleted_? )
   }
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): NewComplexField = {
     // TODO update using accessor
     NewComplexField( id, zClass, fieldSets, members, scope,

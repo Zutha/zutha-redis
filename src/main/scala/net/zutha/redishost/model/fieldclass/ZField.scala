@@ -2,10 +2,10 @@ package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.db.MutableAccessor
 import net.zutha.redishost.model._
-import fieldmember.MLiteral
+import companion.ZFieldClassCompanion
+import fieldmember._
 import fieldset._
 import itemclass._
-import companion.ZFieldClassCompanion
 import MsgType._
 import net.zutha.redishost.exception.SchemaException
 
@@ -136,8 +136,8 @@ trait MField
    * @param literals
    * @return
    */
-  protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralSet = literals
+  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
+                              literals: Set[MLiteral] = literals
                               ): T
 
   // Accessors
@@ -149,15 +149,15 @@ trait MField
   def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
   def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
 
-  lazy val rolePlayers: MRolePlayerSet = {
-    val rolePlayerSeq = members flatMap {m => m match {
-      case MRoleFieldMember(role, players) => players.map (p => (role -> p))
+  lazy val rolePlayers: Set[MRolePlayer] = {
+    val rolePlayerSeq: Seq[MRolePlayer] = members flatMap { m => m match {
+      case MRoleFieldMember( role, players ) => players.map (p => MRolePlayer(role, p))
       case _ => Seq()
     }}
     rolePlayerSeq.toSet
   }
 
-  lazy val literals: MLiteralSet = {
+  lazy val literals: Set[MLiteral] = {
     val literalSeq: Seq[MLiteral] = members.collect {
       case literal: MLiteral => literal
     }
@@ -166,25 +166,25 @@ trait MField
 
   // Mutators
 
-  def mutateRolePlayers(mutate: MRolePlayerSet => MRolePlayerSet): T =
+  def mutateRolePlayers(mutate: Set[MRolePlayer] => Set[MRolePlayer]): T =
     updateField( rolePlayers = mutate(rolePlayers) )
 
-  def addRolePlayer(role: MRole, player: MObject): T =
-    mutateRolePlayers(_ + (role.ref -> player.ref) )
+  def addRolePlayer( rolePlayer: MRolePlayer ): T =
+    mutateRolePlayers(_ + rolePlayer )
 
-  def removeRolePlayer(role: MRole, player: MObject): T =
-    mutateRolePlayers( _ - (role.ref -> player.ref) )
+  def removeRolePlayer( rolePlayer: MRolePlayer ) : T =
+    mutateRolePlayers( _ - rolePlayer )
 
-  def mutateLiterals(mutate: MLiteralSet => MLiteralSet): T =
+  def mutateLiterals( mutate: Set[MLiteral] => Set[MLiteral] ): T =
     updateField( literals = mutate(literals) )
 
-  def addLiteral(literal: MLiteral): T =
+  def addLiteral( literal: MLiteral ): T =
     mutateLiterals( _ + literal )
 
-  def removeLiteral(literal: MLiteral): T =
+  def removeLiteral( literal: MLiteral ): T =
     mutateLiterals( _ - literal )
 
-  def applyDiff(diff: ZFieldDiff): T = {
+  def applyDiff( diff: ZFieldDiff ): T = {
     val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
     val newLiterals = literals ++ diff.addedLiterals -- diff.removedLiterals
 
@@ -204,8 +204,8 @@ trait ModifiedField
   def id: PersistedId
   def zClass: MRef[MFieldClass]
   def fieldSets: Seq[MFieldSetRef]
-  def rolePlayersOrig: MRolePlayerSet
-  def literalsOrig: MLiteralSet
+  def rolePlayersOrig: Set[MRolePlayer]
+  def literalsOrig: Set[MLiteral]
   def members: Seq[MFieldMember]
   def scope: MScopeSeq
   def messages: Seq[(MsgType, String)]
