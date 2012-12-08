@@ -4,6 +4,7 @@ import net.zutha.redishost.model._
 import companion.ZClassCompanion
 import fieldset._
 import MsgType._
+import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor, Accessor}
 
 object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
   type ObjC = ZClass
@@ -23,11 +24,13 @@ object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
 
 
 trait ZObject
-  extends HasRef
 {
   type T <: ZObject
 
   // Accessors
+  implicit def acc: Accessor
+
+  def ref: ZRef[T]
 
   def id: ZIdentity
   def key: String = id.key
@@ -71,11 +74,13 @@ trait PersistedObject
 trait IObject
   extends ZObject
   with PersistedObject
-  with HasIRef
 {
 	type T <: IObject
 
   // Accessors
+  implicit def acc: ImmutableAccessor
+
+  def ref: IRef[T] = IRef[T]( id )
 
   def id: Zids
 
@@ -97,11 +102,14 @@ trait IObject
  */
 trait MObject
   extends ZObject
-  with HasMRef
 {
 	type T <: MObject
 
   // Accessors
+
+  implicit def acc: MutableAccessor
+
+  def ref: MRef[T] = MRef[T]( id )
 
   def id: ZIdentity
 
