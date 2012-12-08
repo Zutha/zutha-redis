@@ -1,7 +1,7 @@
 package net.zutha.redishost.model.datatype
 
 import net.zutha.redishost.model.companion.ZDatatypeCompanion
-import net.zutha.redishost.literal.{LiteralValueLike, LiteralValue}
+import net.zutha.redishost.model.fieldmember.{LiteralValueLike, LiteralValue}
 
 object URI extends ZDatatypeCompanion[URI] {
 

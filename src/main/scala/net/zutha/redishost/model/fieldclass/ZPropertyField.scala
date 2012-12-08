@@ -1,11 +1,11 @@
 package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.model._
+import fieldmember.{ILiteral, MLiteral}
 import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
-import net.zutha.redishost.literal.{MLiteral, ILiteral}
 
 trait ZPropertyField
   extends ZField

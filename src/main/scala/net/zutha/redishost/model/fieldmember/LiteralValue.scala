@@ -1,4 +1,4 @@
-package net.zutha.redishost.literal
+package net.zutha.redishost.model.fieldmember
 
 import net.zutha.redishost.model.itemclass.{IDatatype, MDatatype}
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}

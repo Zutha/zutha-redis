@@ -2,7 +2,7 @@ package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model.companion.ZItemClassCompanion
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
-import net.zutha.redishost.literal.{LiteralValue, MLiteral, ILiteral}
+import net.zutha.redishost.model.fieldmember._
 
 object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
 

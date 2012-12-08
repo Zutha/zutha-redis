@@ -2,7 +2,7 @@ package net.zutha.redishost.db
 
 import com.redis.RedisCommand
 import net.zutha.redishost.model._
-import net.zutha.redishost.literal.MLiteral
+import fieldmember.MLiteral
 
 protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 

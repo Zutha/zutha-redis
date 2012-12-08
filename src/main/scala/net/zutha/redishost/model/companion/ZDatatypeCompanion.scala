@@ -1,9 +1,8 @@
 package net.zutha.redishost.model.companion
 
 import net.zutha.redishost.model._
+import fieldmember.LiteralValue
 import net.zutha.redishost.model.itemclass._
-import scala.Some
-import net.zutha.redishost.literal.LiteralValue
 
 protected[redishost] trait ZDatatypeCompanion[+V <: LiteralValue]
   extends SchemaItem

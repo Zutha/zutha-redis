@@ -1,9 +1,10 @@
 package net.zutha.redishost.model.companion
 
 import net.zutha.redishost.model._
+import fieldmember.{LiteralValue, MLiteral, ILiteral}
 import net.zutha.redishost.model.itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
-import net.zutha.redishost.literal.{LiteralValue, MLiteral, ILiteral}
+
 
 
 protected[redishost] trait ZLiteralTypeCompanion[V <: LiteralValue]

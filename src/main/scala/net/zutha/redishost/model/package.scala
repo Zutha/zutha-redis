@@ -1,10 +1,11 @@
 package net.zutha.redishost
 
-import literal.{MLiteral, ILiteral, Literal}
+
 
 package object model {
   import itemclass._
   import fieldclass._
+  import fieldmember._
   import scala.language.implicitConversions
 
   type I = IObject

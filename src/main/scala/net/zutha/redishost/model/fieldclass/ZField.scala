@@ -2,12 +2,12 @@ package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.db.MutableAccessor
 import net.zutha.redishost.model._
+import fieldmember.MLiteral
 import fieldset._
 import itemclass._
 import companion.ZFieldClassCompanion
 import MsgType._
 import net.zutha.redishost.exception.SchemaException
-import net.zutha.redishost.literal.MLiteral
 
 object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
