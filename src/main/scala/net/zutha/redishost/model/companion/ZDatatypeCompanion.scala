@@ -20,12 +20,9 @@ protected[redishost] trait ZDatatypeCompanion[+V <: LiteralValue]
 
   def make( value: String ): Option[V]
 
-  def unapply( value: String ): Option[V] = make( value )
-
   def validate( value: String ): Boolean = make( value ) match {
     case Some(_) => true
     case None => false
   }
 
-  def unapply[T >: V <: LiteralValue]( value: T ): Option[String]
 }

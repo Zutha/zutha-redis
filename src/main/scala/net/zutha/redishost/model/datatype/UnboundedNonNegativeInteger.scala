@@ -9,11 +9,7 @@ object UnboundedNonNegativeInteger extends ZDatatypeCompanion[UnboundedNonNegati
 
   def make( value: String ): Option[UnboundedNonNegativeInteger] = value match {
     case "*" => Some(Infinity)
-    case v => try {
-        Some(Finite(v.toInt))
-      } catch {
-        case e: Exception => None
-      }
+    case v => NonNegativeInteger.make( v )
   }
 
   def unapply[T >: UnboundedNonNegativeInteger <: LiteralValue]( value: T ): Option[String] = value match {
@@ -27,23 +23,10 @@ object UnboundedNonNegativeInteger extends ZDatatypeCompanion[UnboundedNonNegati
     def asString = "*"
     def compare(other: UnboundedNonNegativeInteger) = other match {
       case Infinity => 0
-      case Finite(otherVal) => 1
+      case v: NonNegativeInteger => 1
     }
   }
 
-  case class Finite(value: Int) extends UnboundedNonNegativeInteger {
-    require( value >= 0, "UnboundedNonNegativeInteger literals cannot be negative." )
-    def asString = value.toString
-
-    def compare(other: UnboundedNonNegativeInteger) = other match {
-      case Infinity => -1
-      case Finite(otherVal) => (value - otherVal).signum
-    }
-  }
-
-  // implicit conversions
-  import scala.language.implicitConversions
-  implicit def intToUnboundedNNI( value:Int ):UnboundedNonNegativeInteger = Finite(value)
 }
 
 trait UnboundedNonNegativeInteger 
