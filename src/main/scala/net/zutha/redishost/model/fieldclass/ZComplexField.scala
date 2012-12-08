@@ -67,7 +67,7 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): ModifiedComplexField = {
     // TODO update using accessor
     ModifiedComplexField( id, zClass, fieldSets,
@@ -102,7 +102,7 @@ case class NewComplexField protected[redishost] ( id: TempId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): NewComplexField = {
     // TODO update using accessor
     NewComplexField( id, zClass, fieldSets, members, scope,

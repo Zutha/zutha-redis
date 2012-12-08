@@ -3,7 +3,6 @@ package net.zutha.redishost.db
 import net.zutha.redishost.model._
 import fieldclass._
 import itemclass._
-import literal.Name
 
 trait UpdateQueries { self: MutableAccessor =>
 
@@ -20,12 +19,6 @@ trait UpdateQueries { self: MutableAccessor =>
     val newId = nextId
     redis.hset( OBJ_PREFIX + newId, objIsNewHKey, newId )
     newId
-  }
-
-  protected[redishost] def createSchemaRef( name: Name ): MRef[MObject] = {
-    val newId = createNewObject
-    redis.indexAddName( name.value, newId )
-    MRef(TempId(newId))
   }
 
   def createItem( zClass: MRef[MItemClass] ): NewItem = {
@@ -61,13 +54,10 @@ trait UpdateQueries { self: MutableAccessor =>
       r.setFieldScope( newId, scope )
     }
 
-    val literalMembers = literals.map{ case (lType, value) =>
-      MLiteralFieldMember(lType, value)
-    }.toSeq
     val roleMembers = rolePlayers.mapValues(_.toSeq).map{case (role, players) =>
       MRoleFieldMember(role, players)
     }.toSeq
-    val members: Seq[MFieldMember] = roleMembers ++ literalMembers
+    val members: Seq[MFieldMember] = roleMembers ++ literals
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
 
     //TODO create simpler FieldType if applicable

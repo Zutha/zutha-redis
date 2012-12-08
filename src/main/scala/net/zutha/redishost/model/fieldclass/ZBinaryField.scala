@@ -91,7 +91,7 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
    * @return the deleted old binary field
    */
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): ModifiedBinaryField = {
     val rps1 = rolePlayers.get(rolePlayer1._1).getOrElse(Set(rolePlayer1._2))
     val rps2 = rolePlayers.get(rolePlayer2._1).getOrElse(Set(rolePlayer2._2))
@@ -147,7 +147,7 @@ NewBinaryField protected[redishost] ( id: TempId,
    * @return the updated binary field
    */
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): NewBinaryField = {
     val rps1 = rolePlayers.get(rolePlayer1._1).getOrElse(Set(rolePlayer1._2))
     val rps2 = rolePlayers.get(rolePlayer2._1).getOrElse(Set(rolePlayer2._2))

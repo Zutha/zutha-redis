@@ -10,5 +10,5 @@ protected[redishost] trait ZRoleCompanion
   type ObjCM = MRole
   type ObjCI = IRole
 
-  def classFactory = ZRole
+  protected def classFactory = ZRole
 }

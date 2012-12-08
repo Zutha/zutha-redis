@@ -5,6 +5,7 @@ import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
+import net.zutha.redishost.literal.{MLiteral, ILiteral}
 
 trait ZPropertyField
   extends ZField
@@ -82,7 +83,7 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): ModifiedPropertyField = {
     // TODO update using accessor
     ModifiedPropertyField( id, zClass, fieldSets,
@@ -122,7 +123,7 @@ NewPropertyField protected[redishost] ( id: TempId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): NewPropertyField = {
     // TODO update using accessor
     NewPropertyField( id, zClass, fieldSets,

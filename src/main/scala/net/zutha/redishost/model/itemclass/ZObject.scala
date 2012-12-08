@@ -15,7 +15,7 @@ object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
   type ObjTM = MClass with MRole
   type ObjTI = IClass with IRole
 
-  def classFactory = ZClass
+  protected def classFactory = ZClass
 
   def name = "Object"
 

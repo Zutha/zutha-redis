@@ -7,6 +7,7 @@ import itemclass._
 import companion.ZFieldClassCompanion
 import MsgType._
 import net.zutha.redishost.exception.SchemaException
+import net.zutha.redishost.literal.MLiteral
 
 object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
@@ -136,7 +137,7 @@ trait MField
    * @return
    */
   protected def updateField ( rolePlayers: MRolePlayerMap = rolePlayers,
-                              literals: MLiteralMap = literals
+                              literals: MLiteralSet = literals
                               ): T
 
   // Accessors
@@ -158,7 +159,7 @@ trait MField
 
   lazy val literals: MLiteralSet = {
     val literalSeq: Seq[MLiteral] = members.collect {
-      case MLiteralFieldMember(literalType, value) => literalType -> value
+      case literal: MLiteral => literal
     }
     literalSeq.toSet
   }

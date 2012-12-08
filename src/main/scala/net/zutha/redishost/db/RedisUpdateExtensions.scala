@@ -2,9 +2,7 @@ package net.zutha.redishost.db
 
 import com.redis.RedisCommand
 import net.zutha.redishost.model._
-import fieldclass._
-import fieldset._
-import itemclass._
+import net.zutha.redishost.literal.MLiteral
 
 protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
@@ -41,9 +39,9 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
   }
 
   def setFieldLiterals( fieldId: String, literals: MLiteralSet ) {
-    val kvs = literals.toSeq map { case (literalType, literalValue) =>
+    val kvs = literals.toSeq map { case MLiteral( literalType, value ) =>
       val key = fieldLiteralsKey( fieldId, literalType.key )
-      ( key -> literalValue.toString )
+      ( key -> value.toString )
     }
     r.mset( kvs:_* )
   }

@@ -4,6 +4,7 @@ import net.zutha.redishost.model.MRef
 import net.zutha.redishost.model.itemclass._
 import net.zutha.redishost.db.MutableAccessor
 import net.zutha.redishost.model.fieldclass.{NewComplexField, FieldDeclaration}
+import net.zutha.redishost.model.datatype.UnboundedNonNegativeInteger
 
 class ClassBuilder( val ref: MRef[MClass] )
                   ( implicit val acc: MutableAccessor )
@@ -12,8 +13,9 @@ class ClassBuilder( val ref: MRef[MClass] )
 {
   def playsRole( role: MRef[MRole],
                  fieldClass: MRef[MFieldClass],
-                 minCard: Int,
-                 maxCard: Int ): MRef[NewComplexField] = {
+                 minCard: UnboundedNonNegativeInteger,
+                 maxCard: UnboundedNonNegativeInteger
+                 ): MRef[NewComplexField] = {
     FieldDeclaration( ref, role, fieldClass, minCard, maxCard ).ref
   }
 }

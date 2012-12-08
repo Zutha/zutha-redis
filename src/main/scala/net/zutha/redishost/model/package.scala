@@ -1,6 +1,6 @@
 package net.zutha.redishost
 
-import model.literal.LiteralValue
+import literal.{MLiteral, ILiteral, Literal}
 
 package object model {
   import itemclass._
@@ -33,20 +33,9 @@ package object model {
   type MRolePlayerMap       = Map[MRef[MRole], Set[MRef[MObject]]]
   implicit def MRolePlayerSetToMap( rps: MRolePlayerSet ): MRolePlayerMap = rps.groupBy(_._1).mapValues(_.map(_._2))
 
-
-
-  type Literal              = (ZRef[ZLiteralType], LiteralValue)
-  type LiteralSet           = Set[Literal]
-  type LiteralMap           = Map[ZRef[ZLiteralType], LiteralValue]
-  implicit def LiteralSetToMap( literals: LiteralSet ): LiteralMap = literals.toMap
-  type ILiteral             = (IRef[ILiteralType], LiteralValue)
-  type ILiteralSet          = Set[ILiteral]
-  type ILiteralMap          = Map[IRef[ILiteralType], LiteralValue]
-  implicit def ILiteralSetToMap( literals: ILiteralSet ): ILiteralMap = literals.toMap
-  type MLiteral             = (MRef[MLiteralType], LiteralValue)
-  type MLiteralSet          = Set[MLiteral]
-  type MLiteralMap          = Map[MRef[MLiteralType], LiteralValue]
-  implicit def MLiteralSetToMap( literals: MLiteralSet ): MLiteralMap = literals.toMap
+  type LiteralSet            = Set[Literal]
+  type ILiteralSet           = Set[ILiteral]
+  type MLiteralSet           = Set[MLiteral]
 
   type FieldSeq            = Seq[ZRef[ZField]]
   type IFieldSeq           = Seq[IRef[IField]]

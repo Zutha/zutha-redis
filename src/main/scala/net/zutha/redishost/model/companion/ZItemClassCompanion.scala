@@ -15,5 +15,5 @@ protected[redishost] trait ZItemClassCompanion
   type ObjCI = IItemClass
   type ObjCM = MItemClass
 
-  def classFactory = ZItemClass
+  protected def classFactory = ZItemClass
 }
