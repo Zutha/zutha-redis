@@ -1,13 +1,12 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model._
-import companion.ZItemClassCompanion
+import net.zutha.redishost.model.companion.ZItemClassCompanion
 
 object ZObjectType extends ZItemClassCompanion[ZObjectType, IObjectType, MObjectType] {
 
   def name = "ObjectType"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZObjectType

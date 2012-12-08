@@ -6,7 +6,7 @@ object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLit
 
   def name = "LiteralType"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZLiteralType

@@ -6,7 +6,7 @@ object ZType extends ZItemClassCompanion[ZType, IType, MType] {
 
   def name = "Type"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZType

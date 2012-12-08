@@ -17,5 +17,5 @@ object NamableHasName extends ZFieldClassCompanion[ZField, IField, MField] {
     ZField( NamableHasName, Namable.refM -> namable, Name.refM -> name )
   }
 
-  def validType_?(obj: ZObject) = ???
+
 }

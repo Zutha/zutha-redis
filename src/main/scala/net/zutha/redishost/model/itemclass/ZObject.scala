@@ -1,6 +1,5 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model._
 import companion.ZClassCompanion
 import fieldset._
@@ -19,7 +18,7 @@ object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
 
   def name = "Object"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 
@@ -29,7 +28,6 @@ trait ZObject
   type T <: ZObject
 
   // Accessors
-  def ref: ZRef[T]
 
   def id: ZIdentity
   def key: String = id.key
@@ -77,6 +75,8 @@ trait IObject
 {
 	type T <: IObject
 
+  // Accessors
+
   def id: Zids
 
   def zid: Zid = id.zid
@@ -84,6 +84,10 @@ trait IObject
   override def zClass: IRef[IClass]
 
   def fieldSets: Seq[IFieldSetRef]
+
+  // Queries
+
+  def hasType_? ( zType: IRef[IType] ) : Boolean = acc.objHasType( zType )
 
 }
 
@@ -98,6 +102,7 @@ trait MObject
 	type T <: MObject
 
   // Accessors
+
   def id: ZIdentity
 
   override def zClass: MRef[MClass]
@@ -107,6 +112,10 @@ trait MObject
   def deleted_? : Boolean
 
   def messages: Seq[(MsgType, String)]
+
+  // Queries
+
+  def hasType_? ( zType: MRef[MType] ) : Boolean = acc.objHasType( zType )
 
   // Mutation
 

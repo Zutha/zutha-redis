@@ -6,7 +6,7 @@ object ZItemClass extends ZItemClassCompanion[ZItemClass, IItemClass, MItemClass
 
   def name = "ItemClass"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZItemClass

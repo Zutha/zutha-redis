@@ -6,7 +6,7 @@ object ZDatatype extends ZItemClassCompanion[ZDatatype, IDatatype, MDatatype] {
 
   def name = "Datatype"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZDatatype

@@ -1,6 +1,6 @@
 package net.zutha.redishost.model.fieldclass
 
-import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
+import net.zutha.redishost.db.MutableAccessor
 import net.zutha.redishost.model._
 import fieldset._
 import itemclass._
@@ -12,7 +12,7 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
   def name = "Field"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 
   /**
    * Create a new Property Field

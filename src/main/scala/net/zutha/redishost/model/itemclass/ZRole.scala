@@ -10,7 +10,7 @@ object ZRole extends ZItemClassCompanion[ZRole, IRole, MRole] {
 
   def name = "Role"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 
 }
 

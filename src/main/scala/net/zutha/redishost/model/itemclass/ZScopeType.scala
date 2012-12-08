@@ -6,7 +6,7 @@ object ZScopeType extends ZItemClassCompanion[ZScopeType, IScopeType, MScopeType
 
   def name = "ScopeType"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZScopeType

@@ -8,6 +8,8 @@ import net.zutha.redishost.model.ScopeMatchType._
 
 trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
 
+  // =================== Getters ======================
+
   def getObjectRef( objKey: String ): Option[IRef[IObject]] = objKey match {
     case Zid(zid) => getObjectZids( objKey ).toSeq match {
       case Seq() => None
@@ -58,7 +60,10 @@ trait ImmutableReadQueries extends ReadQueries { self: ImmutableAccessor =>
     IFieldSet( parent, role, fieldClass, fields, scopeFilter, scopeMatchType, order, limit, offset )
   }
 
+  // =================== Queries ======================
 
-
+  def objHasType( zType: IRef[IType] ): Boolean = {
+    ???
+  }
 
 }

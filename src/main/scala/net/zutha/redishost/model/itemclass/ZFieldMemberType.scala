@@ -6,7 +6,7 @@ object ZFieldMemberType extends ZItemClassCompanion[ZFieldMemberType, IFieldMemb
 
   def name = "FieldMemberType"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZFieldMemberType

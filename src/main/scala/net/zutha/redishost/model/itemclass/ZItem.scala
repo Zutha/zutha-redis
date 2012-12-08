@@ -10,7 +10,7 @@ object ZItem extends ZItemClassCompanion[ZItem, IItem, MItem] {
 
   def name = "Item"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 
   def apply( zClass: MRef[MItemClass]
              )( implicit acc: MutableAccessor ): NewItem = {

@@ -8,9 +8,8 @@ import net.zutha.redishost.model.ScopeMatchType._
 
 trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
-  def objectIsNew( objKey: String ): Boolean = {
-    redis.hexists( objHashKey( objKey ), objIsNewHKey )
-  }
+  // =================== Getters ======================
+
   override def getObjectZids( objKey: String ): Set[Zid] = {
     super.getObjectZids( objKey ) union dbAcc.getObjectZids( objKey )
   }
@@ -95,5 +94,15 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   // TODO: implement stub
   def getUpdatedField( field: MRef[ModifiedField], fieldLimit: Int = 0 ): ModifiedField = ???
 
+
+  // =================== Queries ======================
+
+  def objectIsNew( objKey: String ): Boolean = {
+    redis.hexists( objHashKey( objKey ), objIsNewHKey )
+  }
+
+  def objHasType( zType: MRef[MType] ): Boolean = {
+    ???
+  }
 
 }

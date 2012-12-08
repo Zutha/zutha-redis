@@ -12,8 +12,8 @@ protected[redishost] trait ZItemClassCompanion
   extends ZClassCompanion[T, TI, TM]
 {
   type ObjC = ZItemClass
-  type ObjCM = MItemClass
   type ObjCI = IItemClass
+  type ObjCM = MItemClass
 
   def classFactory = ZItemClass
 }

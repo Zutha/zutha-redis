@@ -6,7 +6,7 @@ object ZFieldClass extends ZItemClassCompanion[ZFieldClass, IFieldClass, MFieldC
 
   def name = "FieldClass"
 
-  def validType_?(obj: ZObject): Boolean = ???
+
 }
 
 trait ZFieldClass

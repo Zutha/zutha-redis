@@ -6,6 +6,8 @@ import itemclass._
 private[model] trait HasRef {
   type T <: ZObject
 
+  implicit def acc: Accessor
+
   def id: ZIdentity
   
   def ref: ZRef[T]
