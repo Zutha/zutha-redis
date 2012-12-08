@@ -6,7 +6,9 @@ object ZFieldClass extends ZItemClassCompanion[ZFieldClass, IFieldClass, MFieldC
 
   def name = "FieldClass"
 
-
+  type ObjT = ZItemClass with ZRole
+  type ObjTI = IItemClass with IRole
+  type ObjTM = MItemClass with MRole
 }
 
 trait ZFieldClass

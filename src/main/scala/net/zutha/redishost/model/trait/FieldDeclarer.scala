@@ -1,12 +1,12 @@
-package net.zutha.redishost.model.role
+package net.zutha.redishost.model.`trait`
 
 import net.zutha.redishost.model.itemclass._
 import net.zutha.redishost.model.companion.ZRoleCompanion
 
-object Namable extends ZRoleCompanion {
+object FieldDeclarer extends ZRoleCompanion {
   type ObjT = ZTrait with ZRole
   type ObjTM = MTrait with MRole
   type ObjTI = ITrait with IRole
 
-  def name = "Namable"
+  def name = "Field Declarer"
 }

@@ -2,7 +2,6 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import fieldclass._
-import fieldset._
 import itemclass._
 import literal.Name
 
@@ -51,6 +50,8 @@ trait UpdateQueries { self: MutableAccessor =>
                    scope: MScopeMap
                    ): NewField = {
     val newId = createNewObject
+
+    //TODO verify provided field components against fieldClass declarations
 
     redis.pipeline {r =>
       r.specifyObjectClass( newId, zClass.key )

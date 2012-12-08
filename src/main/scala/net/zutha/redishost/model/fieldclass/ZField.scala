@@ -29,7 +29,8 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
     val scopeMap: MScopeMap = scope.toMap
     acc.createField(zClass, Set(rolePlayer), Set(literal), scopeMap.toMap ) match {
       case f: NewPropertyField => f
-      case f => throw new SchemaException("createdField should have returned a PropertyField. Actually returned: " + f.toString )
+      case f => throw new SchemaException(
+        "createdField should have returned a PropertyField. Actually returned: " + f.toString )
     }
   }
 
@@ -47,7 +48,8 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
     //TODO verify that field class is a binary field
     acc.createField(zClass, Set(rolePlayer1, rolePlayer2), Set(), scope.toMap ) match {
       case f: NewBinaryField => f
-      case f => throw new SchemaException("createdField should have returned a BinaryField. Actually returned: " + f.toString )
+      case f => throw new SchemaException(
+        "createdField should have returned a BinaryField. Actually returned: " + f.toString )
     }
   }
 
@@ -59,7 +61,7 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
    */
   def apply( zClass: MRef[MFieldClass], 
              rolePlayers: MRolePlayer* )
-           ( implicit acc: MutableAccessor ): NewField = {
+           ( implicit acc: MutableAccessor ): NewComplexField = {
     apply( zClass )( rolePlayers:_* )()()
   }
 
@@ -74,8 +76,12 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
            ( rolePlayers: MRolePlayer* )
            ( literals: MLiteral* )
            ( scope: (MRef[MScopeType], Set[MRef[MObject]])* )
-           ( implicit acc: MutableAccessor ): NewField = {
-    acc.createField( zClass, rolePlayers.toSet, literals.toSet, scope.toMap )
+           ( implicit acc: MutableAccessor ): NewComplexField = {
+    acc.createField( zClass, rolePlayers.toSet, literals.toSet, scope.toMap ) match {
+      case f: NewComplexField => f
+      case f => throw new IllegalArgumentException(
+        "This constructor should only be used for Complex Fields. Field created: " + f.toString )
+    }
   }
 }
 

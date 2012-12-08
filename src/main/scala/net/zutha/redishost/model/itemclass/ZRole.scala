@@ -9,9 +9,6 @@ object ZRole extends ZItemClassCompanion[ZRole, IRole, MRole] {
   type ObjTM = MItemClass with MRole with MTrait
 
   def name = "Role"
-
-
-
 }
 
 trait ZRole
