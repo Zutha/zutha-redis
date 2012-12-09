@@ -2,7 +2,7 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import fieldclass._
-import fieldmember.{MLiteral, MRolePlayer, MRoleFieldMember, MFieldMember}
+import fieldmember._
 import itemclass._
 import net.zutha.redishost.exception.SchemaException
 
@@ -41,7 +41,7 @@ trait UpdateQueries { self: MutableAccessor =>
    */
   def createField( zClass: MRef[MFieldClass],
                    rolePlayers: Set[MRolePlayer],
-                   literals: Set[MLiteral],
+                   literals: MLiteralMap,
                    scope: MScopeMap
                    ): NewField = {
     val newId = createNewObject
@@ -59,7 +59,7 @@ trait UpdateQueries { self: MutableAccessor =>
     val roleMembers = rolePlayers.groupBy(_.role).map{ case (role, rps) =>
       MRoleFieldMember(role, rps.map(_.player).toSeq )
     }.toSeq
-    val literalMembers = literals.toSeq
+    val literalMembers: Seq[MLiteral] = literals.map( pair => (pair: MLiteral) ).toSeq
     val members: Seq[MFieldMember] = roleMembers ++ literalMembers
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
 
@@ -90,7 +90,7 @@ trait UpdateQueries { self: MutableAccessor =>
     case ModifiedBinaryField( modifiedFieldId, zClass, fieldSets, rp1, rp2, scope,
                               msgs, memberMsgs, scopeMsgs, deleted_? ) => {
       // TODO delete modifiedField
-      createField( zClass, Set( rolePlayer1, rolePlayer2 ), Set(), scope ) match {
+      createField( zClass, Set( rolePlayer1, rolePlayer2 ), Map(), scope ) match {
         case f: NewBinaryField => f
         case f => throw new SchemaException(
           "A binary field should have been created. Actually returned: " + f.toString )

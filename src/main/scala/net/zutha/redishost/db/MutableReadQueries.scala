@@ -2,7 +2,7 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import fieldclass._
-import fieldmember.{MLiteral, MRolePlayer}
+import fieldmember._
 import fieldset._
 import itemclass._
 import net.zutha.redishost.model.ScopeMatchType._
@@ -68,7 +68,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
   }
 
   //  TODO: implement stub
-  def getLiteralsOfField( field: MRef[MField] ): Set[MLiteral] = {
+  def getLiteralsOfField( field: MRef[MField] ): MLiteralMap = {
     ???
   }
 

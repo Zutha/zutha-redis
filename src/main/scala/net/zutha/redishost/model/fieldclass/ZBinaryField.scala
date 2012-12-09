@@ -19,12 +19,12 @@ trait ZBinaryField
  */
 case class
 IBinaryField protected[redishost] ( id: Zids,
-                                      zClass: IRef[IFieldClass],
-                                      fieldSets: Seq[IFieldSetRef],
-                                      rolePlayer1: IRolePlayer,
-                                      rolePlayer2: IRolePlayer,
-                                      scope: IScopeSeq
-                                      )( implicit val acc: ImmutableAccessor )
+                                    zClass: IRef[IFieldClass],
+                                    fieldSets: Seq[IFieldSetRef],
+                                    rolePlayer1: IRolePlayer,
+                                    rolePlayer2: IRolePlayer,
+                                    scope: IScopeSeq
+                                    )( implicit val acc: ImmutableAccessor )
   extends IField
 {
   type T = IBinaryField
@@ -43,7 +43,7 @@ trait MBinaryField
 
   def members: Seq[MFieldMember] = Seq( rolePlayer1, rolePlayer2 )
   override lazy val rolePlayers = Set( rolePlayer1, rolePlayer2 )
-  override lazy val literals: Set[MLiteral] = Set()
+  override lazy val literals: MLiteralMap = Map()
 
   protected def updateRolePlayers( rolePlayers: Set[MRolePlayer] = rolePlayers
                                    ): NewBinaryField = {
@@ -80,7 +80,7 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
 
   // Getters
 
-  def literalsOrig: Set[MLiteral] = Set()
+  def literalsOrig: MLiteralMap = Map()
   def rolePlayersOrig: Set[MRolePlayer] = Set( rolePlayer1, rolePlayer2 )
 
   //  Mutators
@@ -102,7 +102,7 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
    * @return the deleted old binary field
    */
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): ModifiedBinaryField = {
     updateRolePlayers( rolePlayers )
     acc.getField( this.ref ) // get the deleted old field and return it
@@ -148,7 +148,7 @@ NewBinaryField protected[redishost] ( id: TempId,
    * @return the updated binary field
    */
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): NewBinaryField = {
     updateRolePlayers( rolePlayers )
   }

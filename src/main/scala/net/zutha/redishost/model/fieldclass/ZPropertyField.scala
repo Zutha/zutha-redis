@@ -43,7 +43,7 @@ trait MPropertyField
 
   def members: Seq[MFieldMember] = Seq( rolePlayer, literal )
   override lazy val rolePlayers = Set( rolePlayer )
-  override lazy val literals = Set( literal )
+  override lazy val literals = Map( literal.toPair )
 }
 
 /**
@@ -69,7 +69,7 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
 
   // Getters
 
-  def literalsOrig: Set[MLiteral] = Set( literalOrig )
+  def literalsOrig: MLiteralMap = Set( literalOrig )
   def rolePlayersOrig: Set[MRolePlayer] = Set( rolePlayer )
 
   //  Mutators
@@ -83,7 +83,7 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): ModifiedPropertyField = {
     // TODO update using accessor
     ModifiedPropertyField( id, zClass, fieldSets,
@@ -123,7 +123,7 @@ NewPropertyField protected[redishost] ( id: TempId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): NewPropertyField = {
     // TODO update using accessor
     NewPropertyField( id, zClass, fieldSets,

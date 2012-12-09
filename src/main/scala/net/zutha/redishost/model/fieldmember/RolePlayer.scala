@@ -19,10 +19,17 @@ object RolePlayer {
 trait RolePlayer {
   def role: ZRef[ZRole]
   def player: ZRef[ZObject]
+  def toPair: Pair[ZRef[ZRole], ZRef[ZObject]]
 }
 
 case class IRolePlayer( role: IRef[IRole], player: IRef[IObject] )
   extends RolePlayer
+{
+  def toPair = Pair( role, player )
+}
 
 case class MRolePlayer( role: MRef[MRole], player: MRef[MObject] )
   extends RolePlayer
+{
+  def toPair = Pair( role, player )
+}

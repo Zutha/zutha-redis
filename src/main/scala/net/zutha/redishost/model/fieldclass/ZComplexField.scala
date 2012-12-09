@@ -1,7 +1,7 @@
 package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.model._
-import fieldmember.{MLiteral, MRolePlayer, MFieldMember, IFieldMember}
+import fieldmember._
 import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
@@ -44,7 +44,7 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
                                             zClass: MRef[MFieldClass],
                                             fieldSets: Seq[MFieldSetRef],
                                             rolePlayersOrig: Set[MRolePlayer],
-                                            literalsOrig: Set[MLiteral],
+                                            literalsOrig: MLiteralMap,
                                             members: Seq[MFieldMember] = Seq(),
                                             scope: MScopeSeq = Seq(),
                                             messages: Seq[(MsgType, String)] = Seq(),
@@ -68,7 +68,7 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): ModifiedComplexField = {
     // TODO update using accessor
     ModifiedComplexField( id, zClass, fieldSets,
@@ -103,7 +103,7 @@ case class NewComplexField protected[redishost] ( id: TempId,
       messages, memberMessages, scopeMessages, deleted_? )
   }
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): NewComplexField = {
     // TODO update using accessor
     NewComplexField( id, zClass, fieldSets, members, scope,

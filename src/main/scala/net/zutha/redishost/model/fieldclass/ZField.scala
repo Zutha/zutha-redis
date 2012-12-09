@@ -47,7 +47,7 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
              scope: (MRef[MScopeType], Set[MRef[MObject]])* )
            ( implicit acc: MutableAccessor ): NewBinaryField = {
     //TODO verify that field class is a binary field
-    acc.createField(zClass, Set(rolePlayer1, rolePlayer2), Set(), scope.toMap ) match {
+    acc.createField(zClass, Set(rolePlayer1, rolePlayer2), Map(), scope.toMap ) match {
       case f: NewBinaryField => f
       case f => throw new SchemaException(
         "createdField should have returned a BinaryField. Actually returned: " + f.toString )
@@ -137,7 +137,7 @@ trait MField
    * @return
    */
   protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: Set[MLiteral] = literals
+                              literals: MLiteralMap = literals
                               ): T
 
   // Accessors
@@ -157,12 +157,9 @@ trait MField
     rolePlayerSeq.toSet
   }
 
-  lazy val literals: Set[MLiteral] = {
-    val literalSeq: Seq[MLiteral] = members.collect {
-      case literal: MLiteral => literal
-    }
-    literalSeq.toSet
-  }
+  lazy val literals: MLiteralMap = members.collect {
+    case literal: MLiteral => literal.toPair
+  }.toMap
 
   // Mutators
 
@@ -175,18 +172,16 @@ trait MField
   def removeRolePlayer( rolePlayer: MRolePlayer ) : T =
     mutateRolePlayers( _ - rolePlayer )
 
-  def mutateLiterals( mutate: Set[MLiteral] => Set[MLiteral] ): T =
+  def mutateLiterals( mutate: MLiteralMap => MLiteralMap ): T =
     updateField( literals = mutate(literals) )
 
-  def addLiteral( literal: MLiteral ): T =
-    mutateLiterals( _ + literal )
-
-  def removeLiteral( literal: MLiteral ): T =
-    mutateLiterals( _ - literal )
+  def updateLiteral( literalType: MRef[MLiteralType], newValue: LiteralValue ): T = {
+    mutateLiterals( _.updated( literalType, newValue ) )
+  }
 
   def applyDiff( diff: ZFieldDiff ): T = {
     val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
-    val newLiterals = literals ++ diff.addedLiterals -- diff.removedLiterals
+    val newLiterals = literals ++ diff.modifiedLiterals
 
     updateField( rolePlayers = newRolePlayers, literals = newLiterals )
   }
@@ -205,7 +200,7 @@ trait ModifiedField
   def zClass: MRef[MFieldClass]
   def fieldSets: Seq[MFieldSetRef]
   def rolePlayersOrig: Set[MRolePlayer]
-  def literalsOrig: Set[MLiteral]
+  def literalsOrig: MLiteralMap
   def members: Seq[MFieldMember]
   def scope: MScopeSeq
   def messages: Seq[(MsgType, String)]
@@ -218,11 +213,10 @@ trait ModifiedField
   def calcDiff: ZFieldDiff = {
     val addedRolePlayers = rolePlayers -- rolePlayersOrig
     val removedRolePlayers = rolePlayersOrig -- rolePlayers
-    val addedLiterals = literals -- literalsOrig
-    val removedLiterals = literalsOrig -- literals
-    val modifiedLiterals = Set[MLiteral]() //TODO use for unary literals
-    ZFieldDiff(addedRolePlayers, removedRolePlayers,
-      addedLiterals, removedLiterals, modifiedLiterals)
+    val modifiedLiterals = literals filter { case (literalType, value) =>
+      value != literalsOrig( literalType )
+    }
+    ZFieldDiff( addedRolePlayers, removedRolePlayers, modifiedLiterals )
   }
 
   // Mutators
