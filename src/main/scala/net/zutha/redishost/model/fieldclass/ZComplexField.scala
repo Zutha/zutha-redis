@@ -9,9 +9,7 @@ import net.zutha.redishost.model.MsgType._
 
 trait ZComplexField
   extends ZField
-{
-  type T <: ZComplexField
-}
+  with ZFieldLike[ZComplexField]
 
 /**
  * An immutable Field that corresponds to a Field in the database
@@ -25,16 +23,13 @@ case class IComplexField protected[redishost] ( id: Zids,
                                                 )( implicit val acc: ImmutableAccessor )
   extends ZComplexField
   with IField
-{
-  type T = IComplexField
-}
+  with IFieldLike[IComplexField]
+
 
 trait MComplexField
   extends ZComplexField
   with MField
-{
-  type T <: MComplexField
-}
+  with MFieldLike[MComplexField]
 
 /**
  * A Persisted Field that possibly has unsaved modifications
@@ -54,28 +49,7 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
                                             )( implicit val acc: MutableAccessor )
   extends MComplexField
   with ModifiedField
-{
-  type T = ModifiedComplexField
-
-  //  Mutators
-
-  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
-                        deleted_? : Boolean = false
-                        ): ModifiedComplexField = {
-    // TODO update using accessor
-    ModifiedComplexField( id, zClass, fieldSets,
-      rolePlayersOrig, literalsOrig, members, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: MLiteralMap = literals
-                              ): ModifiedComplexField = {
-    // TODO update using accessor
-    ModifiedComplexField( id, zClass, fieldSets,
-      rolePlayersOrig, literalsOrig, members, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-}
+  with MFieldLike[ModifiedComplexField]
 
 
 /**
@@ -93,20 +67,4 @@ case class NewComplexField protected[redishost] ( id: TempId,
                                                   )( implicit val acc: MutableAccessor )
   extends MComplexField
   with NewField
-{
-  type T = NewComplexField
-
-  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
-                        deleted_? : Boolean = false ): NewComplexField = {
-    // TODO update using accessor
-    NewComplexField( id, zClass, fieldSets, members, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: MLiteralMap = literals
-                              ): NewComplexField = {
-    // TODO update using accessor
-    NewComplexField( id, zClass, fieldSets, members, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-}
+  with MFieldLike[NewComplexField]

@@ -1,6 +1,7 @@
 package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model._
 
 object ZType extends ZItemClassCompanion[ZType, IType, MType] {
 
@@ -11,20 +12,14 @@ object ZType extends ZItemClassCompanion[ZType, IType, MType] {
 
 trait ZType
   extends ZItem
-{
-	type T <: ZType
-}
+  with ZItemLike[ZType]
 
 trait IType
   extends ZType
   with IItem
-{
-	type T <: IType
-}
+  with IItemLike[IType]
 
 trait MType
   extends ZType
   with MItem
-{
-	type T <: MType
-}
+  with MItemLike[MType]

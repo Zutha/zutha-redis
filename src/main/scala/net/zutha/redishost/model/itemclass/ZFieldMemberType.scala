@@ -1,30 +1,23 @@
 package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model._
 
 object ZFieldMemberType extends ZItemClassCompanion[ZFieldMemberType, IFieldMemberType, MFieldMemberType] {
 
   def name = "FieldMemberType"
-
-
 }
 
 trait ZFieldMemberType
   extends ZType
-{
-	type T <: ZFieldMemberType
-}
+  with ZItemLike[ZFieldMemberType]
 
 trait IFieldMemberType
   extends ZFieldMemberType
   with IType
-{
-	type T <: IFieldMemberType
-}
+  with IItemLike[IFieldMemberType]
 
 trait MFieldMemberType
   extends ZFieldMemberType
   with MType
-{
-	type T <: MFieldMemberType
-}
+  with MItemLike[MFieldMemberType]

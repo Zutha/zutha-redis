@@ -6,18 +6,13 @@ import fieldmember._
 import fieldset._
 import itemclass._
 import net.zutha.redishost.model.ScopeMatchType._
+import net.zutha.redishost.exception.SchemaException
+import scala.reflect.runtime.universe._
+import net.zutha.redishost.lib.ReflectionHelpers._
 
 trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
 
-  // =================== Getters ======================
-
-  override def getObjectZids( objKey: String ): Set[Zid] = {
-    super.getObjectZids( objKey ) union dbAcc.getObjectZids( objKey )
-  }
-
-  def getObjectMergedZids( objKey: String ): Set[Zid] = {
-    redis.smembers[Zid]( objMergedZidsKey(objKey) ).get.map(_.get)
-  }
+  // =================== Object Getters ======================
 
   def getObjectRef( objKey: String ): Option[MRef[MObject]] = objKey match {
     case Zid(zid) => getObjectZids( objKey ).toSeq match {
@@ -40,7 +35,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     ???
   }
 
-  def getObject( id: ZIdentity, fieldLimit: Int = 0 ): Option[MObject] = {
+  def getObjectById( id: ZIdentity, fieldLimit: Int = 0 ): Option[MObject] = {
     val obj = id match {
       case MZids(pZids, allZids) => dbAcc.getObject(pZids.head) //TODO merge results
       case Zids(zid, allZids) => dbAcc.getObject(zid)
@@ -50,16 +45,62 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     ???
   }
 
-  def getObjectT[T <: MObject]( id: ZIdentity, fieldLimit: Int = 0 ): Option[T] = {
-    getObject(id, fieldLimit) map (_.asInstanceOf[T])
+  protected def getItemById( id: ZIdentity, fieldLimit: Int = 0 ): Option[MItem] = {
+    ???
+  }
+  protected def getFieldById( id: ZIdentity, fieldLimit: Int = 0 ): Option[MField] = {
+    ???
   }
 
-  def getItem[T <: MItem]( item: MRef[T], fieldLimit: Int = 0): T = {
-    getObject(item.id, fieldLimit).get.asInstanceOf[T]
+  protected def getTypedObjectById[T <: MObject: TypeTag]( id: ZIdentity, fieldLimit: Int = 0 ): Option[T] = {
+    def wrongType: Nothing = {
+      val tString = typeToString( typeOf[T] )
+      throw new IllegalArgumentException( s"Object with id $id does not satisfy the type: $tString" )
+    }
+
+    getObjectRef( id.key ) flatMap { obj =>
+      // If Object is an Item
+      if ( objectHasType( obj, ZItem.refM ) ) {
+        if ( typeOf[T] <:< typeOf[MItem] || typeOf[MItem] <:< typeOf[T] ){
+          val item: Option[MItem] = getItemById( id, fieldLimit )
+          item map (_.asInstanceOf[T])
+        }
+        else wrongType
+      }
+      // If Object is a Field
+      else if (objectHasType( obj, ZField.refM ) ) {
+        if ( typeOf[T] <:< typeOf[MField] || typeOf[MField] <:< typeOf[T] ){
+          val field: Option[MField] = getFieldById( id, fieldLimit )
+          field map (_.asInstanceOf[T])
+        }
+        else wrongType
+      }
+      // Object is neither an Item nor a Field
+      else throw new SchemaException(
+          s"Every object must be either an Item or a Field. Object with id: $id is neither." )
+    }
   }
 
-  def getField[T <: MField]( field: MRef[T], fieldLimit: Int = 0 ): T = {
-    getObject(field.id, fieldLimit).get.asInstanceOf[T]
+  def reloadObject[T <: MObject: TypeTag]( obj: MRef[T], fieldLimit: Int = 0): T = {
+    getTypedObjectById(obj.id, fieldLimit).get
+  }
+
+  def reloadItem[T <: MItem: TypeTag]( item: MRef[T], fieldLimit: Int = 0): T = {
+    getTypedObjectById(item.id, fieldLimit).get
+  }
+
+  def reloadField[T <: MField: TypeTag]( field: MRef[T], fieldLimit: Int = 0 ): T = {
+    getTypedObjectById(field.id, fieldLimit).get
+  }
+
+  // =================== Object Member Getters ======================
+
+  override def getObjectZids( objKey: String ): Set[Zid] = {
+    super.getObjectZids( objKey ) union dbAcc.getObjectZids( objKey )
+  }
+
+  def getObjectMergedZids( objKey: String ): Set[Zid] = {
+    redis.smembers[Zid]( objMergedZidsKey(objKey) ).get.map(_.get)
   }
 
   // TODO: implement stub
@@ -102,7 +143,7 @@ trait MutableReadQueries extends ReadQueries { self: MutableAccessor =>
     redis.hexists( objHashKey( objKey ), objIsNewHKey )
   }
 
-  def objHasType( zType: MRef[MType] ): Boolean = {
+  def objectHasType( obj: MRef[MObject], zType: MRef[MType] ): Boolean = {
     ???
   }
 

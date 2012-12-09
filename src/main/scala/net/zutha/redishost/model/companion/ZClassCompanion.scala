@@ -45,7 +45,7 @@ protected[redishost] trait ZClassCompanion
   }
 
   def apply( id: ZIdentity )( implicit acc: MutableAccessor ): Option[TM] = {
-    val obj = acc.getObject( id )
+    val obj = acc.getObjectById( id )
     toT[TM]( obj )
   }
 

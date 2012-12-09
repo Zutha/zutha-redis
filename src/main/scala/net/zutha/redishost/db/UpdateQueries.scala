@@ -13,6 +13,8 @@ trait UpdateQueries { self: MutableAccessor =>
     "tmp:" + next.toString
   }
 
+  // ======================= Object Creation =======================
+
   /**
    * create a new object with a tempId
    * @return the tempId of the new object
@@ -67,6 +69,20 @@ trait UpdateQueries { self: MutableAccessor =>
     NewComplexField( TempId(newId), zClass, Seq(), members, scopeSeq)
   }
 
+  // ======================= Mutation =======================
+
+  def deleteObject( obj: MRef[MObject] ) {
+    ???
+  }
+
+  def restoreObject( obj: MRef[MObject] ) {
+    ???
+  }
+
+  def changeItemClass( item: MRef[MItem], newClass: MRef[MItemClass] ) {
+    ???
+  }
+
   /**
    * modify the rolePlayers of a NewBinaryField or
    * replace a ModifiedBinaryField with a NewBinaryField of the same FieldClass but different rolePlayers
@@ -96,6 +112,13 @@ trait UpdateQueries { self: MutableAccessor =>
           "A binary field should have been created. Actually returned: " + f.toString )
       }
     }
+  }
+
+  def updateField( field: MRef[MField],
+                   newRolePlayers: Set[MRolePlayer],
+                   newLiterals: MLiteralMap
+                   ) {
+    ???
   }
 
 }

@@ -1,30 +1,24 @@
 package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model._
 
 object ZItemClass extends ZItemClassCompanion[ZItemClass, IItemClass, MItemClass] {
 
   def name = "ItemClass"
 
-
 }
 
 trait ZItemClass
   extends ZClass
-{
-	type T <: ZItemClass
-}
+  with ZItemLike[ZItemClass]
 
 trait IItemClass
   extends ZItemClass
   with IClass
-{
-	type T <: IItemClass
-}
+  with IItemLike[IItemClass]
 
 trait MItemClass
   extends ZItemClass
   with MClass
-{
-	type T <: MItemClass
-}
+  with MItemLike[MItemClass]

@@ -3,6 +3,7 @@ package net.zutha.redishost.model.itemclass
 import net.zutha.redishost.model.companion.ZItemClassCompanion
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
 import net.zutha.redishost.model.fieldmember._
+import net.zutha.redishost.model.{ZItemLike, MItemLike, IItemLike}
 
 object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
 
@@ -11,8 +12,8 @@ object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLit
 
 trait ZLiteralType
   extends ZFieldMemberType
+  with ZItemLike[ZLiteralType]
 {
-	type T <: ZLiteralType
 
   def datatype: ZDatatype
 
@@ -21,8 +22,8 @@ trait ZLiteralType
 trait ILiteralType
   extends ZLiteralType
   with IFieldMemberType
+  with IItemLike[ILiteralType]
 {
-	type T <: ILiteralType
 
   def datatype: IDatatype = ???
 
@@ -33,8 +34,8 @@ trait ILiteralType
 trait MLiteralType
   extends ZLiteralType
   with MFieldMemberType
+  with MItemLike[MLiteralType]
 {
-	type T <: MLiteralType
 
   def datatype: MDatatype = ???
 

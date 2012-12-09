@@ -6,14 +6,11 @@ import companion.ZFieldClassCompanion
 import fieldmember._
 import fieldset._
 import itemclass._
-import MsgType._
 import net.zutha.redishost.exception.SchemaException
 
 object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
 
   def name = "Field"
-
-
 
   /**
    * Create a new Property Field
@@ -90,15 +87,7 @@ object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
  * An association between one or more objects and zero or more literal values
  */
 trait ZField extends ZObject
-{
-	type T <: ZField
-
-  def id: ZIdentity
-
-  def zClass: ZRef[ZFieldClass]
-  def members: Seq[ZFieldMember]
-  def scope: ScopeSeq
-}
+  with ZFieldLike[ZField]
 
 /**
  * An immutable Field that corresponds to a Field in the database
@@ -107,15 +96,8 @@ trait ZField extends ZObject
 trait IField
   extends ZField
   with IObject
-{
-  type T <: IField
+  with IFieldLike[IField]
 
-  def id: Zids
-  def zClass: IRef[IFieldClass]
-  def fieldSets: Seq[IFieldSetRef]
-  def members: Seq[IFieldMember]
-  def scope: IScopeSeq
-}
 
 /**
  * A Field that can be Modified
@@ -123,69 +105,8 @@ trait IField
 trait MField
   extends ZField
   with MObject
-{
-	type T <: MField
+  with MFieldLike[MField]
 
-  override def id: ZIdentity
-
-  /**
-   * Applies changes to the rolePlayers and Literals of a field.
-   * Only the RoleMembers and LiteralMembers that are allowed by the Field's Class will be affected by this operation.
-   * Any rolePlayers or literals given that are not permitted by the FieldClass will be ignored.
-   * @param rolePlayers
-   * @param literals
-   * @return
-   */
-  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: MLiteralMap = literals
-                              ): T
-
-  // Accessors
-
-  def zClass: MRef[MFieldClass]
-  def fieldSets: Seq[MFieldSetRef]
-  def members: Seq[MFieldMember]
-  def scope: MScopeSeq
-  def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
-  def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
-
-  lazy val rolePlayers: Set[MRolePlayer] = {
-    val rolePlayerSeq: Seq[MRolePlayer] = members flatMap { m => m match {
-      case MRoleFieldMember( role, players ) => players.map (p => MRolePlayer(role, p))
-      case _ => Seq()
-    }}
-    rolePlayerSeq.toSet
-  }
-
-  lazy val literals: MLiteralMap = members.collect {
-    case literal: MLiteral => literal.toPair
-  }.toMap
-
-  // Mutators
-
-  def mutateRolePlayers(mutate: Set[MRolePlayer] => Set[MRolePlayer]): T =
-    updateField( rolePlayers = mutate(rolePlayers) )
-
-  def addRolePlayer( rolePlayer: MRolePlayer ): T =
-    mutateRolePlayers(_ + rolePlayer )
-
-  def removeRolePlayer( rolePlayer: MRolePlayer ) : T =
-    mutateRolePlayers( _ - rolePlayer )
-
-  def mutateLiterals( mutate: MLiteralMap => MLiteralMap ): T =
-    updateField( literals = mutate(literals) )
-
-  def updateLiteral( literalType: MRef[MLiteralType], newValue: LiteralValue ): T = {
-    mutateLiterals( _.updated( literalType, newValue ) )
-  }
-
-  def applyDiff( diff: ZFieldDiff ): T = {
-    val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
-    val newLiterals = literals ++ diff.modifiedLiterals
-
-    updateField( rolePlayers = newRolePlayers, literals = newLiterals )
-  }
-}
 
 /**
  * A Persisted Field that possibly has unsaved modifications
@@ -193,20 +114,14 @@ trait MField
 trait ModifiedField
   extends ModifiedObject
   with MField
+  with MFieldLike[ModifiedField]
 {
-  type T <: ModifiedField
 
   def id: PersistedId
-  def zClass: MRef[MFieldClass]
-  def fieldSets: Seq[MFieldSetRef]
+
   def rolePlayersOrig: Set[MRolePlayer]
   def literalsOrig: MLiteralMap
-  def members: Seq[MFieldMember]
-  def scope: MScopeSeq
-  def messages: Seq[(MsgType, String)]
-  def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
-  def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
-  def deleted_? : Boolean
+
 
   // Accessors
 
@@ -235,15 +150,5 @@ trait NewField
   extends NewObject
   with MField
 {
-  type T <: NewField
 
-  def id: TempId
-  def zClass: MRef[MFieldClass]
-  def fieldSets: Seq[MFieldSetRef]
-  def members: Seq[MFieldMember]
-  def scope: MScopeSeq
-  def messages: Seq[(MsgType, String)]
-  def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
-  def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
-  def deleted_? : Boolean
 }

@@ -9,9 +9,7 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 
 trait ZPropertyField
   extends ZField
-{
-  type T <: ZPropertyField
-}
+  with ZFieldLike[ZPropertyField]
 
 /**
  * An immutable Field that corresponds to a Field in the database
@@ -26,17 +24,16 @@ IPropertyField protected[redishost] ( id: Zids,
                                       scope: IScopeSeq
                                       )( implicit val acc: ImmutableAccessor )
   extends IField
+  with IFieldLike[IPropertyField]
 {
-  type T = IPropertyField
-
   def members: Seq[IFieldMember] = Seq( rolePlayer, literal )
 }
 
 trait MPropertyField
   extends ZPropertyField
   with MField
+  with MFieldLike[MPropertyField]
 {
-  type T <: MPropertyField
 
   def rolePlayer: MRolePlayer
   def literal: MLiteral
@@ -64,32 +61,13 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
                                              )( implicit val acc: MutableAccessor )
   extends MPropertyField
   with ModifiedField
+  with MFieldLike[ModifiedPropertyField]
 {
-  type T = ModifiedPropertyField
-
   // Getters
 
   def literalsOrig: MLiteralMap = Set( literalOrig )
   def rolePlayersOrig: Set[MRolePlayer] = Set( rolePlayer )
 
-  //  Mutators
-
-  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
-                        deleted_? : Boolean = false
-                        ): ModifiedPropertyField = {
-    // TODO update using accessor
-    ModifiedPropertyField( id, zClass, fieldSets,
-      rolePlayer, literalOrig, literal, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: MLiteralMap = literals
-                              ): ModifiedPropertyField = {
-    // TODO update using accessor
-    ModifiedPropertyField( id, zClass, fieldSets,
-      rolePlayer, literalOrig, literal, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
 }
 
 
@@ -110,24 +88,4 @@ NewPropertyField protected[redishost] ( id: TempId,
                                         )( implicit val acc: MutableAccessor )
   extends MPropertyField
   with NewField
-{
-  type T = NewPropertyField
-
-  // Mutators
-
-  protected def update( fieldSets: Seq[MFieldSetRef] = fieldSets,
-                        deleted_? : Boolean = false ): NewPropertyField = {
-    // TODO update using accessor
-    NewPropertyField( id, zClass, fieldSets,
-      rolePlayer, literal, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-  protected def updateField ( rolePlayers: Set[MRolePlayer] = rolePlayers,
-                              literals: MLiteralMap = literals
-                              ): NewPropertyField = {
-    // TODO update using accessor
-    NewPropertyField( id, zClass, fieldSets,
-      rolePlayer, literal, scope,
-      messages, memberMessages, scopeMessages, deleted_? )
-  }
-}
+  with MFieldLike[NewPropertyField]
