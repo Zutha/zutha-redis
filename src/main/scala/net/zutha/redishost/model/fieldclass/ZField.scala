@@ -2,13 +2,13 @@ package net.zutha.redishost.model.fieldclass
 
 import net.zutha.redishost.db.MutableAccessor
 import net.zutha.redishost.model._
-import companion.ZFieldClassCompanion
+import singleton.ZFieldClassSingleton
 import fieldmember._
 import fieldset._
 import itemclass._
 import net.zutha.redishost.exception.SchemaException
 
-object ZField extends ZFieldClassCompanion[ZField, IField, MField] {
+object ZField extends ZFieldClassSingleton[ZField, IField, MField] {
 
   def name = "Field"
 

@@ -6,26 +6,26 @@ import scala.reflect.runtime.universe._
 
 trait ZRef[+T <: ZObject]
 {
-  def get: T
+  def load: T
 
   def id: ZIdentity
 
   def key: String = id.key
 }
 
-case class IRef[+T <: IObject] protected[redishost]( id: Zids )( implicit val acc: ImmutableAccessor,
-                                                                 implicit private[this] val tt: TypeTag[T] )
+final case class IRef[+T <: IObject] private[redishost]( id: Zids )( implicit val acc: ImmutableAccessor,
+                                                                     implicit private[this] val tt: TypeTag[T] )
   extends ZRef[T]
 {
 
-  def get: T = acc.getObjectT(id.zid).get
+  def load: T = acc.reloadObject(this)
 
   def zid: Zid = id.zid
 }
 
-case class MRef[+T <: MObject] protected[redishost] ( id: ZIdentity)( implicit val acc: MutableAccessor,
-                                                                      implicit private[this] val tt: TypeTag[T] )
+final case class MRef[+T <: MObject] private[redishost] ( id: ZIdentity)( implicit val acc: MutableAccessor,
+                                                                          implicit private[this] val tt: TypeTag[T] )
   extends ZRef[T]
 {
-  def get: T = acc.reloadObject(this)
+  def load: T = acc.reloadObject(this)
 }

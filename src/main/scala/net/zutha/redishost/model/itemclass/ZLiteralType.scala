@@ -1,11 +1,11 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.db.{ImmutableAccessor, MutableAccessor}
 import net.zutha.redishost.model.fieldmember._
 import net.zutha.redishost.model.{ZItemLike, MItemLike, IItemLike}
 
-object ZLiteralType extends ZItemClassCompanion[ZLiteralType, ILiteralType, MLiteralType] {
+object ZLiteralType extends ZItemClassSingleton[ZLiteralType, ILiteralType, MLiteralType] {
 
   def name = "LiteralType"
 }

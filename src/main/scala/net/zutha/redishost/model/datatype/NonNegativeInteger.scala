@@ -1,9 +1,9 @@
 package net.zutha.redishost.model.datatype
 
-import net.zutha.redishost.model.companion.ZDatatypeCompanion
+import net.zutha.redishost.model.singleton.ZDatatypeSingleton
 import net.zutha.redishost.model.datatype.UnboundedNonNegativeInteger._
 
-object NonNegativeInteger extends ZDatatypeCompanion[NonNegativeInteger] {
+object NonNegativeInteger extends ZDatatypeSingleton[NonNegativeInteger] {
 
   def name = "Non-Negative Integer"
 

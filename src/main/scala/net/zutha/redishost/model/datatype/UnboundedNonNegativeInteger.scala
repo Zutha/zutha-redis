@@ -1,9 +1,9 @@
 package net.zutha.redishost.model.datatype
 
-import net.zutha.redishost.model.companion.ZDatatypeCompanion
+import net.zutha.redishost.model.singleton.ZDatatypeSingleton
 import net.zutha.redishost.model.fieldmember.{LiteralValueLike, LiteralValue}
 
-object UnboundedNonNegativeInteger extends ZDatatypeCompanion[UnboundedNonNegativeInteger] {
+object UnboundedNonNegativeInteger extends ZDatatypeSingleton[UnboundedNonNegativeInteger] {
 
   def name = "Unbounded Non-Negative Integer"
 

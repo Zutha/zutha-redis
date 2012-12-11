@@ -22,7 +22,7 @@ case class ILiteral( literalType: IRef[ILiteralType], value: LiteralValue)
   with IFieldMember
 {
   implicit def acc: ImmutableAccessor = literalType.acc
-  require( value.datatypeI == literalType.get.datatype.ref )
+  require( value.datatypeI == literalType.load.datatype.ref )
   def toPair = Pair(literalType, value)
 }
 
@@ -32,6 +32,6 @@ case class MLiteral( literalType: MRef[MLiteralType], value: LiteralValue)
   with MFieldMember
 {
   implicit def acc: MutableAccessor = literalType.acc
-  require( value.datatypeM == literalType.get.datatype.ref )
+  require( value.datatypeM == literalType.load.datatype.ref )
   def toPair = Pair(literalType, value)
 }

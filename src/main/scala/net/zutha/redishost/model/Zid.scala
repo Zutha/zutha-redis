@@ -61,7 +61,12 @@ class Zid private (idStr: String, val hostId: Int, val identifier: Long)
   extends Ordered[Zid]
 {
   def compare(that: Zid) = Ordering.Tuple2[Int, Long].compare( hostId -> identifier, that.hostId -> that.identifier )
+
+  def key = idStr
+
   override def toString = idStr
+
   def toDec: String = s"${hostId}$identifier}"
+  
   def toInt: Int = toDec.toInt
 }

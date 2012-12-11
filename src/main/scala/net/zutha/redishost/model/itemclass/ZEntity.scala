@@ -1,9 +1,9 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.model._
 
-object ZEntity extends ZItemClassCompanion[ZEntity, IEntity, MEntity] {
+object ZEntity extends ZItemClassSingleton[ZEntity, IEntity, MEntity] {
 
   def name = "Entity"
 

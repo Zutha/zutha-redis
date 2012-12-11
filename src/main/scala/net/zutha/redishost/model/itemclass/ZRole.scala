@@ -1,11 +1,11 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.companion.ZItemClassCompanion
+import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.model._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.fieldmember.{MRolePlayer, IRolePlayer}
 
-object ZRole extends ZItemClassCompanion[ZRole, IRole, MRole] {
+object ZRole extends ZItemClassSingleton[ZRole, IRole, MRole] {
 
   type ObjT = ZItemClass with ZRole with ZTrait
   type ObjTI = IItemClass with IRole with ITrait

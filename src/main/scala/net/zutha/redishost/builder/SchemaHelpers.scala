@@ -1,40 +1,39 @@
 package net.zutha.redishost.builder
 
 import net.zutha.redishost.db.MutableAccessor
-import net.zutha.redishost.model.SchemaItem
 import net.zutha.redishost.model.itemclass._
-import net.zutha.redishost.model.fieldclass.MField
+import net.zutha.redishost.model.singleton.ZItemSingleton
 
 trait SchemaHelpers {
   implicit def acc: MutableAccessor
 
-  private def prelim[B <: ItemBuilder]( ic: SchemaItem, b: B ): B = {
+  private def prelim[B <: ItemBuilder]( ic: ZItemSingleton, b: B ): B = {
     b.name( ic.name )
     b
   }
 
-  def zClass( zClass: SchemaItem{ type ObjTM <: MClass } ): ClassBuilder =
+  def zClass( zClass: ZItemSingleton{ type ObjTM <: MClass } ): ClassBuilder =
     prelim( zClass, new ClassBuilder( zClass.refM ) )
 
-  def itemClass( itemClass: SchemaItem{ type ObjTM <: MItemClass } ): ItemClassBuilder =
+  def itemClass( itemClass: ZItemSingleton{ type ObjTM <: MItemClass } ): ItemClassBuilder =
     prelim( itemClass, new ItemClassBuilder( itemClass.refM ) )
 
-  def fieldClass( fieldClass: SchemaItem{ type ObjTM <: MFieldClass } ): FieldClassBuilder =
+  def fieldClass( fieldClass: ZItemSingleton{ type ObjTM <: MFieldClass } ): FieldClassBuilder =
     prelim( fieldClass, new FieldClassBuilder( fieldClass.refM ) )
 
-  def role( role: SchemaItem{ type ObjTM <: MRole } ): RoleBuilder =
+  def role( role: ZItemSingleton{ type ObjTM <: MRole } ): RoleBuilder =
     prelim( role, new RoleBuilder( role.refM ) )
 
-  def zTrait( zTrait: SchemaItem{ type ObjTM <: MTrait } ): TraitBuilder =
+  def zTrait( zTrait: ZItemSingleton{ type ObjTM <: MTrait } ): TraitBuilder =
     prelim( zTrait, new TraitBuilder( zTrait.refM ) )
 
-  def literalType( literalType: SchemaItem{ type ObjTM <: MLiteralType } ): LiteralTypeBuilder =
+  def literalType( literalType: ZItemSingleton{ type ObjTM <: MLiteralType } ): LiteralTypeBuilder =
     prelim( literalType, new LiteralTypeBuilder( literalType.refM ) )
 
-  def datatype( datatype: SchemaItem{ type ObjTM <: MDatatype } ): DatatypeBuilder =
+  def datatype( datatype: ZItemSingleton{ type ObjTM <: MDatatype } ): DatatypeBuilder =
     prelim( datatype, new DatatypeBuilder( datatype.refM ) )
 
-  def scopeType( scopeType: SchemaItem{ type ObjTM <: MScopeType } ): ScopeTypeBuilder =
+  def scopeType( scopeType: ZItemSingleton{ type ObjTM <: MScopeType } ): ScopeTypeBuilder =
     prelim( scopeType, new ScopeTypeBuilder( scopeType.refM ) )
 
 

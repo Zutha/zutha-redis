@@ -1,18 +1,15 @@
 package net.zutha.redishost.model.itemclass
 
 import net.zutha.redishost.model._
-import companion.ZClassCompanion
+import singleton.{ZItemSingleton, ZClassSingleton}
 
-object ZObject extends ZClassCompanion[ZObject, IObject, MObject] {
-  type ObjC = ZClass
-  type ObjCI = IClass
-  type ObjCM = MClass
-
-  type ObjT = ZClass with ZRole
-  type ObjTM = MClass with MRole
-  type ObjTI = IClass with IRole
-
-  protected def classFactory = ZClass
+object ZObject
+  extends ZClassSingleton[ZObject, IObject, MObject]
+  with ZItemSingleton[
+    ZClass with ZRole,
+    IClass with IRole,
+    MClass with MRole ]
+{
 
   def name = "Object"
 

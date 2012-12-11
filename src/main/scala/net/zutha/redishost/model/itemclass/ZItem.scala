@@ -4,9 +4,9 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model._
 import fieldset._
 import MsgType._
-import companion.ZItemClassCompanion
+import singleton.ZItemClassSingleton
 
-object ZItem extends ZItemClassCompanion[ZItem, IItem, MItem] {
+object ZItem extends ZItemClassSingleton[ZItem, IItem, MItem] {
 
   def name = "Item"
 

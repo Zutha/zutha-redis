@@ -1,9 +1,9 @@
 package net.zutha.redishost.model.literaltype
 
-import net.zutha.redishost.model.companion.ZLiteralTypeCompanion
+import net.zutha.redishost.model.singleton.ZLiteralTypeSingleton
 import net.zutha.redishost.model.datatype.ZString
 
-object Name extends ZLiteralTypeCompanion[ZString] {
+object Name extends ZLiteralTypeSingleton[ZString] {
 
   def name = "Name"
 

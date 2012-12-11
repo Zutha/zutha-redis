@@ -71,9 +71,9 @@ trait IObjectLike[+This <: IObject]
 
   // Queries
 
-  def reload[T >: L <: IObject: TypeTag]: T = ??? // acc.reloadObject( this.ref[T] )
+  def reload[T >: L <: IObject: TypeTag]: T = acc.reloadObject( this.ref[T] )
 
-  def hasType_? ( zType: IRef[IType] ) : Boolean = acc.objHasType( zType )
+  def hasType_? ( zType: IRef[IType] ) : Boolean = acc.objectHasType( this.ref, zType )
 
 }
 
