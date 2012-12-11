@@ -17,9 +17,9 @@ object ZFieldSet {
  * A container for fields of a certain type owned by a specific item
  */
 trait ZFieldSet {
-  def parent: ZRef[ZObject]
-  def role: ZRef[ZRole]
-  def fieldClass: ZRef[ZFieldClass]
+  def parent: Ref[ZObject]
+  def role: Ref[ZRole]
+  def fieldClass: Ref[ZFieldClass]
   def fields: FieldSeq
   def scopeFilter: ScopeSeq
   def scopeMatchType: ScopeMatchType
@@ -34,9 +34,9 @@ trait ZFieldSet {
 /**
  * A container for immutable fields of a certain type owned by a specific item
  */
-case class IFieldSet protected[redishost] ( parent: IRef[IObject],
-                                            role: IRef[IRole],
-                                            fieldClass: IRef[IFieldClass],
+case class IFieldSet protected[redishost] ( parent: IRef[ZObject],
+                                            role: IRef[ZRole],
+                                            fieldClass: IRef[ZFieldClass],
                                             fields: IFieldSeq,
                                             scopeFilter: IScopeSeq,
                                             scopeMatchType: ScopeMatchType,
@@ -55,9 +55,9 @@ case class IFieldSet protected[redishost] ( parent: IRef[IObject],
 /**
  * A FieldSet that can be modified
  */
-case class MFieldSet protected[redishost] ( parent: MRef[MObject],
-                                            role: MRef[MRole],
-                                            fieldClass: MRef[MFieldClass],
+case class MFieldSet protected[redishost] ( parent: MRef[ZObject],
+                                            role: MRef[ZRole],
+                                            fieldClass: MRef[ZFieldClass],
                                             fields: MFieldSeq,
                                             scopeFilter: MScopeSeq,
                                             scopeMatchType: ScopeMatchType,

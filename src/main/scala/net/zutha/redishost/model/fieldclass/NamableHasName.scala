@@ -12,9 +12,9 @@ object NamableHasName extends ZFieldClassSingleton[ZField, IField, MField] {
 
   def name = "Namable Has Name"
 
-  def apply( namable: MRef[MItem], name: ZString )
+  def apply( namable: MRef[ZItem], name: ZString )
            (implicit acc: MutableAccessor ): NewPropertyField = {
-    ZField( NamableHasName, Namable.refM -> namable, Name -> name )
+    ZField( NamableHasName, Namable.ref -> namable, Name -> name )
   }
 
 

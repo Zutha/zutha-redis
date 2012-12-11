@@ -15,39 +15,37 @@ trait ZComplexField
  * An immutable Field that corresponds to a Field in the database
  *
  */
-case class IComplexField protected[redishost] ( id: Zids,
-                                                zClass: IRef[IFieldClass],
+case class ImmutableComplexField protected[redishost] ( id: Zids,
+                                                zClass: IRef[ZFieldClass],
                                                 fieldSets: Seq[IFieldSetRef],
                                                 members: Seq[IFieldMember],
                                                 scope: IScopeSeq
                                                 )( implicit val acc: ImmutableAccessor )
   extends ZComplexField
-  with IField
-  with IFieldLike[IComplexField]
+  with IFieldLike[ImmutableComplexField]
 
 
-trait MComplexField
+trait MutableComplexField
   extends ZComplexField
-  with MField
-  with MFieldLike[MComplexField]
+  with MFieldLike[MutableComplexField]
 
 /**
  * A Persisted Field that possibly has unsaved modifications
  */
 case class
 ModifiedComplexField protected[redishost] ( id: PersistedId,
-                                            zClass: MRef[MFieldClass],
+                                            zClass: MRef[ZFieldClass],
                                             fieldSets: Seq[MFieldSetRef],
                                             rolePlayersOrig: Set[MRolePlayer],
                                             literalsOrig: MLiteralMap,
                                             members: Seq[MFieldMember] = Seq(),
                                             scope: MScopeSeq = Seq(),
                                             messages: Seq[(MsgType, String)] = Seq(),
-                                            memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                            scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                            memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                            scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                             deleted_? : Boolean = false
                                             )( implicit val acc: MutableAccessor )
-  extends MComplexField
+  extends MutableComplexField
   with ModifiedField
   with MFieldLike[ModifiedComplexField]
 
@@ -56,15 +54,15 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
  * A Field that has not been persisted to the database
  */
 case class NewComplexField protected[redishost] ( id: TempId,
-                                                  zClass: MRef[MFieldClass],
+                                                  zClass: MRef[ZFieldClass],
                                                   fieldSets: Seq[MFieldSetRef],
                                                   members: Seq[MFieldMember] = Seq(),
                                                   scope: MScopeSeq = Seq(),
                                                   messages: Seq[(MsgType, String)] = Seq(),
-                                                  memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                                  scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                                  memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                                  scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                                   deleted_? : Boolean = false
                                                   )( implicit val acc: MutableAccessor )
-  extends MComplexField
+  extends MutableComplexField
   with NewField
   with MFieldLike[NewComplexField]

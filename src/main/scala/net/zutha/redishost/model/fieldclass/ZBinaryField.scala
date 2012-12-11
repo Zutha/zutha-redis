@@ -16,24 +16,23 @@ trait ZBinaryField
  *
  */
 case class
-IBinaryField protected[redishost] ( id: Zids,
-                                    zClass: IRef[IFieldClass],
-                                    fieldSets: Seq[IFieldSetRef],
-                                    rolePlayer1: IRolePlayer,
-                                    rolePlayer2: IRolePlayer,
-                                    scope: IScopeSeq
-                                    )( implicit val acc: ImmutableAccessor )
-  extends IField
-  with IFieldLike[IBinaryField]
+ImmutableBinaryField protected[redishost] ( id: Zids,
+                                            zClass: IRef[ZFieldClass],
+                                            fieldSets: Seq[IFieldSetRef],
+                                            rolePlayer1: IRolePlayer,
+                                            rolePlayer2: IRolePlayer,
+                                            scope: IScopeSeq
+                                            )( implicit val acc: ImmutableAccessor )
+  extends ZBinaryField
+  with IFieldLike[ImmutableBinaryField]
 {
 
   def members: Seq[IFieldMember] = Seq( rolePlayer1, rolePlayer2 )
 }
 
-trait MBinaryField
+trait MutableBinaryField
   extends ZBinaryField
-  with MField
-  with MFieldLike[MBinaryField]
+  with MFieldLike[MutableBinaryField]
 {
   def rolePlayer1: MRolePlayer
   def rolePlayer2: MRolePlayer
@@ -49,17 +48,17 @@ trait MBinaryField
  */
 case class
 ModifiedBinaryField protected[redishost] ( id: PersistedId,
-                                           zClass: MRef[MFieldClass],
+                                           zClass: MRef[ZFieldClass],
                                            fieldSets: Seq[MFieldSetRef],
                                            rolePlayer1: MRolePlayer,
                                            rolePlayer2: MRolePlayer,
                                            scope: MScopeSeq = Seq(),
                                            messages: Seq[(MsgType, String)] = Seq(),
-                                           memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                           scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                           memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                           scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                            deleted_? : Boolean = false
                                            )( implicit val acc: MutableAccessor )
-  extends MBinaryField
+  extends MutableBinaryField
   with ModifiedField
   with MFieldLike[ModifiedBinaryField]
 {
@@ -75,16 +74,16 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
  */
 case class
 NewBinaryField protected[redishost] ( id: TempId,
-                                      zClass: MRef[MFieldClass],
+                                      zClass: MRef[ZFieldClass],
                                       fieldSets: Seq[MFieldSetRef],
                                       rolePlayer1: MRolePlayer,
                                       rolePlayer2: MRolePlayer,
                                       scope: MScopeSeq = Seq(),
                                       messages: Seq[(MsgType, String)] = Seq(),
-                                      memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                      scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                      memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                      scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                       deleted_? : Boolean = false
                                       )( implicit val acc: MutableAccessor )
-  extends MBinaryField
+  extends MutableBinaryField
   with NewField
   with MFieldLike[NewBinaryField]

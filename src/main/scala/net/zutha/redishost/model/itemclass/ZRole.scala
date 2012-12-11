@@ -23,8 +23,8 @@ trait IRole
   with IFieldMemberType
   with IItemLike[IRole]
 {
-  def makeRolePlayer( player: IRef[IObject] )( implicit acc: ImmutableAccessor ): IRolePlayer = IRolePlayer( this.ref, player )
-  def -> ( player: IRef[IObject] )( implicit acc: ImmutableAccessor ): IRolePlayer = makeRolePlayer( player )
+  def makeRolePlayer( player: IRef[ZObject] )( implicit acc: ImmutableAccessor ): IRolePlayer = IRolePlayer( this.ref, player )
+  def -> ( player: IRef[ZObject] )( implicit acc: ImmutableAccessor ): IRolePlayer = makeRolePlayer( player )
 }
 
 trait MRole
@@ -32,6 +32,6 @@ trait MRole
   with MFieldMemberType
   with MItemLike[MRole]
 {
-  def makeRolePlayer( player: MRef[MObject] )( implicit acc: MutableAccessor ): MRolePlayer = MRolePlayer( this.ref, player )
-  def -> ( player: MRef[MObject] )( implicit acc: MutableAccessor ): MRolePlayer = makeRolePlayer( player )
+  def makeRolePlayer( player: MRef[ZObject] )( implicit acc: MutableAccessor ): MRolePlayer = MRolePlayer( this.ref, player )
+  def -> ( player: MRef[ZObject] )( implicit acc: MutableAccessor ): MRolePlayer = makeRolePlayer( player )
 }

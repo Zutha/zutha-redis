@@ -10,8 +10,9 @@ protected[redishost] trait ZFieldClassSingleton
   TI <: T with IField,
   TM <: T with MField
 ]
-  extends ZClassSingleton[T, TI, TM]
-  with ZItemSingleton[ZFieldClass, IFieldClass, MFieldClass]
+  extends ZClassSingleton[T]
+  with ZObjectTypeSingleton[ZF, T]
+  with ZItemSingleton[ZFieldClass]
 {
 
 }

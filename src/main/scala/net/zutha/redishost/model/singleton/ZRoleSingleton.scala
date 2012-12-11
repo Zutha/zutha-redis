@@ -5,7 +5,7 @@ import itemclass._
 
 protected[redishost] trait ZRoleSingleton
   extends ZTypeSingleton
-  with ZItemSingleton[ZRole, IRole, MRole]
+  with ZItemSingleton[ZRole]
 {
 
 }

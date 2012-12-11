@@ -13,28 +13,28 @@ trait SchemaHelpers {
   }
 
   def zClass( zClass: ZItemSingleton{ type ObjTM <: MClass } ): ClassBuilder =
-    prelim( zClass, new ClassBuilder( zClass.refM ) )
+    prelim( zClass, new ClassBuilder( zClass.ref ) )
 
   def itemClass( itemClass: ZItemSingleton{ type ObjTM <: MItemClass } ): ItemClassBuilder =
-    prelim( itemClass, new ItemClassBuilder( itemClass.refM ) )
+    prelim( itemClass, new ItemClassBuilder( itemClass.ref ) )
 
   def fieldClass( fieldClass: ZItemSingleton{ type ObjTM <: MFieldClass } ): FieldClassBuilder =
-    prelim( fieldClass, new FieldClassBuilder( fieldClass.refM ) )
+    prelim( fieldClass, new FieldClassBuilder( fieldClass.ref ) )
 
   def role( role: ZItemSingleton{ type ObjTM <: MRole } ): RoleBuilder =
-    prelim( role, new RoleBuilder( role.refM ) )
+    prelim( role, new RoleBuilder( role.ref ) )
 
   def zTrait( zTrait: ZItemSingleton{ type ObjTM <: MTrait } ): TraitBuilder =
-    prelim( zTrait, new TraitBuilder( zTrait.refM ) )
+    prelim( zTrait, new TraitBuilder( zTrait.ref ) )
 
   def literalType( literalType: ZItemSingleton{ type ObjTM <: MLiteralType } ): LiteralTypeBuilder =
-    prelim( literalType, new LiteralTypeBuilder( literalType.refM ) )
+    prelim( literalType, new LiteralTypeBuilder( literalType.ref ) )
 
   def datatype( datatype: ZItemSingleton{ type ObjTM <: MDatatype } ): DatatypeBuilder =
-    prelim( datatype, new DatatypeBuilder( datatype.refM ) )
+    prelim( datatype, new DatatypeBuilder( datatype.ref ) )
 
   def scopeType( scopeType: ZItemSingleton{ type ObjTM <: MScopeType } ): ScopeTypeBuilder =
-    prelim( scopeType, new ScopeTypeBuilder( scopeType.refM ) )
+    prelim( scopeType, new ScopeTypeBuilder( scopeType.ref ) )
 
 
 }

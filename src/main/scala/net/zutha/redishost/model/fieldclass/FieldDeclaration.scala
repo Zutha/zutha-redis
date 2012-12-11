@@ -12,14 +12,14 @@ object FieldDeclaration extends ZFieldClassSingleton[ZField, IField, MField] {
 
   def name = "Field Declaration"
 
-  def apply( declarer: MRef[MItem],
-             role: MRef[MRole],
-             fieldClass: MRef[MFieldClass],
+  def apply( declarer: MRef[ZItem],
+             role: MRef[ZRole],
+             fieldClass: MRef[ZFieldClass],
              cardMin: UnboundedNonNegativeInteger,
              cardMax: UnboundedNonNegativeInteger )
            (implicit acc: MutableAccessor ): NewComplexField = {
     ZField( FieldDeclaration )(
-      FieldDeclarer.refM -> declarer, ZRole.refM -> role, ZFieldClass.refM -> fieldClass )(
+      FieldDeclarer.ref -> declarer, ZRole.ref -> role, ZFieldClass.ref -> fieldClass )(
       FieldCardMin -> cardMin, FieldCardMax -> cardMax )()
   }
 

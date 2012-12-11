@@ -25,7 +25,7 @@ trait UpdateQueries { self: MutableAccessor =>
     newId
   }
 
-  def createItem( zClass: MRef[MItemClass] ): NewItem = {
+  def createItem( zClass: MRef[ZItemClass] ): NewItem = {
     val newId = createNewObject
     redis.pipeline {r =>
       r.specifyObjectClass( newId, zClass.key )
@@ -41,7 +41,7 @@ trait UpdateQueries { self: MutableAccessor =>
    * @param scope the scope in which the new field will be applicable
    * @return a subclass of NewField, depending on the field class requested by zClass
    */
-  def createField( zClass: MRef[MFieldClass],
+  def createField( zClass: MRef[ZFieldClass],
                    rolePlayers: Set[MRolePlayer],
                    literals: MLiteralMap,
                    scope: MScopeMap
@@ -71,15 +71,15 @@ trait UpdateQueries { self: MutableAccessor =>
 
   // ======================= Mutation =======================
 
-  def deleteObject( obj: MRef[MObject] ) {
+  def deleteObject( obj: MRef[ZObject] ) {
     ???
   }
 
-  def restoreObject( obj: MRef[MObject] ) {
+  def restoreObject( obj: MRef[ZObject] ) {
     ???
   }
 
-  def changeItemClass( item: MRef[MItem], newClass: MRef[MItemClass] ) {
+  def changeItemClass( item: MRef[ZItem], newClass: MRef[ZItemClass] ) {
     ???
   }
 
@@ -93,7 +93,7 @@ trait UpdateQueries { self: MutableAccessor =>
    *         or a NewBinaryField that has the same FieldClass as `field`
    *         but with the given rolePlayers
    */
-  def updateField( field: MBinaryField,
+  def updateField( field: MutableBinaryField,
                    rolePlayer1: MRolePlayer,
                    rolePlayer2: MRolePlayer
                    ): NewBinaryField = field match {
@@ -114,7 +114,7 @@ trait UpdateQueries { self: MutableAccessor =>
     }
   }
 
-  def updateField( field: MRef[MField],
+  def updateField( field: MRef[ZField],
                    newRolePlayers: Set[MRolePlayer],
                    newLiterals: MLiteralMap
                    ) {

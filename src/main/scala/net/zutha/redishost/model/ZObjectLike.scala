@@ -20,11 +20,11 @@ trait ZObjectLike[+This <: ZObject]
 
   def id: ZIdentity
 
-  def ref[T >: L <: U: TypeTag]: ZRef[T]
+  def ref[T >: L <: U: TypeTag]: Ref[ZObject, T]
 
   def key: String = id.key
 
-  def zClass: ZRef[ZClass]
+  def zClass: Ref[ZClass]
 
   def fieldSets: Seq[ZFieldSetRef]
   def zids: Seq[Zid] = id match {
@@ -61,11 +61,11 @@ trait IObjectLike[+This <: IObject]
 
   def id: Zids
 
-  def ref[T >: L <: IObject: TypeTag] = IRef[T]( id )
+  def ref[T >: L <: IObject: TypeTag] = Ref[IObject, T]( id )
 
   def zid: Zid = id.zid
 
-  override def zClass: IRef[IClass]
+  override def zClass: IRef[ZClass]
 
   def fieldSets: Seq[IFieldSetRef]
 
@@ -73,11 +73,11 @@ trait IObjectLike[+This <: IObject]
 
   def reload[T >: L <: IObject: TypeTag]: T = acc.reloadObject( this.ref[T] )
 
-  def hasType_? ( zType: IRef[IType] ) : Boolean = acc.objectHasType( this.ref, zType )
+  def hasType_? ( zType: IRef[ZType] ) : Boolean = acc.objectHasType( this.ref, zType )
 
 }
 
-trait MObjectLike[+This <: MObject]
+trait MObjectLike[+This <: ZObject]
   extends ZObjectLike[This]
 {
   self: This =>
@@ -92,7 +92,7 @@ trait MObjectLike[+This <: MObject]
 
   def ref[T >: L <: MObject: TypeTag] = MRef[T]( id )
 
-  override def zClass: MRef[MClass]
+  override def zClass: MRef[ZClass]
 
   def fieldSets: Seq[MFieldSetRef]
 
@@ -104,7 +104,7 @@ trait MObjectLike[+This <: MObject]
 
   def reload[T >: L <: MObject: TypeTag]: T = acc.reloadObject( this.ref[T] )
 
-  def hasType_? ( zType: MRef[MType] ) : Boolean = acc.objectHasType( this.ref, zType )
+  def hasType_? ( zType: MRef[ZType] ) : Boolean = acc.objectHasType( this.ref, zType )
 
   def persisted_? = primaryZids.size > 0
 

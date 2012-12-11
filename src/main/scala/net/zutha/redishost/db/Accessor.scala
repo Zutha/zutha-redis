@@ -2,9 +2,10 @@ package net.zutha.redishost.db
 
 import com.redis.RedisClient
 import scala.language.implicitConversions
+import itemclass.ZObject
 
-trait Accessor
-  extends ReadQueries
+trait Accessor[+U <: ZObject]
+  extends ReadQueries[U]
   with RedisKeys
   with RedisParsers
 {

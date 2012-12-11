@@ -9,8 +9,8 @@ protected[redishost] trait ZTraitSingleton
   TI <: T with IObject,
   TM <: T with MObject
 ]
-  extends ZObjectTypeSingleton[T, TI, TM]
-  with ZItemSingleton[ZTrait, ITrait, MTrait]
+  extends ZObjectTypeSingleton[ZObjT, T]
+  with ZItemSingleton[ZTrait]
 {
 
 }

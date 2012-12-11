@@ -16,23 +16,22 @@ trait ZPropertyField
  *
  */
 case class
-IPropertyField protected[redishost] ( id: Zids,
-                                      zClass: IRef[IFieldClass],
+ImmutablePropertyField protected[redishost] ( id: Zids,
+                                      zClass: IRef[ZFieldClass],
                                       fieldSets: Seq[IFieldSetRef],
                                       rolePlayer: IRolePlayer,
                                       literal: ILiteral,
                                       scope: IScopeSeq
                                       )( implicit val acc: ImmutableAccessor )
-  extends IField
-  with IFieldLike[IPropertyField]
+  extends ZPropertyField
+  with IFieldLike[ImmutablePropertyField]
 {
   def members: Seq[IFieldMember] = Seq( rolePlayer, literal )
 }
 
-trait MPropertyField
+trait MutablePropertyField
   extends ZPropertyField
-  with MField
-  with MFieldLike[MPropertyField]
+  with MFieldLike[MutablePropertyField]
 {
 
   def rolePlayer: MRolePlayer
@@ -48,18 +47,18 @@ trait MPropertyField
  */
 case class
 ModifiedPropertyField protected[redishost] ( id: PersistedId,
-                                             zClass: MRef[MFieldClass],
+                                             zClass: MRef[ZFieldClass],
                                              fieldSets: Seq[MFieldSetRef],
                                              rolePlayer: MRolePlayer,
                                              literalOrig: MLiteral,
                                              literal: MLiteral,
                                              scope: MScopeSeq = Seq(),
                                              messages: Seq[(MsgType, String)] = Seq(),
-                                             memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                             scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                             memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                             scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                              deleted_? : Boolean = false
                                              )( implicit val acc: MutableAccessor )
-  extends MPropertyField
+  extends MutablePropertyField
   with ModifiedField
   with MFieldLike[ModifiedPropertyField]
 {
@@ -76,16 +75,16 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
  */
 case class
 NewPropertyField protected[redishost] ( id: TempId,
-                                        zClass: MRef[MFieldClass],
+                                        zClass: MRef[ZFieldClass],
                                         fieldSets: Seq[MFieldSetRef],
                                         rolePlayer: MRolePlayer,
                                         literal: MLiteral,
                                         scope: MScopeSeq = Seq(),
                                         messages: Seq[(MsgType, String)] = Seq(),
-                                        memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]] = Map(),
-                                        scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]] = Map(),
+                                        memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
+                                        scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
                                         deleted_? : Boolean = false
                                         )( implicit val acc: MutableAccessor )
-  extends MPropertyField
+  extends MutablePropertyField
   with NewField
   with MFieldLike[NewPropertyField]

@@ -9,13 +9,13 @@ import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 
 protected[redishost] trait ZLiteralTypeSingleton[V <: LiteralValue]
   extends ZTypeSingleton
-  with ZItemSingleton[ZLiteralType, ILiteralType, MLiteralType]
+  with ZItemSingleton[ZLiteralType]
 {
   protected def datatypeCompanion: ZDatatypeSingleton[V]
 
-  val ref: MRef[MLiteralType] = this.refM
+  val ref: MRef[ZLiteralType] = this.ref
   def makeILiteral( value: V )( implicit acc: ImmutableAccessor ): ILiteral = ILiteral( this.refI, value )
 
-  def makeMLiteral( value: V )( implicit acc: MutableAccessor ): MLiteral = MLiteral( this.refM, value )
+  def makeMLiteral( value: V )( implicit acc: MutableAccessor ): MLiteral = MLiteral( this.ref, value )
   def -> ( value: V )( implicit acc: MutableAccessor ): MLiteral = makeMLiteral( value )
 }

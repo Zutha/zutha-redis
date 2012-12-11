@@ -1,6 +1,6 @@
 package net.zutha.redishost.model
 
-import fieldclass.{MField, IField, ZField}
+import fieldclass.ZField
 import fieldmember._
 import fieldmember.MLiteral
 import fieldmember.MRoleFieldMember
@@ -18,7 +18,7 @@ trait ZFieldLike[+This <: ZField]
 
   // Accessors
 
-  def zClass: ZRef[ZFieldClass]
+  def zClass: Ref[ZObject, ZFieldClass]
 
   def members: Seq[ZFieldMember]
 
@@ -33,7 +33,7 @@ trait IFieldLike[+This <: IField]
 
   // Accessors
 
-  def zClass: IRef[IFieldClass]
+  def zClass: IRef[ZFieldClass]
 
   def members: Seq[IFieldMember]
 
@@ -48,15 +48,15 @@ trait MFieldLike[+This <: MField]
 
   // Accessors
 
-  def zClass: MRef[MFieldClass]
+  def zClass: MRef[ZFieldClass]
 
   def members: Seq[MFieldMember]
 
   def scope: MScopeSeq
 
-  def memberMessages: Map[MRef[MFieldMemberType], Seq[(MsgType, String)]]
+  def memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]]
 
-  def scopeMessages: Map[MRef[MScopeType], Seq[(MsgType, String)]]
+  def scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]]
 
   lazy val rolePlayers: Set[MRolePlayer] = {
     val rolePlayerSeq: Seq[MRolePlayer] = members flatMap { m => m match {
@@ -100,7 +100,7 @@ trait MFieldLike[+This <: MField]
   def mutateLiterals[T >: L <: MField: TypeTag]( mutate: MLiteralMap => MLiteralMap ): T =
     updateField[T]( literals = mutate(literals) )
 
-  def updateLiteral[T >: L <: MField: TypeTag]( literalType: MRef[MLiteralType],
+  def updateLiteral[T >: L <: MField: TypeTag]( literalType: MRef[ZLiteralType],
                                                    newValue: LiteralValue
                                                    ): T = {
     mutateLiterals[T]( _.updated( literalType, newValue ) )

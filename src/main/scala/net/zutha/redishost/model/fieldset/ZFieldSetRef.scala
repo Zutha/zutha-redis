@@ -9,9 +9,9 @@ trait ZFieldSetRef
 {
   type T <: ZFieldSet
 
-  def parent: ZRef[ZObject]
-  def role: ZRef[ZRole]
-  def fieldClass: ZRef[ZFieldClass]
+  def parent: Ref[ZObject]
+  def role: Ref[ZRole]
+  def fieldClass: Ref[ZFieldClass]
 
   def get( order: String,
            limit: Int,
@@ -19,9 +19,9 @@ trait ZFieldSetRef
            ): T
 }
 
-case class IFieldSetRef protected[model]( parent: IRef[IObject],
-                                          role: IRef[IRole],
-                                          fieldClass: IRef[IFieldClass]
+case class IFieldSetRef protected[model]( parent: IRef[ZObject],
+                                          role: IRef[ZRole],
+                                          fieldClass: IRef[ZFieldClass]
                                           )( implicit val acc: ImmutableAccessor )
   extends ZFieldSetRef
 {
@@ -44,9 +44,9 @@ case class IFieldSetRef protected[model]( parent: IRef[IObject],
   }
 }
 
-case class MFieldSetRef protected[model]( parent: MRef[MObject],
-                                          role: MRef[MRole],
-                                          fieldClass: MRef[MFieldClass]
+case class MFieldSetRef protected[model]( parent: MRef[ZObject],
+                                          role: MRef[ZRole],
+                                          fieldClass: MRef[ZFieldClass]
                                           )( implicit val acc: MutableAccessor )
   extends ZFieldSetRef
 {

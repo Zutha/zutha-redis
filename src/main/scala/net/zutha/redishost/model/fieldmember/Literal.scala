@@ -6,18 +6,18 @@ import net.zutha.redishost.model.itemclass._
 
 object Literal {
   import scala.language.implicitConversions
-  implicit def pairToLiteral( pair: Pair[IRef[ILiteralType], LiteralValue] ): ILiteral = ILiteral( pair._1, pair._2 )
-  implicit def pairToLiteral( pair: Pair[MRef[MLiteralType], LiteralValue] ): MLiteral = MLiteral( pair._1, pair._2 )
+  implicit def pairToLiteral( pair: Pair[IRef[ZLiteralType], LiteralValue] ): ILiteral = ILiteral( pair._1, pair._2 )
+  implicit def pairToLiteral( pair: Pair[MRef[ZLiteralType], LiteralValue] ): MLiteral = MLiteral( pair._1, pair._2 )
 }
 
 trait Literal extends ZFieldMember
 {
-  def literalType: ZRef[ZLiteralType]
+  def literalType: Ref[ZLiteralType]
   def value: LiteralValue
-  def toPair: Pair[ZRef[ZLiteralType], LiteralValue]
+  def toPair: Pair[Ref[ZLiteralType], LiteralValue]
 }
 
-case class ILiteral( literalType: IRef[ILiteralType], value: LiteralValue)
+case class ILiteral( literalType: IRef[ZLiteralType], value: LiteralValue)
   extends Literal
   with IFieldMember
 {
@@ -27,7 +27,7 @@ case class ILiteral( literalType: IRef[ILiteralType], value: LiteralValue)
 }
 
 
-case class MLiteral( literalType: MRef[MLiteralType], value: LiteralValue)
+case class MLiteral( literalType: MRef[ZLiteralType], value: LiteralValue)
   extends Literal
   with MFieldMember
 {

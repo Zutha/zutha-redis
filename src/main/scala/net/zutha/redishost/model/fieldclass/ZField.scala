@@ -18,10 +18,10 @@ object ZField extends ZFieldClassSingleton[ZField, IField, MField] {
    * @param rolePlayer the rolePlayer pointing to the property parent item
    * @param literal the literal value of the property field
    */
-  def apply( zClass: MRef[MFieldClass],
+  def apply( zClass: MRef[ZFieldClass],
              rolePlayer: MRolePlayer,
              literal: MLiteral,
-             scope: (MRef[MScopeType], Set[MRef[MObject]])* )
+             scope: (MRef[ZScopeType], Set[MRef[ZFieldClass]])* )
            ( implicit acc: MutableAccessor ): NewPropertyField = {
     //TODO verify that field class is a property field
     val scopeMap: MScopeMap = scope.toMap
@@ -38,10 +38,10 @@ object ZField extends ZFieldClassSingleton[ZField, IField, MField] {
    * @param rolePlayer1 one of the two rolePlayers of this binary field
    * @param rolePlayer2 the other of the two rolePlayers of this binary field
    */
-  def apply( zClass: MRef[MFieldClass],
+  def apply( zClass: MRef[ZFieldClass],
              rolePlayer1: MRolePlayer,
              rolePlayer2: MRolePlayer,
-             scope: (MRef[MScopeType], Set[MRef[MObject]])* )
+             scope: (MRef[ZScopeType], Set[MRef[ZFieldClass]])* )
            ( implicit acc: MutableAccessor ): NewBinaryField = {
     //TODO verify that field class is a binary field
     acc.createField(zClass, Set(rolePlayer1, rolePlayer2), Map(), scope.toMap ) match {
@@ -57,7 +57,7 @@ object ZField extends ZFieldClassSingleton[ZField, IField, MField] {
    * @param rolePlayers the rolePlayers of the field
    * @return
    */
-  def apply( zClass: MRef[MFieldClass], 
+  def apply( zClass: MRef[ZFieldClass],
              rolePlayers: MRolePlayer* )
            ( implicit acc: MutableAccessor ): NewComplexField = {
     apply( zClass )( rolePlayers:_* )()()
@@ -70,10 +70,10 @@ object ZField extends ZFieldClassSingleton[ZField, IField, MField] {
    * @param literals the literal members of the field
    * @return
    */
-  def apply( zClass: MRef[MFieldClass] )
+  def apply( zClass: MRef[ZFieldClass] )
            ( rolePlayers: MRolePlayer* )
            ( literals: MLiteral* )
-           ( scope: (MRef[MScopeType], Set[MRef[MObject]])* )
+           ( scope: (MRef[ZScopeType], Set[MRef[ZObject]])* )
            ( implicit acc: MutableAccessor ): NewComplexField = {
     acc.createField( zClass, rolePlayers.toSet, literals.toSet, scope.toMap ) match {
       case f: NewComplexField => f
@@ -90,30 +90,10 @@ trait ZField extends ZObject
   with ZFieldLike[ZField]
 
 /**
- * An immutable Field that corresponds to a Field in the database
- *
- */
-trait IField
-  extends ZField
-  with IObject
-  with IFieldLike[IField]
-
-
-/**
- * A Field that can be Modified
- */
-trait MField
-  extends ZField
-  with MObject
-  with MFieldLike[MField]
-
-
-/**
  * A Persisted Field that possibly has unsaved modifications
  */
 trait ModifiedField
-  extends ModifiedObject
-  with MField
+  extends ZField
   with MFieldLike[ModifiedField]
 {
 
@@ -147,8 +127,7 @@ trait ModifiedField
  * A Field that has not been persisted to the database
  */
 trait NewField
-  extends NewObject
-  with MField
+  extends ZField
 {
-
+  def id: TempId
 }
