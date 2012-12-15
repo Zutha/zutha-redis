@@ -2,6 +2,7 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import datatype.{URI, ZString}
+import fieldclass.ZField
 import fieldset.ZFieldSet
 import itemclass._
 import literaltype.Name
@@ -11,6 +12,7 @@ import scala.reflect.runtime.{currentMirror => mirror}
 import special.ZNothing
 import net.zutha.redishost.model.ScopeMatchType._
 import net.zutha.redishost.model.ZRef
+import net.zutha.redishost.exception.{ZTypeChangedException, DanglingRefException, SchemaException}
 
 trait ReadQueries[A <: Accessor[A]] { self: A =>
 
@@ -52,12 +54,33 @@ trait ReadQueries[A <: Accessor[A]] { self: A =>
     }
   }
 
+  protected def retrieveItem[Impl <: ZItem: TypeTag]( key: String ): Impl
+  protected def retrieveField[Impl <: ZField: TypeTag]( key: String ): Impl
+
   protected[redishost] def loadObject[
-    Impl <: ZObject : TypeTag,
+    Impl <: ZObject: TypeTag,
     ZT >: ZNothing <: ZObject : TypeTag
   ]
   ( zRef: ZRef[A, ZT] ): Obj[Impl, ZT] = {
-    ???
+
+    def retrieveObject( key: String ): ZObject = {
+      if ( objHasType( key, ZItem.key[A] ) ){
+        retrieveItem( key )
+      } else if ( objHasType( key, ZField.key[A] ) ){
+        retrieveField( key )
+      } else {
+        throw new SchemaException( s"key '$key' was found but corresponds to neither an Item nor a Field" )
+      }
+    }
+
+    correctKey( zRef.key ) match {
+      case Some( key ) => getTypedRef[ZT]( key ) match {
+        case Some( correctRef ) => retrieveObject( key ).asInstanceOf[Obj[Impl, ZT]]
+        case None => throw new ZTypeChangedException
+      }
+      case _ => throw new DanglingRefException( zRef )
+    }
+
   }
 
 

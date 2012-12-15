@@ -1,14 +1,27 @@
 package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
+import fieldclass.ZField
 import fieldset._
 import itemclass._
 import net.zutha.redishost.model.ScopeMatchType._
-import scala.reflect.runtime.{currentMirror => mirror}
+import scala.reflect.runtime.universe._
+
 
 trait MutableReadQueries extends ReadQueries[MutableAccessor] { self: MutableAccessor =>
 
   // =================== Object Getters ======================
+
+  protected def retrieveItem[Impl <: ZItem: TypeTag]( key: String ): Impl = {
+    ???
+  }
+
+  protected def retrieveField[Impl <: ZField: TypeTag]( key: String ): Impl = {
+    ???
+  }
+
+
+  // =================== Generic Queries ======================
 
   protected[db] override def correctKey( key: String ): Option[String] = key match {
     case Zid(zid) => getObjectZids( key ).toSeq match {
@@ -29,9 +42,6 @@ trait MutableReadQueries extends ReadQueries[MutableAccessor] { self: MutableAcc
 
   protected[db] override def objHasTypes( objKey: String, zTypeKeys: Iterable[String] ): Boolean = ???
   protected[db] override def objHasType( objKey: String, zTypeKey: String ): Boolean = ???
-
-
-  // =================== Generic Queries ======================
 
   def objectIsNew( key: String ): Boolean = {
     redis.hexists( objHashKey( key ), objIsNewHKey )
