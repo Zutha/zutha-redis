@@ -3,8 +3,9 @@ package net.zutha.redishost.model.singleton
 import net.zutha.redishost.model.itemclass._
 
 protected[redishost] trait ZTypeSingleton
-  extends ZItemSingleton[ZType, IType, MType]
+  extends ZSingletonLike[ZType]
 {
+  self: ZSingleton[ZType] =>
 
 
 }

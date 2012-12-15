@@ -5,8 +5,9 @@ import net.zutha.redishost.model.fieldmember.LiteralValue
 
 protected[redishost] trait ZDatatypeSingleton[+V <: LiteralValue]
   extends ZTypeSingleton
-  with ZItemSingleton[ZDatatype]
+  with ZSingletonLike[ZDatatype]
 {
+  self: ZSingleton[ZDatatype] =>
 
   def make( value: String ): Option[V]
 

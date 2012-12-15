@@ -7,27 +7,52 @@ import itemclass._
 import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
 import net.zutha.redishost.model.MsgType._
 
+object ZComplexField {
+
+  /**
+   * Create a new Complex Field
+   * @param zClass the FieldClass of the new Field
+   * @param rolePlayers the rolePlayers of the field
+   * @param literals the literal members of the field
+   * @return
+   */
+  def apply( zClass: MRef[ZFieldClass] )
+           ( rolePlayers: MRolePlayer* )
+           ( literals: MLiteralFieldMember* )
+           ( scope: (MRef[ZScopeType], Set[MRef[ZObject]])* )
+           ( implicit acc: MA ): NewComplexField = {
+    acc.createField( zClass, rolePlayers.toSet, literals.toSet, scope.toMap ) match {
+      case f: NewComplexField => f
+      case f => throw new IllegalArgumentException(
+        "This constructor should only be used for Complex Fields. Field created: " + f.toString )
+    }
+  }
+
+}
+
 trait ZComplexField
   extends ZField
-  with ZFieldLike[ZComplexField]
+  with Loadable[ZComplexField, ZField]
 
 /**
  * An immutable Field that corresponds to a Field in the database
  *
  */
 case class ImmutableComplexField protected[redishost] ( id: Zids,
-                                                zClass: IRef[ZFieldClass],
-                                                fieldSets: Seq[IFieldSetRef],
-                                                members: Seq[IFieldMember],
-                                                scope: IScopeSeq
-                                                )( implicit val acc: ImmutableAccessor )
+                                                        zClass: IRef[ZFieldClass],
+                                                        fieldSets: Seq[IFieldSetRef],
+                                                        members: Seq[IFieldMember],
+                                                        scope: IScopeSeq )
+                                                      ( implicit val acc: ImmutableAccessor)
   extends ZComplexField
-  with IFieldLike[ImmutableComplexField]
+  with IField
+  with Loadable[ImmutableComplexField, ZField]
 
 
 trait MutableComplexField
   extends ZComplexField
-  with MFieldLike[MutableComplexField]
+  with MField
+  with Loadable[MutableComplexField, ZField]
 
 /**
  * A Persisted Field that possibly has unsaved modifications
@@ -43,11 +68,11 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
                                             messages: Seq[(MsgType, String)] = Seq(),
                                             memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
                                             scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
-                                            deleted_? : Boolean = false
-                                            )( implicit val acc: MutableAccessor )
+                                            deleted_? : Boolean = false )
+                                          ( implicit val acc: MutableAccessor )
   extends MutableComplexField
   with ModifiedField
-  with MFieldLike[ModifiedComplexField]
+  with Loadable[ModifiedComplexField, ZField]
 
 
 /**
@@ -61,8 +86,8 @@ case class NewComplexField protected[redishost] ( id: TempId,
                                                   messages: Seq[(MsgType, String)] = Seq(),
                                                   memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
                                                   scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
-                                                  deleted_? : Boolean = false
-                                                  )( implicit val acc: MutableAccessor )
+                                                  deleted_? : Boolean = false )
+                                                ( implicit val acc: MutableAccessor )
   extends MutableComplexField
   with NewField
-  with MFieldLike[NewComplexField]
+  with Loadable[NewComplexField, ZField]

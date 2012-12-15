@@ -16,18 +16,18 @@ object ZFieldSet {
 /**
  * A container for fields of a certain type owned by a specific item
  */
-trait ZFieldSet {
-  def parent: Ref[ZObject]
-  def role: Ref[ZRole]
-  def fieldClass: Ref[ZFieldClass]
-  def fields: FieldSeq
-  def scopeFilter: ScopeSeq
+trait ZFieldSet[A <: Accessor[A]] {
+  def parent: ZRef[A, ZObject]
+  def role: ZRef[A, ZRole]
+  def fieldClass: ZRef[A, ZFieldClass]
+  def fields: FieldSeq[A]
+  def scopeFilter: ScopeSeq[A]
   def scopeMatchType: ScopeMatchType
   def order: String
   def limit: Int
   def offset: Int
 
-  def reload: ZFieldSet
+  def reload: ZFieldSet[A]
 }
 
 
@@ -43,7 +43,10 @@ case class IFieldSet protected[redishost] ( parent: IRef[ZObject],
                                             order: String,
                                             limit: Int,
                                             offset: Int
-                                            )( implicit val acc: ImmutableAccessor ) extends ZFieldSet {
+                                            )
+                                          ( implicit val acc: ImmutableAccessor )
+  extends ZFieldSet[IA]
+{
 
   def reload: IFieldSet = {
     acc.getFieldSet( parent, role, fieldClass, scopeFilter, scopeMatchType, order, limit, offset )
@@ -64,9 +67,12 @@ case class MFieldSet protected[redishost] ( parent: MRef[ZObject],
                                             order: String,
                                             limit: Int,
                                             offset: Int,
-                                            includeDeleted_? : Boolean,
-                                            messages: Seq[(MsgType, String)]
-                                            )( implicit val acc: MutableAccessor ) extends ZFieldSet {
+                                            messages: Seq[(MsgType, String)],
+                                            includeDeleted_? : Boolean
+                                            )
+                                          ( implicit val acc: MutableAccessor )
+  extends ZFieldSet[MA]
+{
 
   // Accessors
 

@@ -2,15 +2,17 @@ package net.zutha.redishost.db
 
 import net.zutha.redishost.model._
 import datatype.{URI, ZString}
-import fieldclass.ZField
+import fieldset.ZFieldSet
 import itemclass._
 import literaltype.Name
-import net.zutha.redishost.lib.ReflectionHelpers._
-import singleton.ZObjectTypeSingleton
+import singleton.ZSingleton
 import scala.reflect.runtime.universe._
 import scala.reflect.runtime.{currentMirror => mirror}
+import special.ZNothing
+import net.zutha.redishost.model.ScopeMatchType._
+import net.zutha.redishost.model.ZRef
 
-trait ReadQueries[+U <: ZObject] { self: Accessor[U] =>
+trait ReadQueries[A <: Accessor[A]] { self: A =>
 
   // =================== Object Getters ======================
 
@@ -18,69 +20,81 @@ trait ReadQueries[+U <: ZObject] { self: Accessor[U] =>
 
   def lookupObjectKeyByName( name: ZString ): Option[String] = redis.hget( nameHashKey, Name.indexForm(name) )
 
-  def getObjectZids( objKey: String ): Seq[Zid] = {
-    redis.smembers[Zid]( objZidsKey(objKey) ).get.map(_.get).toSeq.sorted
+  def getTypedRef[T >: ZNothing <: ZObject: TypeTag]( key: String ): Option[ZRef[A, T]] = {
+
+    def getZTypeKeyFromScalaClassName( className: String ): String = {
+      val classSym =  mirror.staticClass( className )
+      val companionModuleSym =  classSym.companionSymbol.asModule
+      val companionClassSym = companionModuleSym.moduleClass.asClass
+      val companion = if ( companionClassSym.baseClasses.contains( typeOf[ZSingleton[ZObjectType]].typeSymbol ) ){
+        mirror.reflectModule( companionModuleSym ).instance.asInstanceOf[ZSingleton[ZObjectType]]
+      } else throw new IllegalArgumentException(
+        "type parameter T must include only scala traits that have a ZSingleton companion object" )
+      val zTypeKey: String = companion.zKey[A]
+      zTypeKey
+    }
+
+    def validateType( objKey: String ): Boolean = {
+      typeOf[T] match {
+        case RefinedType(parents, decls) => {
+          val zTypeKeys = parents.map{ p =>
+            getZTypeKeyFromScalaClassName( p.typeSymbol.fullName )
+          }
+          objHasTypes( objKey, zTypeKeys )
+        }
+        case SingleType(pre, sym) => objHasType( objKey, sym.fullName )
+      }
+    }
+
+    correctKey( key ) match {
+      case Some( objKey ) if validateType( objKey ) => Some( ZRef[A, T]( objKey ) )
+      case _ => None
+    }
   }
 
-  def getObjectRef( key: String ): Option[Ref[U, ZObject]]
-
-  def getObjectByKey( key: String): Option[ZObject]
-
-  def getItemByKey( key: String ): Option[ZItem]
-
-  def getFieldByKey( key: String ): Option[ZField]
-
-  protected[redishost] def getTypedRef[T <: U: TypeTag]( key: String ): Option[Ref[U, T]] = {
-    def wrongType: Nothing = {
-      val tString = typeToString( typeOf[T] )
-      throw new IllegalArgumentException( s"Object with key $key does not satisfy the type: $tString" )
-    }
-
-    def getZTypeFromTypeName( typeName: String ): RefU[U, ZObjectType] = {
-      val classSym =  mirror.staticClass( typeName )
-      val companionModSym =  classSym.companionSymbol.asModule
-      val companionClassSym = companionModSym.moduleClass.asClass
-      val companion = if ( companionClassSym.baseClasses.contains( typeOf[ZObjectTypeSingleton].typeSymbol ) ){
-        mirror.reflectModule( companionModSym ).instance.asInstanceOf[ZObjectTypeSingleton]
-      } else {
-        throw new IllegalArgumentException(
-          "type parameter T must include only scala types that are defined in the Zutha Schema" )
-      }
-      val zType: RefU[U, ZObjectType] = companion.ref[U, ZObjectType with U]
-      zType
-    }
-
-    def validateType( obj: Ref[U, ZObject] ): Boolean = {
-      def objHasZType( typeName: String ): Boolean = {
-        val zType = getZTypeFromTypeName( typeName )
-        objectHasType(obj, zType)
-      }
-
-      typeOf[T] match {
-        case RefinedType(parents, decls) => parents.forall{ p =>
-          objHasZType( p.typeSymbol.fullName )
-        }
-        case SingleType(pre, sym) => objHasZType( sym.fullName )
-      }
-    }
-
-    getObjectRef( key ) map { obj =>
-      if ( validateType( obj ) ){
-        obj.asInstanceOf[Ref[U, T]]
-      } else {
-        wrongType
-      }
-    }
+  protected[redishost] def loadObject[
+    Impl <: ZObject : TypeTag,
+    ZT >: ZNothing <: ZObject : TypeTag
+  ]
+  ( zRef: ZRef[A, ZT] ): Obj[Impl, ZT] = {
+    ???
   }
 
 
   // =================== Generic Queries ======================
 
-  def objectHasType( obj: Ref[U, ZObject],
-                     zType: Ref[U, ZObjectType] ): Boolean
+  protected[db] def correctKey( key: String ): Option[String] = key match {
+    case Zid(zid) => getObjectZids( key ).toSeq match {
+      case Seq() => None
+      case zids => Some( zids.head.key )
+    }
+    case _ => None
+  }
+
+  protected[db] def objHasTypes( objKey: String, zTypeKeys: Iterable[String] ): Boolean = ???
+  protected[db] def objHasType( objKey: String, zTypeKey: String ): Boolean = ???
+
+  def objectHasType( obj: ZRef[A, ZObject],
+                     zType: ZRef[A, ZObjectType] ): Boolean = {
+    ???
+  }
 
 
   // =================== Object Member Getters ======================
 
+  def getObjectZids( objKey: String ): Seq[Zid] = {
+    redis.smembers[Zid]( objZidsKey(objKey) ).get.map(_.get).toSeq.sorted
+  }
+
+  //  TODO: implement stub
+  def getFieldSet( parent: ZRef[A, ZObject],
+                   role: ZRef[A, ZRole],
+                   fieldClass: ZRef[A, ZFieldClass],
+                   scopeFilter: ScopeSeq[A],
+                   scopeMatchType: ScopeMatchType,
+                   order: String,
+                   limit: Int,
+                   offset: Int
+                   ): ZFieldSet[A]
 
 }

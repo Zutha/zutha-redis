@@ -1,58 +1,51 @@
 package net.zutha.redishost
 
+import db.{Accessor, MutableAccessor, ImmutableAccessor}
+import model.special.ZNothing
+
 
 package object model {
   import itemclass._
   import fieldclass._
   import scala.language.implicitConversions
 
+  // Accessor Aliases
+  type IA = ImmutableAccessor
+  type MA = MutableAccessor
+
   // --- Type Constructors for Mutability ---
 
   // Object Type Constructors
-  type ZObjT[+T <: ZObject]   = T with ZObjectLike[T]
-  type I[+T <: ZObject]       = T with IObjectLike[T]
-  type M[+T <: ZObject]       = T with MObjectLike[T]
-  type IObject = I[ZObject]
-  type MObject = M[ZObject]
+  type Obj[+Impl <: ZObject, +ZT >: ZNothing <: ZObject] = Impl with ZT with Loadable[Impl, ZT]
 
-  // Item Type Constructors
-  type II[+T <: ZItem] = T with IItemLike[T]
-  type MI[+T <: ZItem] = T with MItemLike[T]
-  type IItem = II[ZItem]
-  type MItem = MI[ZItem]
+//  type IObj[+T >: ZNothing <: ZObject]  = IObject with T
+//  type MObj[+T >: ZNothing <: ZObject]  = MObject with T
+//
+//  // Item Type Constructors
+//  type II[+T >: ZNothing <: ZItem]   = IItem with T
+//  type MI[+T >: ZNothing <: ZItem]   = MItem with T
+//
+//  // Field Type Constructors
+//  type IF[+T >: ZNothing <: ZField]  = IField with T
+//  type MF[+T >: ZNothing <: ZField]  = MField with T
 
-  // Field Type Constructors
-  type IF[+T <: ZField] = T with IFieldLike[T]
-  type MF[+T <: ZField] = T with MFieldLike[T]
-  type IField = IF[ZField]
-  type MField = MF[ZField]
+  // ZRef Aliases
+  type IRef[+T >: ZNothing <: ZObject] = ZRef[IA, T]
+  type MRef[+T >: ZNothing <: ZObject] = ZRef[MA, T]
 
-  // Ref Constructor
-  type RefU[U <: ZObject, T <: ZObject] = Ref[U, T with U]
+  // Scope structures
+  implicit def ScopeSeqToMap[A <: Accessor[A]]( scope: ScopeSeq[A] ): ScopeMap[A] = scope.toMap.mapValues(_.toSet)
+  type ScopeSeq[A <: Accessor[A]]  = Seq[(ZRef[A, ZScopeType], Seq[ZRef[A, ZObject]])]
+  type IScopeSeq    = ScopeSeq[IA]
+  type MScopeSeq    = ScopeSeq[MA]
 
-  // Ref Aliases
-  type ZRef[+T <: ZObject] = Ref[ZObject, T]
+  type ScopeMap[A <: Accessor[A]]  = Map[ZRef[A, ZScopeType], Set[ZRef[A, ZObject]]]
+  type IScopeMap    = ScopeMap[IA]
+  type MScopeMap    = ScopeMap[MA]
 
-  type IRef[+T <: ZObject] = Ref[IObject, I[T]]
-  type MRef[+T <: ZObject] = Ref[MObject, M[T]]
-  type IIRef[+T <: ZItem]  = Ref[IObject, II[T]]
-  type MIRef[+T <: ZItem]  = Ref[MObject, MI[T]]
-  type IFRef[+T <: ZField] = Ref[IObject, IF[T]]
-  type MFRef[+T <: ZField] = Ref[MObject, MF[T]]
-
-  type ScopeSeq[B <: ZObjT]  = Seq[(Ref[B, ZScopeType], Seq[Ref[B, ZObject]])]
-  type ScopeMap[B <: ZObjT]  = Map[Ref[B, ZScopeType], Set[Ref[B, ZObject]]]
-  implicit def ScopeSeqToMap[B <: ZObjT]( scope: ScopeSeq[B] ): ScopeMap[B] = scope.toMap.mapValues(_.toSet)
-  type IScopeSeq               = Seq[(IRef[ZScopeType], Seq[IRef[ZScopeType]])]
-  type IScopeMap                = Map[IRef[ZScopeType], Set[IRef[ZScopeType]]]
-  implicit def IScopeSeqToMap( scope: IScopeSeq ): IScopeMap = scope.toMap.mapValues(_.toSet)
-  type MScopeSeq               = Seq[(MRef[ZScopeType], Seq[MRef[ZObject]])]
-  type MScopeMap                = Map[MRef[ZScopeType], Set[MRef[ZObject]]]
-  implicit def MScopeSeqToMap( scope: MScopeSeq ): MScopeMap = scope.toMap.mapValues(_.toSet)
-
-
-  type FieldSeq[B <: ZObjT]  = Seq[Ref[B, ZField]]
-  type IFieldSeq             = Seq[IRef[ZField]]
-  type MFieldSeq             = Seq[MRef[ZField]]
+  // FieldSet structures
+  type FieldSeq[A <: Accessor[A]]  = Seq[ZRef[A, ZField]]
+  type IFieldSeq                   = FieldSeq[IA]
+  type MFieldSeq                   = FieldSeq[MA]
 
 }

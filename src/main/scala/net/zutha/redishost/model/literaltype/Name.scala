@@ -1,9 +1,13 @@
 package net.zutha.redishost.model.literaltype
 
-import net.zutha.redishost.model.singleton.ZLiteralTypeSingleton
+import net.zutha.redishost.model.singleton.{ZSingleton, ZLiteralTypeSingleton}
 import net.zutha.redishost.model.datatype.ZString
+import net.zutha.redishost.model.itemclass.ZLiteralType
 
-object Name extends ZLiteralTypeSingleton[ZString] {
+object Name
+  extends ZSingleton[ZLiteralType]
+  with ZLiteralTypeSingleton[ZString]
+{
 
   def name = "Name"
 

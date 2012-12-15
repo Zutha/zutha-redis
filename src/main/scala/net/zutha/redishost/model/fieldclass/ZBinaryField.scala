@@ -4,12 +4,36 @@ import net.zutha.redishost.model._
 import fieldmember._
 import fieldset.{MFieldSetRef, IFieldSetRef}
 import itemclass._
-import net.zutha.redishost.db.{MutableAccessor, ImmutableAccessor}
+import net.zutha.redishost.db.ImmutableAccessor
 import net.zutha.redishost.model.MsgType._
+import net.zutha.redishost.exception.SchemaException
+
+object ZBinaryField {
+
+  /**
+   * Create a new Binary Field
+   * @param zClass the FieldClass of the new Field
+   * @param rolePlayer1 one of the two rolePlayers of this binary field
+   * @param rolePlayer2 the other of the two rolePlayers of this binary field
+   */
+  def apply( zClass: MRef[ZFieldClass],
+             rolePlayer1: MRolePlayer,
+             rolePlayer2: MRolePlayer,
+             scope: (MRef[ZScopeType], Set[MRef[ZObject]])* )
+           ( implicit acc: MA ): NewBinaryField = {
+    //TODO verify that field class is a binary field
+    acc.createField(zClass, Set(rolePlayer1, rolePlayer2), Map(), scope.toMap ) match {
+      case f: NewBinaryField => f
+      case f => throw new SchemaException(
+        "createdField should have returned a BinaryField. Actually returned: " + f.toString )
+    }
+  }
+
+}
 
 trait ZBinaryField
   extends ZField
-  with ZFieldLike[ZBinaryField]
+  with Loadable[ZBinaryField, ZField]
 
 /**
  * An immutable Field that corresponds to a Field in the database
@@ -21,18 +45,19 @@ ImmutableBinaryField protected[redishost] ( id: Zids,
                                             fieldSets: Seq[IFieldSetRef],
                                             rolePlayer1: IRolePlayer,
                                             rolePlayer2: IRolePlayer,
-                                            scope: IScopeSeq
-                                            )( implicit val acc: ImmutableAccessor )
+                                            scope: IScopeSeq )
+                                          ( implicit val acc: ImmutableAccessor )
   extends ZBinaryField
-  with IFieldLike[ImmutableBinaryField]
+  with IField
+  with Loadable[ImmutableBinaryField, ZField]
 {
-
   def members: Seq[IFieldMember] = Seq( rolePlayer1, rolePlayer2 )
 }
 
 trait MutableBinaryField
   extends ZBinaryField
-  with MFieldLike[MutableBinaryField]
+  with MField
+  with Loadable[MutableBinaryField, ZField]
 {
   def rolePlayer1: MRolePlayer
   def rolePlayer2: MRolePlayer
@@ -56,11 +81,11 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
                                            messages: Seq[(MsgType, String)] = Seq(),
                                            memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
                                            scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
-                                           deleted_? : Boolean = false
-                                           )( implicit val acc: MutableAccessor )
+                                           deleted_? : Boolean = false )
+                                         ( implicit val acc: MA )
   extends MutableBinaryField
   with ModifiedField
-  with MFieldLike[ModifiedBinaryField]
+  with Loadable[ModifiedBinaryField, ZField]
 {
   // Getters
 
@@ -82,8 +107,8 @@ NewBinaryField protected[redishost] ( id: TempId,
                                       messages: Seq[(MsgType, String)] = Seq(),
                                       memberMessages: Map[MRef[ZFieldMemberType], Seq[(MsgType, String)]] = Map(),
                                       scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]] = Map(),
-                                      deleted_? : Boolean = false
-                                      )( implicit val acc: MutableAccessor )
+                                      deleted_? : Boolean = false )
+                                    ( implicit val acc: MA )
   extends MutableBinaryField
   with NewField
-  with MFieldLike[NewBinaryField]
+  with Loadable[NewBinaryField, ZField]

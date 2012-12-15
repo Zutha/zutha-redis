@@ -2,31 +2,24 @@ package net.zutha.redishost.model
 
 import fieldset.{MFieldSetRef, IFieldSetRef, ZFieldSetRef}
 import itemclass._
-import net.zutha.redishost.db.{ImmutableAccessor, Accessor, MutableAccessor}
 import net.zutha.redishost.model.MsgType._
-import scala.reflect.runtime.universe._
 
 
-trait ZObjectLike[+This <: ZObject]
+private[model]
+trait ZObjectLike
+  extends Loadable[ZObject, ZObject]
 {
-  self: This =>
-
-  type U <: ZObject
-  type L = This
+  self: ZObject =>
 
   // Accessors
 
-  implicit def acc: Accessor
-
   def id: ZIdentity
 
-  def ref[T >: L <: U: TypeTag]: Ref[ZObject, T]
+  def zKey: String = id.key
 
-  def key: String = id.key
+  def zClass: ZRef[A, ZClass]
 
-  def zClass: Ref[ZClass]
-
-  def fieldSets: Seq[ZFieldSetRef]
+  def fieldSets: Seq[ZFieldSetRef[A]]
   def zids: Seq[Zid] = id match {
     case TempId(_) => Seq()
     case MZids(_, allZids) => allZids
@@ -40,28 +33,23 @@ trait ZObjectLike[+This <: ZObject]
 
   // Comparison
 
-  def sameAs(other: ZObject): Boolean = id == other.id
+  def sameAs( other: ZObject ): Boolean = id == other.id
 
   // Querying
 
-  def reload[T >: L <: U: TypeTag]: T
 }
 
-trait IObjectLike[+This <: IObject]
-  extends ZObjectLike[This]
+private[model]
+trait IObjectLike
+  extends ZObjectLike
+  with Accessible[IA]
+  with Loadable[IObject, ZObject]
 {
-  self: This =>
-
-  type U = IObject
-
+  self: IObject =>
 
   // Accessors
 
-  implicit def acc: ImmutableAccessor
-
   def id: Zids
-
-  def ref[T >: L <: IObject: TypeTag] = Ref[IObject, T]( id )
 
   def zid: Zid = id.zid
 
@@ -71,26 +59,21 @@ trait IObjectLike[+This <: IObject]
 
   // Queries
 
-  def reload[T >: L <: IObject: TypeTag]: T = acc.reloadObject( this.ref[T] )
-
-  def hasType_? ( zType: IRef[ZType] ) : Boolean = acc.objectHasType( this.ref, zType )
+  def hasType_? ( objType: IRef[ZObjectType] ) : Boolean = acc.objectHasType( this.zRef, objType )
 
 }
 
-trait MObjectLike[+This <: ZObject]
-  extends ZObjectLike[This]
+private[model]
+trait MObjectLike
+  extends ZObjectLike
+  with Accessible[MA]
+  with Loadable[MObject, ZObject]
 {
-  self: This =>
-
-  type U = MObject
+  self: MObject =>
 
   // Accessors
 
-  implicit def acc: MutableAccessor
-
   def id: ZIdentity
-
-  def ref[T >: L <: MObject: TypeTag] = MRef[T]( id )
 
   override def zClass: MRef[ZClass]
 
@@ -102,9 +85,7 @@ trait MObjectLike[+This <: ZObject]
 
   // Queries
 
-  def reload[T >: L <: MObject: TypeTag]: T = acc.reloadObject( this.ref[T] )
-
-  def hasType_? ( zType: MRef[ZType] ) : Boolean = acc.objectHasType( this.ref, zType )
+  def hasType_? ( objType: MRef[ZObjectType] ) : Boolean = acc.objectHasType( this.zRef, objType )
 
   def persisted_? = primaryZids.size > 0
 
@@ -112,13 +93,13 @@ trait MObjectLike[+This <: ZObject]
 
   // Mutation
 
-  def delete[T >: L <: MObject: TypeTag]: T = {
-    acc.deleteObject( this.ref )
+  def delete: Impl = {
+    acc.deleteObject( this.zRef )
     reload
   }
 
-  def restore[T >: L <: MObject: TypeTag]: T = {
-    acc.restoreObject( this.ref )
+  def restore: Impl = {
+    acc.restoreObject( this.zRef )
     reload
   }
 }

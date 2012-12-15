@@ -28,20 +28,20 @@ trait UpdateQueries { self: MutableAccessor =>
   def createItem( zClass: MRef[ZItemClass] ): NewItem = {
     val newId = createNewObject
     redis.pipeline {r =>
-      r.specifyObjectClass( newId, zClass.key )
+      r.specifyObjectClass( newId, zClass.zKey )
     }
     NewItem( TempId(newId), zClass, Seq(), Seq() )
   }
 
   /**
    * Create a new field of the given class
-   * @param zClass the class of field to create
+   * @param fieldClass the class of field to create
    * @param rolePlayers a set of rolePlayers to put in the new field
    * @param literals a set of literal values to put in the new field
    * @param scope the scope in which the new field will be applicable
-   * @return a subclass of NewField, depending on the field class requested by zClass
+   * @return a subclass of NewField, depending on the field class requested by fieldClass
    */
-  def createField( zClass: MRef[ZFieldClass],
+  def createField( fieldClass: MRef[ZFieldClass],
                    rolePlayers: Set[MRolePlayer],
                    literals: MLiteralMap,
                    scope: MScopeMap
@@ -51,22 +51,22 @@ trait UpdateQueries { self: MutableAccessor =>
     //TODO validate provided field components against fieldClass declarations
 
     redis.pipeline {r =>
-      r.specifyObjectClass( newId, zClass.key )
-      r.addTypeToObject( newId, zClass.key )
+      r.specifyObjectClass( newId, fieldClass.zKey )
+      r.addTypeToObject( newId, fieldClass.zKey )
       r.addRolePlayersToField( newId, rolePlayers )
       r.setFieldLiterals( newId, literals )
       r.setFieldScope( newId, scope )
     }
 
     val roleMembers = rolePlayers.groupBy(_.role).map{ case (role, rps) =>
-      MRoleFieldMember(role, rps.map(_.player).toSeq )
+      RoleFieldMember(role, rps.map(_.player).toSeq )
     }.toSeq
-    val literalMembers: Seq[MLiteral] = literals.map( pair => (pair: MLiteral) ).toSeq
+    val literalMembers: Seq[MLiteralFieldMember] = literals.map( pair => (pair: MLiteralFieldMember) ).toSeq
     val members: Seq[MFieldMember] = roleMembers ++ literalMembers
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
 
     //TODO create simpler FieldType if applicable
-    NewComplexField( TempId(newId), zClass, Seq(), members, scopeSeq)
+    NewComplexField( TempId(newId), fieldClass, Seq(), members, scopeSeq)
   }
 
   // ======================= Mutation =======================

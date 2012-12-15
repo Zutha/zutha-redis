@@ -1,12 +1,11 @@
 package net.zutha.redishost.model.role
 
 import net.zutha.redishost.model.itemclass._
-import net.zutha.redishost.model.singleton.ZRoleSingleton
+import net.zutha.redishost.model.singleton.{ZSingleton, ZRoleSingleton}
 
-object Namable extends ZRoleSingleton {
-  type ObjT = ZTrait with ZRole
-  type ObjTM = MTrait with MRole
-  type ObjTI = ITrait with IRole
-
+object Namable
+  extends ZSingleton[ZTrait with ZRole]
+  with ZRoleSingleton
+{
   def name = "Namable"
 }

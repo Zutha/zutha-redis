@@ -2,34 +2,20 @@ package net.zutha.redishost.model.fieldmember
 
 import net.zutha.redishost.model._
 import net.zutha.redishost.model.itemclass._
+import net.zutha.redishost.db.Accessor
 
 object RolePlayer {
   import scala.language.implicitConversions
-  implicit def rolePlayerToFieldMember( rolePlayer: IRolePlayer ): IFieldMember = rolePlayer match {
-    case IRolePlayer(role, player) => IRoleFieldMember( role, Seq(player) )
-  }
-  implicit def rolePlayerToFieldMember( rolePlayer: MRolePlayer ): MFieldMember = rolePlayer match {
-    case MRolePlayer(role, player) => MRoleFieldMember( role, Seq(player) )
-  }
+  implicit def rolePlayerToFieldMember[A <: Accessor[A]]( rolePlayer: RolePlayer[A] ): FieldMember[A] =
+    RoleFieldMember( rolePlayer.role, Seq(rolePlayer.player) )
 
-  implicit def pairToRolePlayer( pair: Pair[IRef[ZRole], IRef[ZObject]] ): IRolePlayer = IRolePlayer( pair._1, pair._2 )
-  implicit def pairToRolePlayer( pair: Pair[MRef[ZRole], MRef[ZObject]] ): MRolePlayer = MRolePlayer( pair._1, pair._2 )
+  implicit def pairToRolePlayer[A <: Accessor[A]]( pair: Pair[ZRef[A, ZRole], ZRef[A, ZObject]]
+                                                   ): RolePlayer[A] = RolePlayer( pair._1, pair._2 )
 }
 
-trait RolePlayer {
-  def role: Ref[ZRole]
-  def player: Ref[ZObject]
-  def toPair: Pair[Ref[ZRole], Ref[ZObject]]
-}
 
-case class IRolePlayer( role: IRef[ZRole], player: IRef[ZObject] )
-  extends RolePlayer
-{
-  def toPair = Pair( role, player )
-}
-
-case class MRolePlayer( role: MRef[ZRole], player: MRef[ZObject] )
-  extends RolePlayer
+case class RolePlayer[A <: Accessor[A]]( role: ZRef[A, ZRole],
+                                         player: ZRef[A, ZObject] )
 {
   def toPair = Pair( role, player )
 }

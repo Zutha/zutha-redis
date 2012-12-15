@@ -1,9 +1,13 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.model._
+import singleton.{ZRoleSingleton, ZSingleton, ZItemClassSingleton}
 
-object ZObjectType extends ZItemClassSingleton[ZObjectType, IObjectType, MObjectType] {
+object ZObjectType
+  extends ZSingleton[ZItemClass with ZRole]
+  with ZItemClassSingleton[ZObjectType]
+  with ZRoleSingleton
+{
 
   def name = "ObjectType"
 
@@ -11,14 +15,4 @@ object ZObjectType extends ZItemClassSingleton[ZObjectType, IObjectType, MObject
 
 trait ZObjectType
   extends ZType
-  with ZItemLike[ZObjectType]
-
-trait IObjectType
-  extends ZObjectType
-  with IType
-  with IItemLike[IObjectType]
-
-trait MObjectType
-  extends ZObjectType
-  with MType
-  with MItemLike[MObjectType]
+  with Referenceable[ZObjectType]

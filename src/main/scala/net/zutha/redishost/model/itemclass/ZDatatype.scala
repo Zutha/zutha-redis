@@ -1,9 +1,13 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.model._
+import singleton.{ZRoleSingleton, ZSingleton, ZItemClassSingleton}
 
-object ZDatatype extends ZItemClassSingleton[ZDatatype] {
+object ZDatatype
+  extends ZSingleton[ZItemClass with ZRole]
+  with ZItemClassSingleton[ZDatatype]
+  with ZRoleSingleton
+{
 
   def name = "Datatype"
 
@@ -11,4 +15,4 @@ object ZDatatype extends ZItemClassSingleton[ZDatatype] {
 
 trait ZDatatype
   extends ZType
-  with ZItemLike[ZDatatype]
+  with Referenceable[ZDatatype]

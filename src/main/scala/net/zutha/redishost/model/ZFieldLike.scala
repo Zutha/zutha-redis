@@ -1,35 +1,34 @@
 package net.zutha.redishost.model
 
-import fieldclass.ZField
+import fieldclass.{IField, MField, ZField}
 import fieldmember._
-import fieldmember.MLiteral
-import fieldmember.MRoleFieldMember
-import fieldmember.MRolePlayer
 import fieldset._
 import itemclass._
 import scala.reflect.runtime.universe._
 import net.zutha.redishost.model.MsgType._
 
 
-trait ZFieldLike[+This <: ZField]
-  extends ZObjectLike[This]
+trait ZFieldLike
+  extends ZObjectLike
+  with Loadable[ZField, ZField]
 {
-  self: This =>
+  self: ZField =>
 
   // Accessors
 
-  def zClass: Ref[ZObject, ZFieldClass]
+  def zClass: ZRef[A, ZFieldClass]
 
-  def members: Seq[ZFieldMember]
+  def members: Seq[FieldMember[A]]
 
-  def scope: ScopeSeq
+  def scope: ScopeSeq[A]
 }
 
-trait IFieldLike[+This <: IField]
-  extends ZFieldLike[This]
-  with IObjectLike[This]
+trait IFieldLike
+  extends ZFieldLike
+  with IObjectLike
+  with Loadable[IField, ZField]
 {
-  self: This =>
+  self: IField =>
 
   // Accessors
 
@@ -40,11 +39,12 @@ trait IFieldLike[+This <: IField]
   def scope: IScopeSeq
 }
 
-trait MFieldLike[+This <: MField]
-  extends ZFieldLike[This]
-  with MObjectLike[This]
+trait MFieldLike
+  extends ZFieldLike
+  with MObjectLike
+  with Loadable[MField, ZField]
 {
-  self: This =>
+  self: MField =>
 
   // Accessors
 
@@ -58,16 +58,16 @@ trait MFieldLike[+This <: MField]
 
   def scopeMessages: Map[MRef[ZScopeType], Seq[(MsgType, String)]]
 
-  lazy val rolePlayers: Set[MRolePlayer] = {
+  lazy val rolePlayers: MRolePlayerSet = {
     val rolePlayerSeq: Seq[MRolePlayer] = members flatMap { m => m match {
-      case MRoleFieldMember( role, players ) => players.map (p => MRolePlayer(role, p))
+      case RoleFieldMember( role, players ) => players.map (p => RolePlayer(role, p))
       case _ => Seq()
     }}
     rolePlayerSeq.toSet
   }
 
   lazy val literals: MLiteralMap = members.collect {
-    case literal: MLiteral => literal.toPair
+    case literal: MLiteralFieldMember => literal.toPair
   }.toMap
 
   /**
@@ -78,35 +78,35 @@ trait MFieldLike[+This <: MField]
    * @param literals
    * @return
    */
-  protected def updateField[T >: L <: MField: TypeTag]
+  protected def updateField[T >: Impl <: MField: TypeTag]
   ( rolePlayers: Set[MRolePlayer] = rolePlayers,
     literals: MLiteralMap = literals
     ): T = {
-    acc.updateField( this.ref, rolePlayers, literals )
-    reload[T]
+    acc.updateField( this.zRef, rolePlayers, literals )
+    reload
   }
 
   // Mutators
 
-  def mutateRolePlayers[T >: L <: MField: TypeTag]( mutate: Set[MRolePlayer] => Set[MRolePlayer] ): T =
+  def mutateRolePlayers[T >: Impl <: MField: TypeTag]( mutate: Set[MRolePlayer] => Set[MRolePlayer] ): T =
     updateField[T]( rolePlayers = mutate(rolePlayers) )
 
-  def addRolePlayer[T >: L <: MField: TypeTag]( rolePlayer: MRolePlayer ): T =
+  def addRolePlayer[T >: Impl <: MField: TypeTag]( rolePlayer: MRolePlayer ): T =
     mutateRolePlayers[T](_ + rolePlayer )
 
-  def removeRolePlayer[T >: L <: MField: TypeTag]( rolePlayer: MRolePlayer ) : T =
+  def removeRolePlayer[T >: Impl <: MField: TypeTag]( rolePlayer: MRolePlayer ) : T =
     mutateRolePlayers[T]( _ - rolePlayer )
 
-  def mutateLiterals[T >: L <: MField: TypeTag]( mutate: MLiteralMap => MLiteralMap ): T =
+  def mutateLiterals[T >: Impl <: MField: TypeTag]( mutate: MLiteralMap => MLiteralMap ): T =
     updateField[T]( literals = mutate(literals) )
 
-  def updateLiteral[T >: L <: MField: TypeTag]( literalType: MRef[ZLiteralType],
+  def updateLiteral[T >: Impl <: MField: TypeTag]( literalType: MRef[ZLiteralType],
                                                    newValue: LiteralValue
                                                    ): T = {
     mutateLiterals[T]( _.updated( literalType, newValue ) )
   }
 
-  def applyDiff[T >: L <: MField: TypeTag]( diff: ZFieldDiff ): T = {
+  def applyDiff[T >: Impl <: MField: TypeTag]( diff: ZFieldDiff ): T = {
     val newRolePlayers = rolePlayers ++ diff.addedRolePlayers -- diff.removedRolePlayers
     val newLiterals = literals ++ diff.modifiedLiterals
 

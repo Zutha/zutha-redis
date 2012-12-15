@@ -1,25 +1,17 @@
 package net.zutha.redishost.model.itemclass
 
-import net.zutha.redishost.model.singleton.ZItemClassSingleton
 import net.zutha.redishost.model._
+import singleton.{ZRoleSingleton, ZSingleton, ZItemClassSingleton}
 
-object ZScopeType extends ZItemClassSingleton[ZScopeType, IScopeType, MScopeType] {
+object ZScopeType
+  extends ZSingleton[ZItemClass with ZRole]
+  with ZItemClassSingleton[ZScopeType]
+  with ZRoleSingleton
+{
 
   def name = "ScopeType"
-
-
 }
 
 trait ZScopeType
   extends ZType
-  with ZItemLike[ZScopeType]
-
-trait IScopeType
-  extends ZScopeType
-  with IType
-  with IItemLike[IScopeType]
-
-trait MScopeType
-  extends ZScopeType
-  with MType
-  with MItemLike[MScopeType]
+  with Referenceable[ZScopeType]
