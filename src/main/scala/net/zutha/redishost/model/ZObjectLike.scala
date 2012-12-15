@@ -15,7 +15,7 @@ trait ZObjectLike
 
   def id: ZIdentity
 
-  def zKey: String = id.key
+  def key: String = id.key
 
   def zClass: ZRef[A, ZClass]
 

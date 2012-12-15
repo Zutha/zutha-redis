@@ -30,7 +30,7 @@ trait ReadQueries[A <: Accessor[A]] { self: A =>
         mirror.reflectModule( companionModuleSym ).instance.asInstanceOf[ZSingleton[ZObjectType]]
       } else throw new IllegalArgumentException(
         "type parameter T must include only scala traits that have a ZSingleton companion object" )
-      val zTypeKey: String = companion.zKey[A]
+      val zTypeKey: String = companion.key[A]
       zTypeKey
     }
 

@@ -19,7 +19,7 @@ trait ZSingletonLike[+This >: ZNothing <: ZItem]
    */
   def name: String
 
-  def zKey[A <: Accessor[A] ]( implicit acc: A ): String = {
+  def key[A <: Accessor[A] ]( implicit acc: A ): String = {
     val key = acc.lookupObjectKeyByName( name ) match {
       case Some(k) => k
       case None => acc match {
@@ -36,7 +36,7 @@ trait ZSingletonLike[+This >: ZNothing <: ZItem]
   def ref[A <: Accessor[A], T >: L <: ZObject]( implicit acc: A,
                                                 tt: TypeTag[T] ): ZRef[A, T] = {
 
-    ZRef[A, T]( zKey[A] )
+    ZRef[A, T]( key[A] )
   }
 
   def refI[T >: L <: ZObject]( implicit acc: IA,

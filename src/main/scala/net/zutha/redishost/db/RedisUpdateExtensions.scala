@@ -18,9 +18,9 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
   }
 
   def setFieldScope( fieldId: String, scope: MScopeMap ) {
-    scope foreach {s =>
-      val key = fieldScopesKey(fieldId, s._1.zKey)
-      val scopeItems: Seq[String] = s._2.map(_.zKey).toSeq
+    scope foreach { case (scopeType, scopeObject) =>
+      val key = fieldScopesKey(fieldId, scopeType.key)
+      val scopeItems: Seq[String] = scopeObject.map(_.key).toSeq
       r.del(key)
       if ( scopeItems.size > 0 ){
         r.sadd( key, scopeItems.head, scopeItems.tail:_* )
@@ -30,8 +30,8 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
   def addRolePlayersToField( fieldId: String, rolePlayers: Set[MRolePlayer] ) {
     rolePlayers.groupBy(_.role) foreach { case (role, rps) =>
-      val key = fieldRolePlayersKey( fieldId, role.zKey )
-      val playerIds = rps.map(_.player.zKey)
+      val key = fieldRolePlayersKey( fieldId, role.key )
+      val playerIds = rps.map(_.player.key)
       if ( playerIds.size > 0 ){
         r.sadd( key, playerIds.head, playerIds.tail )
       }
@@ -40,7 +40,7 @@ protected[db] class RedisUpdateExtensions( r: RedisCommand ) extends RedisKeys {
 
   def setFieldLiterals( fieldId: String, literals: MLiteralMap ) {
     val kvs = literals.toSeq map { case Pair( literalType, value ) =>
-      val key = fieldLiteralsKey( fieldId, literalType.zKey )
+      val key = fieldLiteralsKey( fieldId, literalType.key )
       ( key -> value.toString )
     }
     r.mset( kvs:_* )

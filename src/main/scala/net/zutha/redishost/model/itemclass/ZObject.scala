@@ -21,7 +21,7 @@ trait ZObject
 {
   def id: ZIdentity
 
-  def zKey: String
+  def key: String
 }
 
 /**

@@ -20,7 +20,7 @@ object ZRef {
 }
 
 case class ZRef
-[A <: Accessor[A], +ZT >: ZNothing <: ZObject] private[redishost]( zKey: String )
+[A <: Accessor[A], +ZT >: ZNothing <: ZObject] private[redishost]( key: String )
                                                                  ( implicit val acc: A,
                                                                    private[this] val tt: TypeTag[ZT] )
 {

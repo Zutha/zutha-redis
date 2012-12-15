@@ -13,9 +13,9 @@ trait Referenceable[+L >: ZNothing <: ZObject] {
 
   implicit def acc: A
 
-  def zKey: String
+  def key: String
 
-  def zRef[T >: L <: ZObject : TypeTag]: ZRef[A, T] = acc.getTypedRef( zKey ).getOrElse(
+  def zRef[T >: L <: ZObject : TypeTag]: ZRef[A, T] = acc.getTypedRef( key ).getOrElse(
     throw new ZTypeChangedException
   )
 

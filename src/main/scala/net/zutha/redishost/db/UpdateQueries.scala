@@ -28,7 +28,7 @@ trait UpdateQueries { self: MutableAccessor =>
   def createItem( zClass: MRef[ZItemClass] ): NewItem = {
     val newId = createNewObject
     redis.pipeline {r =>
-      r.specifyObjectClass( newId, zClass.zKey )
+      r.specifyObjectClass( newId, zClass.key )
     }
     NewItem( TempId(newId), zClass, Seq(), Seq() )
   }
@@ -51,8 +51,8 @@ trait UpdateQueries { self: MutableAccessor =>
     //TODO validate provided field components against fieldClass declarations
 
     redis.pipeline {r =>
-      r.specifyObjectClass( newId, fieldClass.zKey )
-      r.addTypeToObject( newId, fieldClass.zKey )
+      r.specifyObjectClass( newId, fieldClass.key )
+      r.addTypeToObject( newId, fieldClass.key )
       r.addRolePlayersToField( newId, rolePlayers )
       r.setFieldLiterals( newId, literals )
       r.setFieldScope( newId, scope )
