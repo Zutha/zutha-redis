@@ -40,7 +40,8 @@ trait ZBinaryField
  *
  */
 case class
-ImmutableBinaryField protected[redishost] ( id: Zids,
+ImmutableBinaryField protected[redishost] ( zid: Zid,
+                                            allZids: Seq[Zid],
                                             zClass: IRef[ZFieldClass],
                                             fieldSets: Seq[IFieldSetRef],
                                             rolePlayer1: IRolePlayer,
@@ -72,7 +73,8 @@ trait MutableBinaryField
  * A Persisted BinaryField that possibly has unsaved modifications
  */
 case class
-ModifiedBinaryField protected[redishost] ( id: PersistedId,
+ModifiedBinaryField protected[redishost] ( primaryZids: Seq[Zid],
+                                           allZids: Seq[Zid],
                                            zClass: MRef[ZFieldClass],
                                            fieldSets: Seq[MFieldSetRef],
                                            rolePlayer1: MRolePlayer,
@@ -98,7 +100,7 @@ ModifiedBinaryField protected[redishost] ( id: PersistedId,
  * A BinaryField that has not been persisted to the database
  */
 case class
-NewBinaryField protected[redishost] ( id: TempId,
+NewBinaryField protected[redishost] ( key: String,
                                       zClass: MRef[ZFieldClass],
                                       fieldSets: Seq[MFieldSetRef],
                                       rolePlayer1: MRolePlayer,

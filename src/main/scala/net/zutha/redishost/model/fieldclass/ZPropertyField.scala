@@ -41,7 +41,8 @@ trait ZPropertyField
  *
  */
 case class
-ImmutablePropertyField protected[redishost] ( id: Zids,
+ImmutablePropertyField protected[redishost] ( zid: Zid,
+                                              allZids: Seq[Zid],
                                               zClass: IRef[ZFieldClass],
                                               fieldSets: Seq[IFieldSetRef],
                                               rolePlayer: IRolePlayer,
@@ -73,7 +74,8 @@ trait MutablePropertyField
  * A Persisted PropertyField that possibly has unsaved modifications
  */
 case class
-ModifiedPropertyField protected[redishost] ( id: PersistedId,
+ModifiedPropertyField protected[redishost] ( primaryZids: Seq[Zid],
+                                             allZids: Seq[Zid],
                                              zClass: MRef[ZFieldClass],
                                              fieldSets: Seq[MFieldSetRef],
                                              rolePlayer: MRolePlayer,
@@ -101,7 +103,7 @@ ModifiedPropertyField protected[redishost] ( id: PersistedId,
  * A PropertyField that has not been persisted to the database
  */
 case class
-NewPropertyField protected[redishost] ( id: TempId,
+NewPropertyField protected[redishost] ( key: String,
                                         zClass: MRef[ZFieldClass],
                                         fieldSets: Seq[MFieldSetRef],
                                         rolePlayer: MRolePlayer,

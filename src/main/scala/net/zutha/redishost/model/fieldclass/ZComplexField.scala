@@ -38,7 +38,8 @@ trait ZComplexField
  * An immutable Field that corresponds to a Field in the database
  *
  */
-case class ImmutableComplexField protected[redishost] ( id: Zids,
+case class ImmutableComplexField protected[redishost] ( zid: Zid,
+                                                        allZids: Seq[Zid],
                                                         zClass: IRef[ZFieldClass],
                                                         fieldSets: Seq[IFieldSetRef],
                                                         members: Seq[IFieldMember],
@@ -58,7 +59,8 @@ trait MutableComplexField
  * A Persisted Field that possibly has unsaved modifications
  */
 case class
-ModifiedComplexField protected[redishost] ( id: PersistedId,
+ModifiedComplexField protected[redishost] ( primaryZids: Seq[Zid],
+                                            allZids: Seq[Zid],
                                             zClass: MRef[ZFieldClass],
                                             fieldSets: Seq[MFieldSetRef],
                                             rolePlayersOrig: Set[MRolePlayer],
@@ -78,7 +80,7 @@ ModifiedComplexField protected[redishost] ( id: PersistedId,
 /**
  * A Field that has not been persisted to the database
  */
-case class NewComplexField protected[redishost] ( id: TempId,
+case class NewComplexField protected[redishost] ( key: String,
                                                   zClass: MRef[ZFieldClass],
                                                   fieldSets: Seq[MFieldSetRef],
                                                   members: Seq[MFieldMember] = Seq(),

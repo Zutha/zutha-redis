@@ -13,27 +13,26 @@ trait ZObjectLike
 
   // Accessors
 
-  def id: ZIdentity
-
-  def key: String = id.key
+  def allZids: Seq[Zid]
 
   def zClass: ZRef[A, ZClass]
 
   def fieldSets: Seq[ZFieldSetRef[A]]
-  def zids: Seq[Zid] = id match {
-    case TempId(_) => Seq()
-    case MZids(_, allZids) => allZids
-    case Zids(zid, allZids) => allZids
-  }
-  def primaryZids: Seq[Zid] = id match {
-    case TempId(_) => Seq()
-    case MZids(pZids, _) => pZids
-    case Zids(zid, allZids) => Seq(zid)
-  }
+
+//  def zids: Seq[Zid] = id match {
+//    case TempId(_) => Seq()
+//    case MZids(_, allZids) => allZids
+//    case Zids(zid, allZids) => allZids
+//  }
+//  def primaryZids: Seq[Zid] = id match {
+//    case TempId(_) => Seq()
+//    case MZids(pZids, _) => pZids
+//    case Zids(zid, allZids) => Seq(zid)
+//  }
 
   // Comparison
 
-  def sameAs( other: ZObject ): Boolean = id == other.id
+  def sameAs( other: ZObject ): Boolean = key == other.key
 
   // Querying
 
@@ -47,11 +46,14 @@ trait IObjectLike
 {
   self: IObject =>
 
+  require( allZids.size >= 1 )
+  require( allZids.head == zid )
+
   // Accessors
 
-  def id: Zids
+  def zid: Zid
 
-  def zid: Zid = id.zid
+  def key: String = zid.key
 
   override def zClass: IRef[ZClass]
 
@@ -73,7 +75,7 @@ trait MObjectLike
 
   // Accessors
 
-  def id: ZIdentity
+  def primaryZids: Seq[Zid]
 
   override def zClass: MRef[ZClass]
 
@@ -81,9 +83,9 @@ trait MObjectLike
 
   def deleted_? : Boolean
 
-  def messages: Seq[(MsgType, String)]
-
   // Queries
+
+  def messages: Seq[(MsgType, String)]
 
   def hasType_? ( objType: MRef[ZObjectType] ) : Boolean = acc.objectHasType( this.zRef, objType )
 

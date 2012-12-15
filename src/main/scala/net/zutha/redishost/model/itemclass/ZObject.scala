@@ -18,11 +18,6 @@ object ZObject
  */
 trait ZObject
   extends Referenceable[ZObject]
-{
-  def id: ZIdentity
-
-  def key: String
-}
 
 /**
  * An immutable ZObject
@@ -30,6 +25,7 @@ trait ZObject
 trait IObject
   extends ZObject
   with IObjectLike
+  with Loadable[IObject, ZObject]
 
 
 /**
@@ -38,4 +34,23 @@ trait IObject
 trait MObject
   extends ZObject
   with MObjectLike
+  with Loadable[MObject, ZObject]
 
+
+trait ModifiedObject
+  extends MObject
+  with Loadable[ModifiedObject, ZObject]
+{
+  require( primaryZids.size >= 1 )
+  require( primaryZids.forall( allZids.contains(_) ) )
+
+  def key: String = primaryZids.head.key
+}
+
+trait NewObject
+  extends MObject
+  with Loadable[NewObject, ZObject]
+{
+  def primaryZids = Seq()
+  def allZids = Seq()
+}

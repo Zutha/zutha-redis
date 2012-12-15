@@ -33,18 +33,19 @@ trait IItem
   extends ZItem
   with IObject
   with IItemLike
+  with Loadable[IItem, ZItem]
 
 
 /**
  * A concrete and Accessible Immutable Item corresponding to an Item in the database
  */
-case class ImmutableItem protected[redishost] ( id: Zids,
+case class ImmutableItem protected[redishost] ( zid: Zid,
+                                                allZids: Seq[Zid],
                                                 zClass: IRef[ZItemClass],
                                                 fieldSets: Seq[IFieldSetRef] )
                                               ( implicit val acc: IA )
   extends IItem
   with Loadable[ImmutableItem, ZItem]
-
 
 /**
  * A Mutable Item
@@ -53,12 +54,14 @@ trait MItem
   extends ZItem
   with MObject
   with MItemLike
+  with Loadable[MItem, ZItem]
 
 
 /**
  * A Persisted Item that possibly has unsaved modifications
  */
-case class ModifiedItem protected[redishost] ( id: PersistedId,
+case class ModifiedItem protected[redishost] ( primaryZids: Seq[Zid],
+                                               allZids: Seq[Zid],
                                                zClassOrig: MRef[ZItemClass],
                                                zClass: MRef[ZItemClass],
                                                fieldSets: Seq[MFieldSetRef],
@@ -66,17 +69,18 @@ case class ModifiedItem protected[redishost] ( id: PersistedId,
                                                deleted_? : Boolean = false )
                                              ( implicit val acc: MA )
   extends MItem
+  with ModifiedObject
   with Loadable[ModifiedItem, ZItem]
-
 
 /**
  * An Item that has not been persisted to the database
  */
-case class NewItem protected[redishost] ( id: TempId,
+case class NewItem protected[redishost] ( key: String,
                                           zClass: MRef[ZItemClass],
                                           fieldSets: Seq[MFieldSetRef],
                                           messages: Seq[(MsgType, String)] = Seq(),
                                           deleted_? : Boolean = false )
                                         ( implicit val acc: MA )
   extends MItem
+  with NewObject
   with Loadable[NewItem, ZItem]

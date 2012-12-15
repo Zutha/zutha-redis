@@ -56,6 +56,7 @@ trait IField
   extends ZField
   with IObject
   with IFieldLike
+  with Loadable[IField, ZField]
 
 
 /**
@@ -65,6 +66,7 @@ trait MField
   extends ZField
   with MObject
   with MFieldLike
+  with Loadable[MField, ZField]
 
 
 /**
@@ -72,14 +74,11 @@ trait MField
  */
 trait ModifiedField
   extends MField
+  with ModifiedObject
   with Loadable[ModifiedField, ZField]
 {
-
-  def id: PersistedId
-
   def rolePlayersOrig: Set[RolePlayer[A]]
   def literalsOrig: MLiteralMap
-
 
   // Accessors
 
@@ -106,7 +105,5 @@ trait ModifiedField
  */
 trait NewField
   extends MField
+  with NewObject
   with Loadable[NewField, ZField]
-{
-  def id: TempId
-}

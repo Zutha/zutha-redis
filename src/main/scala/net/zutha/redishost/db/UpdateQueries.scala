@@ -30,7 +30,7 @@ trait UpdateQueries { self: MutableAccessor =>
     redis.pipeline {r =>
       r.specifyObjectClass( newId, zClass.key )
     }
-    NewItem( TempId(newId), zClass, Seq(), Seq() )
+    NewItem( newId , zClass, Seq(), Seq() )
   }
 
   /**
@@ -66,7 +66,7 @@ trait UpdateQueries { self: MutableAccessor =>
     val scopeSeq = scope.mapValues(_.toSeq).toSeq
 
     //TODO create simpler FieldType if applicable
-    NewComplexField( TempId(newId), fieldClass, Seq(), members, scopeSeq)
+    NewComplexField( newId, fieldClass, Seq(), members, scopeSeq)
   }
 
   // ======================= Mutation =======================
@@ -97,13 +97,13 @@ trait UpdateQueries { self: MutableAccessor =>
                    rolePlayer1: MRolePlayer,
                    rolePlayer2: MRolePlayer
                    ): NewBinaryField = field match {
-    case NewBinaryField( id, zClass, fieldSets, rp1, rp2, scope,
+    case NewBinaryField( key, zClass, fieldSets, rp1, rp2, scope,
                          msgs, memberMsgs, scopeMsgs, deleted_? ) => {
       // TODO update redis
-      NewBinaryField( id, zClass, fieldSets, rolePlayer1, rolePlayer2, scope,
+      NewBinaryField( key, zClass, fieldSets, rolePlayer1, rolePlayer2, scope,
         msgs, memberMsgs, scopeMsgs, deleted_? )
     }
-    case ModifiedBinaryField( modifiedFieldId, zClass, fieldSets, rp1, rp2, scope,
+    case ModifiedBinaryField( primaryZids, allZids, zClass, fieldSets, rp1, rp2, scope,
                               msgs, memberMsgs, scopeMsgs, deleted_? ) => {
       // TODO delete modifiedField
       createField( zClass, Set( rolePlayer1, rolePlayer2 ), Map(), scope ) match {
